@@ -15,7 +15,7 @@ export default function EntrarPage() {
             <div className="eyebrow">Área do aluno</div>
             <h1 style={{ marginTop: "14px" }}>Entrar</h1>
             <p style={{ marginTop: "14px" }}>
-              Digite seu e-mail. A gente manda um código de 6 dígitos para você entrar, sem senha.
+              Digite seu e-mail. A gente manda um link para você entrar, sem senha.
             </p>
           </div>
           <Suspense>

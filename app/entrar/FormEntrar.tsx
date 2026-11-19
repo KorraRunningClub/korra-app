@@ -12,7 +12,11 @@ export function FormEntrar() {
   const [email, setEmail] = useState("");
   const [codigo, setCodigo] = useState("");
   const [enviando, setEnviando] = useState(false);
-  const [erro, setErro] = useState<string | null>(null);
+  const [erro, setErro] = useState<string | null>(
+    params.get("erro") === "link"
+      ? "O link expirou ou foi aberto em outro navegador. Peça um novo e abra no mesmo aparelho."
+      : null,
+  );
 
   async function enviarCodigo(e: React.FormEvent) {
     e.preventDefault();
@@ -31,7 +35,7 @@ export function FormEntrar() {
       setErro(
         error.status === 429
           ? "Muitas tentativas seguidas. Espere alguns minutos e tente de novo."
-          : "Não conseguimos enviar o código. Confira o e-mail e tente de novo.",
+          : "Não conseguimos enviar o e-mail. Confira o endereço e tente de novo.",
       );
       return;
     }
@@ -74,7 +78,7 @@ export function FormEntrar() {
         </div>
         {erro && <p className="msg erro">{erro}</p>}
         <button className="btn btn-primary" type="submit" disabled={enviando}>
-          {enviando ? "Enviando…" : "Receber código →"}
+          {enviando ? "Enviando…" : "Receber link de acesso →"}
         </button>
       </form>
     );
@@ -83,8 +87,10 @@ export function FormEntrar() {
   return (
     <form className="panel" onSubmit={confirmarCodigo}>
       <p className="msg">
-        Enviamos um código para <strong>{email}</strong>. Confira também a caixa de spam.
+        Enviamos um link de acesso para <strong>{email}</strong>. Abra o e-mail <strong>neste mesmo
+        aparelho</strong> e toque em entrar. Confira também a caixa de spam.
       </p>
+      <p style={{ fontSize: "15px" }}>Se o e-mail trouxer um código de 6 dígitos, digite aqui:</p>
       <div className="field">
         <label htmlFor="codigo">Código</label>
         <input
