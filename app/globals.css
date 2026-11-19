@@ -224,3 +224,9 @@ footer.escuro{--bg:var(--verde-2)}
 .closing-foto{display:flex;align-items:flex-end;min-height:clamp(560px,62vw,820px);padding-block:48px clamp(48px,6vw,80px);background:linear-gradient(180deg,rgba(31,37,30,0) 30%,rgba(31,37,30,.55) 60%,rgba(31,37,30,.92) 100%),url(/grupo-korra.jpg) center 25%/cover no-repeat}
 .closing-foto>.wrap{width:100%}
 @media (max-width:700px){.closing-foto{min-height:620px;background-position:center,38% 20%}}
+
+/* fotos que abrem o Google Maps */
+.ph-mapa{text-decoration:none;transition:transform .15s,box-shadow .15s}
+.ph-mapa:hover{transform:translateY(-3px);box-shadow:0 14px 28px -16px rgba(31,37,30,.7)}
+.ph-mapa .chip-mapa{position:absolute;top:12px;right:12px;font-family:var(--f-label);font-weight:700;letter-spacing:.1em;text-transform:uppercase;font-size:12px;padding:4px 10px;border-radius:999px;background:var(--amarelo);color:var(--tinta)}
+.link-mapa{font-family:var(--f-label);font-weight:700;letter-spacing:.08em;text-transform:uppercase;font-size:14px;color:inherit;text-decoration:underline;text-decoration-color:var(--amarelo);text-decoration-thickness:3px;text-underline-offset:5px}

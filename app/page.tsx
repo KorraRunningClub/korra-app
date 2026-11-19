@@ -28,8 +28,8 @@ export default function Home() {
 
         <div className="wrap" style={{ paddingBottom: "clamp(56px,8vw,96px)" }}>
           <div className="strip">
-            <div className="ph ph-foto" style={{ backgroundImage: "url(/pedra-branca.jpg)" }}><span>Treino coletivo<br />na Pedra Branca</span></div>
-            <div className="ph ph-foto" style={{ backgroundImage: "url(/parque-coqueiros.jpg)" }}><span>Parque de<br />Coqueiros</span></div>
+            <a className="ph ph-foto ph-mapa" href="https://www.google.com/maps/search/?api=1&query=R.+das+Baronesas%2C+663+-+Pedra+Branca%2C+Palho%C3%A7a+-+SC" target="_blank" rel="noopener noreferrer" style={{ backgroundImage: "url(/pedra-branca.jpg)" }} aria-label="Ver Pedra Branca no Google Maps"><span className="chip-mapa">Ver no mapa ↗</span><span>Treino coletivo<br />na Pedra Branca</span></a>
+            <a className="ph ph-foto ph-mapa" href="https://www.google.com/maps/search/?api=1&query=Parque+de+Coqueiros%2C+Florian%C3%B3polis+-+SC" target="_blank" rel="noopener noreferrer" style={{ backgroundImage: "url(/parque-coqueiros.jpg)" }} aria-label="Ver Parque de Coqueiros no Google Maps"><span className="chip-mapa">Ver no mapa ↗</span><span>Parque de<br />Coqueiros</span></a>
             <div className="ph ph-foto" style={{ backgroundImage: "url(/itinerante-beira-mar.jpg)" }}><span>Treino itinerante<br />pela cidade</span></div>
             <div className="ph ph-foto" style={{ backgroundImage: "url(/dia-de-prova.jpg)" }}><span>Dia de prova<br />com a equipe</span></div>
           </div>
@@ -71,6 +71,7 @@ export default function Home() {
                 <span className="city">Palhoça · SC</span>
                 <p>Nossa base, na R. das Baronesas, 663. Encontro do grupo com aquecimento e treino guiado.</p>
                 <div className="when">Terças e quintas · 19h30</div>
+                <a className="link-mapa" href="https://www.google.com/maps/search/?api=1&query=R.+das+Baronesas%2C+663+-+Pedra+Branca%2C+Palho%C3%A7a+-+SC" target="_blank" rel="noopener noreferrer">Ver no mapa ↗</a>
               </article>
               <article className="loc">
                 <span className="kind">Qualitativo</span>
@@ -78,6 +79,7 @@ export default function Home() {
                 <span className="city">Florianópolis · SC</span>
                 <p>Onde fazemos os treinos qualitativos: intervalados e treinos com ritmos pré-definidos.</p>
                 <div className="when">2 terças por mês · 19h30</div>
+                <a className="link-mapa" href="https://www.google.com/maps/search/?api=1&query=Parque+de+Coqueiros%2C+Florian%C3%B3polis+-+SC" target="_blank" rel="noopener noreferrer">Ver no mapa ↗</a>
               </article>
               <article className="loc">
                 <span className="kind">Itinerante</span>
