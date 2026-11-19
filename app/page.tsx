@@ -30,7 +30,7 @@ export default function Home() {
           <div className="strip">
             <div className="ph"><span>Treino coletivo<br />na Pedra Branca</span></div>
             <div className="ph ph-foto" style={{ backgroundImage: "url(/parque-coqueiros.jpg)" }}><span>Parque de<br />Coqueiros</span></div>
-            <div className="ph"><span>Treino itinerante<br />pela cidade</span></div>
+            <div className="ph ph-foto" style={{ backgroundImage: "url(/itinerante-beira-mar.jpg)" }}><span>Treino itinerante<br />pela cidade</span></div>
             <div className="ph ph-foto" style={{ backgroundImage: "url(/dia-de-prova.jpg)" }}><span>Dia de prova<br />com a equipe</span></div>
           </div>
         </div>
