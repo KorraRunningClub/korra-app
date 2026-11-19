@@ -106,7 +106,14 @@ export default function Home() {
 
         <section className="band escuro" id="treinador">
           <div className="wrap coach">
-            <div className="ph"><span>Arthur Passoni<br />Canônica</span></div>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              className="coach-foto"
+              src="/treinador-arthur.jpg"
+              alt="Arthur Passoni Canônica correndo durante a Volta à Lagoa"
+              width={900}
+              height={1124}
+            />
             <div>
               <div className="eyebrow">Quem treina você</div>
               <h2 style={{ marginTop: "14px" }}>Arthur Passoni Canônica</h2>
