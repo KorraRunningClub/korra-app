@@ -240,3 +240,10 @@ footer.escuro{--bg:var(--verde-2)}
 .bloco-responsavel legend{font-family:var(--f-label);font-weight:700;letter-spacing:.12em;text-transform:uppercase;font-size:14px;padding:0 6px}
 .bloco-responsavel p{font-size:15px}
 .tabela .sub{font-size:13.5px;opacity:.7;margin-top:2px}
+
+/* despesas */
+.despesas-grid{display:grid;grid-template-columns:minmax(0,360px) minmax(0,1fr);gap:28px;align-items:start;margin-top:18px}
+.despesas-grid .panel{max-width:none}
+@media (max-width:900px){.despesas-grid{grid-template-columns:1fr}}
+.cat-resumo{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}
+.cat-chip{font-size:14px;padding:6px 12px;border-radius:999px;background:var(--creme-2);border:1px solid var(--line)}
