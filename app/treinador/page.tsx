@@ -133,6 +133,8 @@ export default async function TreinadorPage({
           </div>
 
           <h2 id="despesas" style={{ marginTop: "64px", fontSize: "clamp(26px,3.4vw,36px)" }}>Despesas de {nomeMes}</h2>
+          {ok?.startsWith("despesa") && <p className="msg" style={{ marginTop: "14px" }}>{OKS[ok]}</p>}
+          {erro?.startsWith("despesa") && <p className="msg erro" style={{ marginTop: "14px" }}>{ERROS[erro]}</p>}
           <div className="despesas-grid">
             <form className="panel" action="/treinador/despesas" method="post">
               <input type="hidden" name="acao" value="lancar" />
@@ -197,6 +199,8 @@ export default async function TreinadorPage({
           </div>
 
           <h2 id="strava" style={{ marginTop: "64px", fontSize: "clamp(26px,3.4vw,36px)" }}>Strava</h2>
+          {ok?.startsWith("strava") && <p className="msg" style={{ marginTop: "14px" }}>{OKS[ok]}</p>}
+          {erro?.startsWith("strava") && <p className="msg erro" style={{ marginTop: "14px" }}>{ERROS[erro]}</p>}
           <div className="strava-box">
             <p>Para os treinos entrarem sozinhos no <a href="/aluno/ranking">ranking</a>, ligue a atualização automática uma única vez (depois de configurar as chaves do Strava no Cloudflare).</p>
             <form action="/treinador/strava" method="post"><button className="btn btn-strava" type="submit">Ligar atualização automática</button></form>
