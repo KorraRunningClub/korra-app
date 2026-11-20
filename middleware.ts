@@ -6,5 +6,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/aluno/:path*", "/treinador/:path*", "/entrar", "/auth/:path*"],
+  matcher: ["/aluno/:path*", "/treinador/:path*", "/entrar", "/auth/:path*", "/strava/conectar", "/strava/callback", "/strava/sincronizar", "/strava/desconectar"],
 };

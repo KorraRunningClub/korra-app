@@ -66,8 +66,13 @@ export default async function AlunoPage({
               <a className="link-mapa" href="/aluno/cadastro">Editar cadastro →</a>
             </div>
             <div className="tile">
+              <span className="k">Desafios</span>
+              <span>Corrida mais longa, mais rápida e maior quilometragem da semana.</span>
+              <a className="link-mapa" href="/aluno/ranking">Ver ranking →</a>
+            </div>
+            <div className="tile">
               <span className="k">Em breve</span>
-              <span>Pagamento pelo app, rankings da semana, Diz Aí Como Foi e conteúdos.</span>
+              <span>Pagamento pelo app, Diz Aí Como Foi e conteúdos.</span>
             </div>
           </div>
         </div>

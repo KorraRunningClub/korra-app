@@ -16,11 +16,14 @@ const ERROS: Record<string, string> = {
   despesa_data: "Confira a data da despesa.",
   despesa_categoria: "Escolha a categoria da despesa.",
   despesa_valor: "Confira o valor (ex.: 45,90).",
+  strava_webhook: "O Strava recusou a ligação automática. Confira as variáveis no Cloudflare e tente de novo.",
 };
 const OKS: Record<string, string> = {
   "1": "Aluno atualizado.",
   despesa: "Despesa lançada.",
   despesa_apagada: "Despesa apagada.",
+  strava_webhook: "Pronto! Agora o Strava avisa o app sempre que um aluno conectado salvar uma corrida.",
+  strava_ja: "A atualização automática do Strava já estava ligada.",
 };
 
 export default async function TreinadorPage({
@@ -191,6 +194,12 @@ export default async function TreinadorPage({
                 </table>
               </div>
             </div>
+          </div>
+
+          <h2 id="strava" style={{ marginTop: "64px", fontSize: "clamp(26px,3.4vw,36px)" }}>Strava</h2>
+          <div className="strava-box">
+            <p>Para os treinos entrarem sozinhos no <a href="/aluno/ranking">ranking</a>, ligue a atualização automática uma única vez (depois de configurar as chaves do Strava no Cloudflare).</p>
+            <form action="/treinador/strava" method="post"><button className="btn btn-strava" type="submit">Ligar atualização automática</button></form>
           </div>
         </div>
       </main>

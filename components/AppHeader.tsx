@@ -10,6 +10,7 @@ export function AppHeader({ nome, treinador }: { nome?: string | null; treinador
         </Link>
         <ul>
           <li><Link href="/aluno">Minha área</Link></li>
+          <li><Link href="/aluno/ranking">Ranking</Link></li>
           {treinador && <li><Link href="/treinador">Painel do treinador</Link></li>}
         </ul>
         <div className="nav-cta">

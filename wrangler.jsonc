@@ -8,5 +8,7 @@
     "directory": ".open-next/assets",
     "binding": "ASSETS"
   },
-  "observability": { "enabled": true }
+  "observability": { "enabled": true },
+  // mantém as variáveis/segredos configurados no painel do Cloudflare a cada deploy
+  "keep_vars": true
 }
