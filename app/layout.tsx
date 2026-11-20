@@ -14,6 +14,9 @@ export const metadata: Metadata = {
   title: "Korrá Running Club · Assessoria de corrida na Grande Florianópolis",
   description:
     "A rua antes do pódio. Assessoria de corrida de rua com planejamento individual, treinos presenciais na Pedra Branca (Palhoça) e Florianópolis, e acompanhamento online.",
+  applicationName: "Korrá",
+  appleWebApp: { capable: true, title: "Korrá", statusBarStyle: "default" },
+  formatDetection: { telephone: false },
   openGraph: {
     title: "Korrá Running Club",
     description: "A rua antes do pódio. Assessoria de corrida na Grande Florianópolis e online.",
