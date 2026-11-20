@@ -1,5 +1,4 @@
 import { redirect } from "next/navigation";
-import { revalidatePath } from "next/cache";
 import { getSessao } from "@/lib/supabase/server";
 import { AppHeader } from "@/components/AppHeader";
 import { formatarTelefone, idade } from "@/lib/cadastro";
@@ -9,18 +8,18 @@ export const metadata = { title: "Painel do treinador · Korrá Running Club" };
 const MENSALIDADE = 165;
 const brl = (v: number) => v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 
-async function mudarStatus(formData: FormData) {
-  "use server";
-  const sessao = await getSessao();
-  if (!sessao || sessao.perfil?.papel !== "treinador") return;
-  const id = String(formData.get("id"));
-  const status = String(formData.get("status"));
-  if (!["ativo", "pendente", "bloqueado"].includes(status)) return;
-  await sessao.supabase.from("perfis").update({ status }).eq("id", id);
-  revalidatePath("/treinador");
-}
+const ERROS: Record<string, string> = {
+  salvar: "Não conseguimos atualizar o aluno. Tente de novo; se continuar, avise o suporte.",
+  permissao: "Só o treinador pode mudar o status dos alunos.",
+  dados: "Ação inválida.",
+};
 
-export default async function TreinadorPage() {
+export default async function TreinadorPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ erro?: string; ok?: string }>;
+}) {
+  const { erro, ok } = await searchParams;
   const sessao = await getSessao();
   if (!sessao) redirect("/entrar?voltar=/treinador");
   if (sessao.perfil?.papel !== "treinador") redirect("/aluno");
@@ -52,6 +51,8 @@ export default async function TreinadorPage() {
         <div className="wrap">
           <div className="eyebrow">Painel do treinador</div>
           <h1 style={{ marginTop: "14px" }}>Visão do mês</h1>
+          {erro && <p className="msg erro" style={{ marginTop: "18px" }}>{ERROS[erro] ?? "Algo deu errado."}</p>}
+          {ok && <p className="msg" style={{ marginTop: "18px" }}>Aluno atualizado.</p>}
 
           <div className="grid-cards">
             <div className="tile"><span className="k">Alunos ativos</span><span className="v">{ativos}</span><span>de {lista.length} cadastrados</span></div>
@@ -90,11 +91,22 @@ export default async function TreinadorPage() {
                     </td>
                     <td><span className={`pill ${a.status}`}>{a.status}</span></td>
                     <td>
-                      <form action={mudarStatus} style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
-                        <input type="hidden" name="id" value={a.id} />
-                        {a.status !== "ativo" && <button className="btn-link" name="status" value="ativo">Ativar</button>}
-                        {a.status !== "bloqueado" && <button className="btn-link" name="status" value="bloqueado">Bloquear</button>}
-                      </form>
+                      <div style={{ display: "flex", gap: "12px", flexWrap: "wrap" }}>
+                        {a.status !== "ativo" && (
+                          <form action="/treinador/status" method="post">
+                            <input type="hidden" name="id" value={a.id} />
+                            <input type="hidden" name="status" value="ativo" />
+                            <button className="btn-link" type="submit">Ativar</button>
+                          </form>
+                        )}
+                        {a.status !== "bloqueado" && (
+                          <form action="/treinador/status" method="post">
+                            <input type="hidden" name="id" value={a.id} />
+                            <input type="hidden" name="status" value="bloqueado" />
+                            <button className="btn-link" type="submit">Bloquear</button>
+                          </form>
+                        )}
+                      </div>
                     </td>
                   </tr>
                 ))}
