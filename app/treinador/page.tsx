@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { getSessao } from "@/lib/supabase/server";
 import { AppHeader } from "@/components/AppHeader";
+import { formatarTelefone, idade } from "@/lib/cadastro";
 
 export const metadata = { title: "Painel do treinador · Korrá Running Club" };
 
@@ -27,7 +28,7 @@ export default async function TreinadorPage() {
 
   const { data: alunos } = await supabase
     .from("perfis")
-    .select("id, nome, email, telefone, status, criado_em")
+    .select("id, nome, email, telefone, status, criado_em, data_nascimento, objetivo, responsavel_nome, responsavel_telefone, autoriza_imagem, cadastro_completo")
     .eq("papel", "aluno")
     .order("nome");
 
@@ -63,16 +64,30 @@ export default async function TreinadorPage() {
           <div style={{ overflowX: "auto", marginTop: "18px" }}>
             <table className="tabela">
               <thead>
-                <tr><th>Nome</th><th>Contato</th><th>Status</th><th>Ações</th></tr>
+                <tr><th>Nome</th><th>Contato</th><th>Idade · objetivo</th><th>Status</th><th>Ações</th></tr>
               </thead>
               <tbody>
                 {lista.length === 0 && (
-                  <tr><td colSpan={4}>Nenhum aluno cadastrado ainda. Quando alguém entrar pela área do aluno, aparece aqui.</td></tr>
+                  <tr><td colSpan={5}>Nenhum aluno cadastrado ainda. Quando alguém entrar pela área do aluno, aparece aqui.</td></tr>
                 )}
                 {lista.map((a) => (
                   <tr key={a.id}>
-                    <td>{a.nome ?? "—"}</td>
-                    <td>{a.email}{a.telefone ? ` · ${a.telefone}` : ""}</td>
+                    <td>
+                      {a.nome ?? "—"}
+                      {!a.cadastro_completo && <div className="sub">cadastro incompleto</div>}
+                    </td>
+                    <td>
+                      {a.email}
+                      {a.telefone && <div className="sub">{formatarTelefone(a.telefone)}</div>}
+                    </td>
+                    <td>
+                      {idade(a.data_nascimento) ?? "—"}{idade(a.data_nascimento) !== null ? " anos" : ""}
+                      {idade(a.data_nascimento) !== null && (idade(a.data_nascimento) as number) < 18 && (
+                        <div className="sub">menor · resp.: {a.responsavel_nome} {formatarTelefone(a.responsavel_telefone)}</div>
+                      )}
+                      {a.objetivo && <div className="sub">{a.objetivo}</div>}
+                      {a.cadastro_completo && !a.autoriza_imagem && <div className="sub">não autoriza imagem</div>}
+                    </td>
                     <td><span className={`pill ${a.status}`}>{a.status}</span></td>
                     <td>
                       <form action={mudarStatus} style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>

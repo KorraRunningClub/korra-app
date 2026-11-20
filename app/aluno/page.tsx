@@ -16,10 +16,22 @@ const STATUS: Record<string, { rotulo: string; texto: string }> = {
   },
 };
 
-export default async function AlunoPage() {
+export default async function AlunoPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ salvo?: string }>;
+}) {
   const sessao = await getSessao();
   if (!sessao) redirect("/entrar");
-  const { user, perfil } = sessao;
+  const { supabase, user, perfil } = sessao;
+  const { salvo } = await searchParams;
+
+  const { data: extra } = await supabase
+    .from("perfis")
+    .select("cadastro_completo")
+    .eq("id", user.id)
+    .single<{ cadastro_completo: boolean }>();
+  if (perfil?.papel !== "treinador" && !extra?.cadastro_completo) redirect("/aluno/cadastro");
   const status = STATUS[perfil?.status ?? "pendente"];
   const primeiroNome = perfil?.nome?.split(" ")[0];
 
@@ -35,6 +47,8 @@ export default async function AlunoPage() {
             {status.texto}
           </p>
 
+          {salvo && <p className="msg" style={{ marginTop: "18px" }}>Cadastro salvo. Obrigado!</p>}
+
           <div className="grid-cards">
             <div className="tile">
               <span className="k">Plano</span>
@@ -45,6 +59,11 @@ export default async function AlunoPage() {
               <span className="k">Treinos presenciais</span>
               <span>Terças e quintas, 19h30 · Pedra Branca (R. das Baronesas, 663)</span>
               <span>2 terças por mês no Parque de Coqueiros</span>
+            </div>
+            <div className="tile">
+              <span className="k">Meus dados</span>
+              <span>Nome, WhatsApp, objetivo e autorizações.</span>
+              <a className="link-mapa" href="/aluno/cadastro">Editar cadastro →</a>
             </div>
             <div className="tile">
               <span className="k">Em breve</span>
