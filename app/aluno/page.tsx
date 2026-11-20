@@ -71,8 +71,13 @@ export default async function AlunoPage({
               <a className="link-mapa" href="/aluno/ranking">Ver ranking →</a>
             </div>
             <div className="tile">
+              <span className="k">Fórum</span>
+              <span>Técnica, força e pliometria e as dicas dos nossos parceiros.</span>
+              <a className="link-mapa" href="/aluno/forum">Ver conteúdos →</a>
+            </div>
+            <div className="tile">
               <span className="k">Em breve</span>
-              <span>Pagamento pelo app, Diz Aí Como Foi e conteúdos.</span>
+              <span>Pagamento pelo app e o Diz Aí Como Foi.</span>
             </div>
           </div>
         </div>

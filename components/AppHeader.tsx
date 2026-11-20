@@ -3,7 +3,7 @@ import { Logo } from "./Logo";
 
 export function AppHeader({ nome, treinador }: { nome?: string | null; treinador?: boolean }) {
   return (
-    <header>
+    <header className="app-header">
       <div className="wrap nav">
         <Link className="brand" href="/" aria-label="Korrá Running Club, início">
           <Logo decorative />
@@ -11,7 +11,8 @@ export function AppHeader({ nome, treinador }: { nome?: string | null; treinador
         <ul>
           <li><Link href="/aluno">Minha área</Link></li>
           <li><Link href="/aluno/ranking">Ranking</Link></li>
-          {treinador && <li><Link href="/treinador">Painel do treinador</Link></li>}
+          <li><Link href="/aluno/forum">Fórum</Link></li>
+          {treinador && <li><Link href="/treinador">Painel</Link></li>}
         </ul>
         <div className="nav-cta">
           {nome && <span className="aluno">{nome}</span>}
