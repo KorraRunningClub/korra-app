@@ -56,7 +56,7 @@ export default function TermosPage() {
           </p>
 
           <h2>7. Contato</h2>
-          <p>Dúvidas: WhatsApp (48) 98500-1468 ou Instagram @korrarunning.</p>
+          <p>Dúvidas: WhatsApp (48) 98500-1468, e-mail korraclubrunn@gmail.com ou Instagram @korrarunning.</p>
         </article>
       </main>
       <SiteFooter />

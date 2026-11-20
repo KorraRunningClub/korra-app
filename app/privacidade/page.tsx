@@ -26,7 +26,7 @@ export default function PrivacidadePage() {
           <p>
             O controlador dos dados é <b>Arthur Passoni Canônica</b> (CREF 035416-G/SC), responsável pela assessoria
             Korrá Running Club. Para qualquer assunto sobre seus dados, fale direto com ele pelo WhatsApp{" "}
-            <b>(48) 98500-1468</b> ou pelo Instagram <b>@korrarunning</b>.
+            <b>(48) 98500-1468</b> ou pelo e-mail <b>korraclubrunn@gmail.com</b>.
           </p>
 
           <h2>2. Quais dados coletamos</h2>
@@ -94,7 +94,7 @@ export default function PrivacidadePage() {
             <li>pedir informações sobre com quem compartilhamos seus dados;</li>
             <li>reclamar à Autoridade Nacional de Proteção de Dados (ANPD).</li>
           </ul>
-          <p>Qualquer pedido também pode ser feito pelo WhatsApp (48) 98500-1468. Respondemos em até 15 dias.</p>
+          <p>Qualquer pedido também pode ser feito pelo WhatsApp (48) 98500-1468 ou pelo e-mail korraclubrunn@gmail.com. Respondemos em até 15 dias.</p>
 
           <h2>8. Cookies</h2>
           <p>
