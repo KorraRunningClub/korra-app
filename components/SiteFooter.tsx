@@ -37,7 +37,7 @@ export function SiteFooter() {
             </ul>
           </div>
         </div>
-        <div className="legal"><span>© {new Date().getFullYear()} Korrá Running Club</span><span>Arthur Passoni Canônica · CREF 035416-G/SC</span></div>
+        <div className="legal"><span>© {new Date().getFullYear()} Korrá Running Club · <Link href="/privacidade">Privacidade</Link> · <Link href="/termos">Termos</Link></span><span>Arthur Passoni Canônica · CREF 035416-G/SC</span></div>
       </div>
     </footer>
   );

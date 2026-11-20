@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { getSessao } from "@/lib/supabase/server";
 import { AppHeader } from "@/components/AppHeader";
 import { dataBR, mes, pace, semana } from "@/lib/semana";
+import { AbasRanking, type Board } from "./Abas";
 
 export const metadata = { title: "Ranking · Korrá Running Club" };
 
@@ -21,30 +22,6 @@ function nomeCurto(n: string | null) {
   if (!n) return "Atleta";
   const p = n.trim().split(/\s+/);
   return p.length > 1 ? `${p[0]} ${p[p.length - 1][0]}.` : p[0];
-}
-
-function Quadro({ titulo, regra, linhas, formato, eu }: {
-  titulo: string; regra: string; linhas: Linha[]; formato: (l: Linha) => string; eu: string;
-}) {
-  return (
-    <section className="quadro">
-      <h3>{titulo}</h3>
-      <p className="regra">{regra}</p>
-      {linhas.length === 0 ? (
-        <p className="vazio">Ninguém pontuou ainda. Bora inaugurar?</p>
-      ) : (
-        <ol>
-          {linhas.slice(0, 10).map((l, i) => (
-            <li key={l.user_id} className={l.user_id === eu ? "eu" : undefined}>
-              <span className={`pos pos-${i + 1}`}>{i + 1}</span>
-              <span className="quem">{nomeCurto(l.nome)}{l.user_id === eu ? " (você)" : ""}</span>
-              <span className="valor">{formato(l)}</span>
-            </li>
-          ))}
-        </ol>
-      )}
-    </section>
-  );
 }
 
 export default async function RankingPage({
@@ -77,6 +54,14 @@ export default async function RankingPage({
   const ord = (r: { data: Linha[] | null }, asc = false) =>
     [...(r.data ?? [])].sort((a, b) => (asc ? Number(a.valor) - Number(b.valor) : Number(b.valor) - Number(a.valor)));
   const km1 = (l: Linha) => `${Number(l.valor).toLocaleString("pt-BR", { maximumFractionDigits: 1 })} km`;
+  const montar = (linhas: Linha[], fmt: (l: Linha) => string) =>
+    linhas.map((l) => ({ id: l.user_id, nome: nomeCurto(l.nome), valor: fmt(l), eu: l.user_id === user.id }));
+  const boards: Board[] = [
+    { chave: "longa", aba: "Mais longa", titulo: "Corrida mais longa da semana", regra: "A maior corrida contínua da semana (até 2 min de pausa).", linhas: montar(ord(longa), km1) },
+    { chave: "rapida", aba: "Mais rápida", titulo: "Corrida mais rápida da semana", regra: "Melhor pace médio em corridas de 5 km ou mais.", linhas: montar(ord(rapida, true), (l) => pace(Number(l.valor))) },
+    { chave: "km", aba: "Km da semana", titulo: "Maior quilometragem da semana", regra: "Soma de todas as corridas da semana.", linhas: montar(ord(km), km1) },
+    { chave: "mes", aba: "Km do mês", titulo: `Quilometragem de ${m.nome}`, regra: "Soma de todas as corridas do mês.", linhas: montar(ord(kmMes), km1) },
+  ];
 
   return (
     <>
@@ -118,12 +103,7 @@ export default async function RankingPage({
                 {passada ? <Link href="/aluno/ranking">Ver semana atual →</Link> : <Link href="/aluno/ranking?semana=passada">← Semana passada</Link>}
               </div>
 
-              <div className="quadros">
-                <Quadro titulo="Corrida mais longa" regra="A maior corrida contínua da semana (até 2 min de pausa)." linhas={ord(longa)} formato={km1} eu={user.id} />
-                <Quadro titulo="Corrida mais rápida" regra="Melhor pace médio em corridas de 5 km ou mais." linhas={ord(rapida, true)} formato={(l) => pace(Number(l.valor))} eu={user.id} />
-                <Quadro titulo="Maior quilometragem" regra="Soma de todas as corridas da semana." linhas={ord(km)} formato={km1} eu={user.id} />
-                <Quadro titulo={`Quilometragem de ${m.nome}`} regra="Soma de todas as corridas do mês." linhas={ord(kmMes)} formato={km1} eu={user.id} />
-              </div>
+              <AbasRanking boards={boards} />
               <p className="regra" style={{ marginTop: 14 }}>Valem corridas de rua, trilha e esteira. Caminhadas não contam. Os 3 primeiros de cada quadro levam medalha.</p>
 
               <h2 style={{ marginTop: 48, fontSize: "clamp(24px,3vw,32px)" }}>Minhas últimas corridas</h2>

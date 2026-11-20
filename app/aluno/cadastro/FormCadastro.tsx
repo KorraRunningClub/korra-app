@@ -77,7 +77,7 @@ export function FormCadastro({ dados }: { dados: DadosCadastro }) {
 
       <label className="check">
         <input type="checkbox" name="aceite_termos" defaultChecked={dados.cadastro_completo} required />
-        <span>Concordo que a Korrá use estes dados para organizar meus treinos, a comunicação e a mensalidade. Eles não são compartilhados com terceiros.</span>
+        <span>Li e concordo com a <a href="/privacidade" target="_blank">Política de Privacidade</a> e os <a href="/termos" target="_blank">Termos de Uso</a>. A Korrá usa estes dados para organizar meus treinos, a comunicação e a mensalidade.</span>
       </label>
 
       {estado.erro && <p className="msg erro" role="alert">{estado.erro}</p>}

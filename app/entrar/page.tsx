@@ -21,6 +21,9 @@ export default function EntrarPage() {
           <Suspense>
             <FormEntrar />
           </Suspense>
+          <p style={{ fontSize: "14px", opacity: 0.75 }}>
+            Ao entrar, você concorda com a <a href="/privacidade">Política de Privacidade</a> e os <a href="/termos">Termos de Uso</a>.
+          </p>
         </div>
       </main>
       <SiteFooter />
