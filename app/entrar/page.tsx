@@ -12,7 +12,7 @@ export default function EntrarPage() {
       <main className="app-shell">
         <div className="wrap" style={{ display: "grid", gap: "28px" }}>
           <div>
-            <div className="eyebrow">Área do aluno</div>
+            <div className="eyebrow">Korrá Running Club</div>
             <h1 style={{ marginTop: "14px" }}>Entrar</h1>
             <p style={{ marginTop: "14px" }}>
               Digite seu e-mail. A gente manda um link para você entrar, sem senha.

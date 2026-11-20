@@ -7,7 +7,7 @@ import { createClient } from "@/lib/supabase/client";
 export function FormEntrar() {
   const router = useRouter();
   const params = useSearchParams();
-  const voltar = params.get("voltar") || "/aluno";
+  const voltar = params.get("voltar") || "/inicio";
   const [etapa, setEtapa] = useState<"email" | "codigo">("email");
   const [email, setEmail] = useState("");
   const [codigo, setCodigo] = useState("");
