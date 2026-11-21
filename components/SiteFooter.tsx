@@ -31,7 +31,7 @@ export function SiteFooter() {
           <div>
             <h4>Alunos</h4>
             <ul>
-              <li><Link href="/entrar">Área do aluno</Link></li>
+              <li><Link href="/inicio">Área do aluno</Link></li>
               <li>Rankings <span style={{ opacity: ".6" }}>(em breve)</span></li>
               <li>Diz Aí Como Foi <span style={{ opacity: ".6" }}>(em breve)</span></li>
             </ul>

@@ -17,7 +17,7 @@ export default function Home() {
               <div className="ctas">
                 <a className="btn btn-primary" href="#planos">Conheça o plano →</a>
                 <a className="btn btn-ghost" href="#como-funciona">Como funciona ↓</a>
-                  <a className="ja-aluno" href="/entrar">Já sou aluno → Entrar</a>
+                  <a className="ja-aluno" href="/inicio">Já sou aluno → Entrar</a>
               </div>
             </div>
             <div className="hero-mark">

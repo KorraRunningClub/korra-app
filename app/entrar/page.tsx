@@ -1,11 +1,23 @@
 import { Suspense } from "react";
+import { redirect } from "next/navigation";
+import { getSessao } from "@/lib/supabase/server";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import { FormEntrar } from "./FormEntrar";
 
 export const metadata = { title: "Entrar · Korrá Running Club" };
 
-export default function EntrarPage() {
+export default async function EntrarPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ voltar?: string }>;
+}) {
+  // Já está logado? Vai direto para a área certa.
+  const sessao = await getSessao();
+  if (sessao) {
+    const { voltar } = await searchParams;
+    redirect(voltar && voltar.startsWith("/") && !voltar.startsWith("//") ? voltar : "/inicio");
+  }
   return (
     <>
       <SiteHeader />

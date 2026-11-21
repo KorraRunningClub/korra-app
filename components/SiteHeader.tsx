@@ -16,7 +16,7 @@ export function SiteHeader() {
           <li><a href="/#duvidas">Dúvidas</a></li>
         </ul>
         <div className="nav-cta">
-          <Link className="aluno" href="/entrar">Área do aluno</Link>
+          <Link className="aluno" href="/inicio">Área do aluno</Link>
           <a className="btn btn-primary" href="/#planos">Quero treinar</a>
         </div>
       </div>
