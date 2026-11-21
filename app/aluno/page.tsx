@@ -76,8 +76,13 @@ export default async function AlunoPage({
               <a className="link-mapa" href="/aluno/forum">Ver conteúdos →</a>
             </div>
             <div className="tile">
+              <span className="k">Diz Aí Como Foi</span>
+              <span>Posta a foto ou o vídeo do treino. Some em 24 horas.</span>
+              <a className="link-mapa" href="/aluno/diz-ai">Ver a comunidade →</a>
+            </div>
+            <div className="tile">
               <span className="k">Em breve</span>
-              <span>Pagamento pelo app e o Diz Aí Como Foi.</span>
+              <span>Pagamento pelo app.</span>
             </div>
           </div>
         </div>

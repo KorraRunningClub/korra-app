@@ -23,6 +23,9 @@ export async function POST(request: NextRequest) {
         headers: { Authorization: `Bearer ${c.access_token}` },
       }).catch(() => {});
     }
+    // Apaga fotos/vídeos do Diz Aí
+    const { data: arquivos } = await admin.storage.from("diz-ai").list(sessao.user.id, { limit: 1000 });
+    if (arquivos?.length) await admin.storage.from("diz-ai").remove(arquivos.map((a) => `${sessao.user.id}/${a.name}`));
     // Apaga o usuário do login; perfil, treinos e conexão são apagados em cascata.
     const { error } = await admin.auth.admin.deleteUser(sessao.user.id);
     if (error) throw error;
