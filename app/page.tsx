@@ -1,4 +1,5 @@
 import { Logo } from "@/components/Logo";
+import { CATALOGO, linkPedido } from "@/lib/loja";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 
@@ -194,20 +195,26 @@ export default function Home() {
               <div className="eyebrow">Produtos oficiais</div>
               <h2 style={{ marginTop: "14px" }}>Veste a Korrá.</h2>
               <p className="loja-lede">
-                A camiseta oficial pra treinar, competir e mostrar de onde você vem. Preta ou branca,
-                com a estampa pequena no peito ou a logo grande nas costas.
+                Camiseta e squeeze oficiais pra treinar, competir e mostrar de onde você vem. Escolha a peça ou monte o seu kit.
               </p>
-              <div className="produto">
-                <div>
-                  <span className="produto-nome">Camiseta oficial Korrá</span>
-                  <span className="produto-det">Preta ou branca · 2 estampas</span>
-                </div>
-                <div className="preco"><span className="cur">R$</span><span className="val">99</span><span className="cent">,99</span></div>
-              </div>
-              <div className="ctas">
-                <a className="btn btn-primary" href="https://wa.me/5548985001468?text=Ol%C3%A1%21%20Quero%20a%20camiseta%20oficial%20da%20Korr%C3%A1.%20Modelo%3A%20%20%20Cor%3A%20%20%20Tamanho%3A" target="_blank" rel="noopener noreferrer">Quero a minha →</a>
-                <span className="loja-nota">Pedido pelo WhatsApp (48) 98500-1468</span>
-              </div>
+              <ul className="catalogo">
+                {CATALOGO.map((item) => {
+                  const [inteiro, cent] = item.preco.toFixed(2).split(".");
+                  return (
+                    <li key={item.id} className={`produto${item.destaque ? " destaque" : ""}`}>
+                      <div style={{ minWidth: 0 }}>
+                        <span className="produto-nome">{item.nome}</span>
+                        <span className="produto-det">{item.detalhe}</span>
+                      </div>
+                      <div className="produto-lado">
+                        <div className="preco"><span className="cur">R$</span><span className="val">{inteiro}</span><span className="cent">,{cent}</span></div>
+                        <a className="pedir" href={linkPedido(item.nome)} target="_blank" rel="noopener noreferrer">Pedir →</a>
+                      </div>
+                    </li>
+                  );
+                })}
+              </ul>
+              <p className="loja-nota" style={{ marginTop: 14 }}>Pedidos pelo WhatsApp (48) 98500-1468.</p>
             </div>
             <div className="loja-video">
               <video
