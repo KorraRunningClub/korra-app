@@ -188,13 +188,38 @@ export default function Home() {
           </div>
         </section>
 
-        <section className="band closing escuro closing-foto" aria-label="Equipe Korrá reunida à beira-mar">
-          <div className="wrap">
-            <div className="eyebrow">Bora?</div>
-            <h2 style={{ marginTop: "14px" }}>A rua antes<br />do pódio.</h2>
-            <div className="ctas">
-              <a className="btn btn-primary" href="https://wa.me/5548985001468?text=Ol%C3%A1%21%20Quero%20conhecer%20a%20Korr%C3%A1%20Running%20Club." target="_blank" rel="noopener noreferrer">Chamar no WhatsApp →</a>
-              <span style={{ alignSelf: "center", fontFamily: "var(--f-label)", letterSpacing: ".06em", fontSize: "18px" }}>(48) 98500-1468</span>
+        <section className="band escuro loja" id="loja" aria-label="Produtos oficiais Korrá">
+          <div className="wrap loja-grid">
+            <div className="loja-texto">
+              <div className="eyebrow">Produtos oficiais</div>
+              <h2 style={{ marginTop: "14px" }}>Veste a Korrá.</h2>
+              <p className="loja-lede">
+                A camiseta oficial pra treinar, competir e mostrar de onde você vem. Preta ou branca,
+                com a estampa pequena no peito ou a logo grande nas costas.
+              </p>
+              <div className="produto">
+                <div>
+                  <span className="produto-nome">Camiseta oficial Korrá</span>
+                  <span className="produto-det">Preta ou branca · 2 estampas</span>
+                </div>
+                <div className="preco"><span className="cur">R$</span><span className="val">99</span><span className="cent">,99</span></div>
+              </div>
+              <div className="ctas">
+                <a className="btn btn-primary" href="https://wa.me/5548985001468?text=Ol%C3%A1%21%20Quero%20a%20camiseta%20oficial%20da%20Korr%C3%A1.%20Modelo%3A%20%20%20Cor%3A%20%20%20Tamanho%3A" target="_blank" rel="noopener noreferrer">Quero a minha →</a>
+                <span className="loja-nota">Pedido pelo WhatsApp (48) 98500-1468</span>
+              </div>
+            </div>
+            <div className="loja-video">
+              <video
+                src="/produtos-korra.mp4"
+                poster="/produtos-korra.jpg"
+                autoPlay
+                muted
+                loop
+                playsInline
+                preload="metadata"
+                aria-label="Camisetas oficiais e garrafa da Korrá em fundos verde, amarelo e creme"
+              />
             </div>
           </div>
         </section>

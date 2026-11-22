@@ -13,7 +13,8 @@ export function SiteHeader() {
           <li><a href="/#onde">Onde treinamos</a></li>
           <li><a href="/#treinador">Treinador</a></li>
           <li><a href="/#planos">Planos</a></li>
-          <li><a href="/#duvidas">Dúvidas</a></li>
+          <li><a href="/#loja">Loja</a></li>
+            <li><a href="/#duvidas">Dúvidas</a></li>
         </ul>
         <div className="nav-cta">
           <Link className="aluno" href="/inicio">Área do aluno</Link>
