@@ -21,6 +21,7 @@ const ERRO: Record<string, string> = {
   tipo: "Escolha o tipo do lançamento.",
   valor: "Confira o valor (ex.: 139,99).",
   salvar: "Não conseguimos salvar. Tente de novo.",
+  tabela: "O banco ainda não tem as tabelas da loja. Rode o SQL 0011 no Supabase (SQL Editor) e tente de novo.",
 };
 
 export default async function LojaAdmin({ searchParams }: { searchParams: Promise<{ ok?: string; erro?: string }> }) {

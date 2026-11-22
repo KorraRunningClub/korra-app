@@ -82,6 +82,9 @@ export async function POST(request: NextRequest) {
     }
   } catch (e) {
     console.error("loja", e);
+    const codigo = (e as { code?: string })?.code ?? "";
+    // tabela ainda não criada no Supabase (falta rodar o SQL 0011)
+    if (codigo === "42P01" || codigo === "PGRST205") return ir("?erro=tabela");
     return ir("?erro=salvar");
   }
   return ir("");
