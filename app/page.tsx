@@ -1,13 +1,38 @@
+import type React from "react";
 import { Logo } from "@/components/Logo";
 import { CATALOGO, linkPedido } from "@/lib/loja";
 
-const PECAS = [
-  { src: "/produtos/camiseta-preta-frente.webp", cls: "p1" },
-  { src: "/produtos/camiseta-branca-costas.webp", cls: "p2" },
-  { src: "/produtos/squeeze.webp", cls: "p3" },
-  { src: "/produtos/camiseta-branca-frente.webp", cls: "p4" },
-  { src: "/produtos/camiseta-preta-costas.webp", cls: "p5" },
+// Peças da loja: posição (x,y) e largura (w) em % — "d" = computador (área da seção toda), "m" = celular (área abaixo do cartão).
+// a = dança, t = duração (s), atraso = começa em outro ponto da dança. Sem "m" = só aparece no computador.
+const PF = "/produtos/camiseta-preta-frente.webp";
+const PC = "/produtos/camiseta-preta-costas.webp";
+const BF = "/produtos/camiseta-branca-frente.webp";
+const BC = "/produtos/camiseta-branca-costas.webp";
+const SQ = "/produtos/squeeze.webp";
+type Peca = { src: string; d: [number, number, number]; m?: [number, number, number]; a: string; t: number; atraso: number; z?: number };
+const PECAS: Peca[] = [
+  { src: PF, d: [54, 7, 16], m: [0, 0, 44], a: "samba-a", t: 6.4, atraso: 0 },
+  { src: BC, d: [76, 3, 17], m: [54, 3, 44], a: "samba-b", t: 7.3, atraso: -2 },
+  { src: SQ, d: [61, 41, 22], m: [16, 40, 62], a: "samba-c", t: 5.6, atraso: -1, z: 3 },
+  { src: BF, d: [53, 57, 15], m: [0, 54, 40], a: "samba-b", t: 8.1, atraso: -4 },
+  { src: PC, d: [77, 54, 17], m: [56, 56, 40], a: "samba-a", t: 6.9, atraso: -3 },
+  { src: SQ, d: [86, 33, 12], m: [60, 27, 34], a: "samba-d", t: 4.8, atraso: -2.5, z: 2 },
+  { src: BF, d: [69, 80, 10], a: "samba-d", t: 5.2, atraso: -1.5 },
+  { src: PC, d: [0.5, 2, 9], a: "samba-c", t: 7.7, atraso: -5 },
+  { src: SQ, d: [38, 87, 14], a: "samba-a", t: 6.1, atraso: -0.5 },
+  { src: BC, d: [46, 1, 8], a: "samba-d", t: 5.9, atraso: -3.5 },
+  { src: PF, d: [90, 80, 9], a: "samba-c", t: 6.6, atraso: -2 },
+  { src: SQ, d: [1, 86, 11], a: "samba-b", t: 7.0, atraso: -4.5 },
 ];
+
+function estiloPeca(p: Peca) {
+  const v: Record<string, string | number> = {
+    "--x": `${p.d[0]}%`, "--y": `${p.d[1]}%`, "--w": `${p.d[2]}%`,
+    "--a": p.a, "--t": `${p.t}s`, "--atraso": `${p.atraso}s`, zIndex: p.z ?? 1,
+  };
+  if (p.m) Object.assign(v, { "--xm": `${p.m[0]}%`, "--ym": `${p.m[1]}%`, "--wm": `${p.m[2]}%` });
+  return v as React.CSSProperties;
+}
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 
@@ -175,6 +200,13 @@ export default function Home() {
         </section>
 
         <section className="loja" id="loja" aria-label="Produtos oficiais Korrá">
+          <div className="loja-palco" aria-label="Camisetas oficiais preta e branca, frente e costas, e squeezes da Korrá dançando">
+            {PECAS.map((p, i) => (
+              <div key={i} className={`peca${p.m ? "" : " so-pc"}`} style={estiloPeca(p)}>
+                <img src={p.src} alt="" loading="lazy" decoding="async" />
+              </div>
+            ))}
+          </div>
           <div className="wrap loja-grid">
             <div className="loja-texto loja-cartao escuro">
               <div className="eyebrow">Produtos oficiais</div>
@@ -200,13 +232,6 @@ export default function Home() {
                 })}
               </ul>
               <p className="loja-nota" style={{ marginTop: 14 }}>Pedidos pelo WhatsApp (48) 98500-1468.</p>
-            </div>
-            <div className="loja-palco" aria-label="Camisetas oficiais preta e branca, frente e costas, e squeeze da Korrá">
-              {PECAS.map((p) => (
-                <div key={p.src} className={`peca ${p.cls}`}>
-                  <img src={p.src} alt="" loading="lazy" decoding="async" />
-                </div>
-              ))}
             </div>
           </div>
         </section>
