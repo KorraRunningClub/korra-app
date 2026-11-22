@@ -1,5 +1,13 @@
 import { Logo } from "@/components/Logo";
 import { CATALOGO, linkPedido } from "@/lib/loja";
+
+const PECAS = [
+  { src: "/produtos/camiseta-preta-frente.webp", cls: "p1" },
+  { src: "/produtos/camiseta-branca-costas.webp", cls: "p2" },
+  { src: "/produtos/squeeze.webp", cls: "p3" },
+  { src: "/produtos/camiseta-branca-frente.webp", cls: "p4" },
+  { src: "/produtos/camiseta-preta-costas.webp", cls: "p5" },
+];
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 
@@ -166,32 +174,9 @@ export default function Home() {
           </div>
         </section>
 
-        <section className="band escuro" id="duvidas">
-          <div className="wrap faq">
-            <div>
-              <div className="eyebrow">Dúvidas</div>
-              <h2 style={{ marginTop: "14px" }}>Antes da largada.</h2>
-            </div>
-            <div>
-              <details open>
-                <summary>O planejamento é individualizado?</summary>
-                <p>Sim! Mas aqui não vendemos isso como diferencial. Acreditamos que entregar um planejamento direcionado à sua realidade é o mínimo de uma assessoria esportiva.</p>
-              </details>
-              <details>
-                <summary>Preciso saber correr?</summary>
-                <p>Não precisa. Aqui você recebe instruções diretas e objetivas para alcançar seus objetivos, ou até mesmo criá-los, caso ainda não tenha.</p>
-              </details>
-              <details>
-                <summary>Preciso ir aos encontros presenciais?</summary>
-                <p>Não. A corrida tem esse benefício: dá para correr de qualquer lugar. Mas saiba que ter um grupo correndo com você ajuda muito no seu desenvolvimento.</p>
-              </details>
-            </div>
-          </div>
-        </section>
-
-        <section className="band escuro loja" id="loja" aria-label="Produtos oficiais Korrá">
+        <section className="loja" id="loja" aria-label="Produtos oficiais Korrá">
           <div className="wrap loja-grid">
-            <div className="loja-texto">
+            <div className="loja-texto loja-cartao escuro">
               <div className="eyebrow">Produtos oficiais</div>
               <h2 style={{ marginTop: "14px" }}>Veste a Korrá.</h2>
               <p className="loja-lede">
@@ -216,17 +201,34 @@ export default function Home() {
               </ul>
               <p className="loja-nota" style={{ marginTop: 14 }}>Pedidos pelo WhatsApp (48) 98500-1468.</p>
             </div>
-            <div className="loja-video">
-              <video
-                src="/produtos-korra.mp4"
-                poster="/produtos-korra.jpg"
-                autoPlay
-                muted
-                loop
-                playsInline
-                preload="metadata"
-                aria-label="Camisetas oficiais e garrafa da Korrá em fundos verde, amarelo e creme"
-              />
+            <div className="loja-palco" aria-label="Camisetas oficiais preta e branca, frente e costas, e squeeze da Korrá">
+              {PECAS.map((p) => (
+                <div key={p.src} className={`peca ${p.cls}`}>
+                  <img src={p.src} alt="" loading="lazy" decoding="async" />
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+        <section className="band escuro" id="duvidas">
+          <div className="wrap faq">
+            <div>
+              <div className="eyebrow">Dúvidas</div>
+              <h2 style={{ marginTop: "14px" }}>Antes da largada.</h2>
+            </div>
+            <div>
+              <details open>
+                <summary>O planejamento é individualizado?</summary>
+                <p>Sim! Mas aqui não vendemos isso como diferencial. Acreditamos que entregar um planejamento direcionado à sua realidade é o mínimo de uma assessoria esportiva.</p>
+              </details>
+              <details>
+                <summary>Preciso saber correr?</summary>
+                <p>Não precisa. Aqui você recebe instruções diretas e objetivas para alcançar seus objetivos, ou até mesmo criá-los, caso ainda não tenha.</p>
+              </details>
+              <details>
+                <summary>Preciso ir aos encontros presenciais?</summary>
+                <p>Não. A corrida tem esse benefício: dá para correr de qualquer lugar. Mas saiba que ter um grupo correndo com você ajuda muito no seu desenvolvimento.</p>
+              </details>
             </div>
           </div>
         </section>
