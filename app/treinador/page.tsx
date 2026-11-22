@@ -39,7 +39,7 @@ export default async function TreinadorPage({
 
   const { data: alunos } = await supabase
     .from("perfis")
-    .select("id, nome, email, telefone, status, criado_em, data_nascimento, objetivo, responsavel_nome, responsavel_telefone, autoriza_imagem, cadastro_completo")
+    .select("id, nome, email, telefone, status, criado_em, valor_mensal, data_nascimento, objetivo, responsavel_nome, responsavel_telefone, autoriza_imagem, cadastro_completo")
     .eq("papel", "aluno")
     .order("nome");
 
@@ -60,7 +60,10 @@ export default async function TreinadorPage({
   const lista = alunos ?? [];
   const ativos = lista.filter((a) => a.status === "ativo").length;
   const totalDespesas = (despesas ?? []).reduce((s, d) => s + Number(d.valor), 0);
-  const receitaPrevista = ativos * MENSALIDADE;
+  const valorDe = (a: { valor_mensal: number | string | null }) => (a.valor_mensal === null ? MENSALIDADE : Number(a.valor_mensal));
+  const listaAtivos = lista.filter((a) => a.status === "ativo");
+  const receitaPrevista = listaAtivos.reduce((s, a) => s + valorDe(a), 0);
+  const gratuitos = listaAtivos.filter((a) => valorDe(a) === 0).length;
 
   return (
     <>
@@ -75,20 +78,22 @@ export default async function TreinadorPage({
 
           <div className="grid-cards">
             <div className="tile"><span className="k">Alunos ativos</span><span className="v">{ativos}</span><span>de {lista.length} cadastrados</span></div>
-            <div className="tile"><span className="k">Receita prevista</span><span className="v">{brl(receitaPrevista)}</span><span>{ativos} × {brl(MENSALIDADE)}</span></div>
+            <div className="tile"><span className="k">Receita prevista</span><span className="v">{brl(receitaPrevista)}</span><span>{ativos - gratuitos} pagantes{gratuitos ? ` · ${gratuitos} gratuito${gratuitos > 1 ? "s" : ""}` : ""}</span></div>
             <div className="tile"><span className="k">Despesas no mês</span><span className="v">{brl(totalDespesas)}</span><span>{(despesas ?? []).length} lançamentos em {nomeMes}</span></div>
             <div className="tile"><span className="k">Saldo previsto</span><span className="v">{brl(receitaPrevista - totalDespesas)}</span><span>receita − despesas</span></div>
           </div>
 
-          <h2 style={{ marginTop: "56px", fontSize: "clamp(26px,3.4vw,36px)" }}>Alunos</h2>
+          <h2 id="alunos" style={{ marginTop: "56px", fontSize: "clamp(26px,3.4vw,36px)" }}>Alunos</h2>
+          {ok === "valor" && <p className="msg" style={{ marginTop: "14px" }}>Mensalidade atualizada.</p>}
+          {erro === "valor_aluno" && <p className="msg erro" style={{ marginTop: "14px" }}>Confira o valor (ex.: 165 ou 120,00).</p>}
           <div style={{ overflowX: "auto", marginTop: "18px" }}>
             <table className="tabela">
               <thead>
-                <tr><th>Nome</th><th>Contato</th><th>Idade · objetivo</th><th>Status</th><th>Ações</th></tr>
+                <tr><th>Nome</th><th>Contato</th><th>Idade · objetivo</th><th>Mensalidade</th><th>Status</th><th>Ações</th></tr>
               </thead>
               <tbody>
                 {lista.length === 0 && (
-                  <tr><td colSpan={5}>Nenhum aluno cadastrado ainda. Quando alguém entrar pela área do aluno, aparece aqui.</td></tr>
+                  <tr><td colSpan={6}>Nenhum aluno cadastrado ainda. Quando alguém entrar pela área do aluno, aparece aqui.</td></tr>
                 )}
                 {lista.map((a) => (
                   <tr key={a.id}>
@@ -107,6 +112,33 @@ export default async function TreinadorPage({
                       )}
                       {a.objetivo && <div className="sub">{a.objetivo}</div>}
                       {a.cadastro_completo && !a.autoriza_imagem && <div className="sub">não autoriza imagem</div>}
+                    </td>
+                    <td>
+                      <form action="/treinador/valor" method="post" className="form-valor">
+                        <input type="hidden" name="id" value={a.id} />
+                        <span className="prefixo">R$</span>
+                        <input name="valor" inputMode="decimal" aria-label={`Mensalidade de ${a.nome ?? "aluno"}`}
+                          defaultValue={a.valor_mensal === null ? "" : Number(a.valor_mensal).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
+                          placeholder={String(MENSALIDADE)} />
+                        <button className="btn-link" type="submit">Salvar</button>
+                      </form>
+                      <div className="sub" style={{ display: "flex", gap: "10px", alignItems: "center" }}>
+                        {valorDe(a) === 0 ? <span className="pill">Gratuito</span> : a.valor_mensal === null ? <span>padrão</span> : <span>personalizado</span>}
+                        {valorDe(a) !== 0 && (
+                          <form action="/treinador/valor" method="post">
+                            <input type="hidden" name="id" value={a.id} />
+                            <input type="hidden" name="modo" value="gratuito" />
+                            <button className="btn-link" type="submit">tornar gratuito</button>
+                          </form>
+                        )}
+                        {a.valor_mensal !== null && (
+                          <form action="/treinador/valor" method="post">
+                            <input type="hidden" name="id" value={a.id} />
+                            <input type="hidden" name="modo" value="padrao" />
+                            <button className="btn-link" type="submit">voltar ao padrão</button>
+                          </form>
+                        )}
+                      </div>
                     </td>
                     <td><span className={`pill ${a.status}`}>{a.status}</span></td>
                     <td>

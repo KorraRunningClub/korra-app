@@ -28,9 +28,10 @@ export default async function AlunoPage({
 
   const { data: extra } = await supabase
     .from("perfis")
-    .select("cadastro_completo")
+    .select("cadastro_completo, valor_mensal")
     .eq("id", user.id)
-    .single<{ cadastro_completo: boolean }>();
+    .single<{ cadastro_completo: boolean; valor_mensal: number | null }>();
+  const valor = extra?.valor_mensal === null || extra?.valor_mensal === undefined ? 165 : Number(extra.valor_mensal);
   if (perfil?.papel !== "treinador" && !extra?.cadastro_completo) redirect("/aluno/cadastro");
   const status = STATUS[perfil?.status ?? "pendente"];
   const primeiroNome = perfil?.nome?.split(" ")[0];
@@ -53,7 +54,7 @@ export default async function AlunoPage({
             <div className="tile">
               <span className="k">Plano</span>
               <span className="v">Mensal</span>
-              <span>R$ 165/mês · presencial + online</span>
+              <span>{valor === 0 ? "Gratuito" : `${valor.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}/mês`} · presencial + online</span>
             </div>
             <div className="tile">
               <span className="k">Treinos presenciais</span>

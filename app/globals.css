@@ -424,3 +424,6 @@ footer.escuro{--bg:var(--verde-2)}
 .post-comentar{display:flex;gap:8px;margin-top:10px}
 .post-comentar input{flex:1;min-width:0;font:inherit;padding:10px 12px;border-radius:999px;border:1.5px solid var(--line);background:var(--bg);color:var(--fg)}
 .post-comentar .btn{padding:9px 16px;font-size:14px}
+.form-valor{display:flex;align-items:center;gap:6px}
+.form-valor .prefixo{font-size:14px;opacity:.7}
+.form-valor input{width:84px;font:inherit;font-size:15px;padding:6px 8px;border-radius:8px;border:1.5px solid var(--line);background:var(--bg);color:var(--fg);font-variant-numeric:tabular-nums}
