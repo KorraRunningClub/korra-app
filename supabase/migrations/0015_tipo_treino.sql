@@ -24,3 +24,8 @@ create policy "marcacoes: aluno apaga as próprias" on public.treino_marcacoes
 
 grant select, insert, update, delete on public.treino_marcacoes to authenticated;
 grant select, insert, update, delete on public.treino_marcacoes to service_role;
+
+-- Tipo "prova" (dia de competição)
+alter table public.treino_marcacoes drop constraint if exists treino_marcacoes_tipo_check;
+alter table public.treino_marcacoes add constraint treino_marcacoes_tipo_check
+  check (tipo in ('intervalado', 'rodagem', 'longao', 'fartlek', 'regenerativo', 'prova'));

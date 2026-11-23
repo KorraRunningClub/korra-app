@@ -543,3 +543,4 @@ footer.escuro{--bg:var(--verde-2)}
 .tipo-treino button.ativo{background:var(--verde);border-color:var(--verde);color:var(--creme)}
 .tipo-treino.salvando{opacity:.7}
 .tipo-erro{font-size:12.5px;color:#8d2a17;align-self:center}
+.tipo-treino button.prova.ativo{background:var(--amarelo);border-color:var(--tinta);color:var(--tinta)}

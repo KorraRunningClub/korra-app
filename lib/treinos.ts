@@ -5,6 +5,7 @@ export const TIPOS_TREINO = [
   { id: "longao", nome: "Longão" },
   { id: "fartlek", nome: "Fartlek" },
   { id: "regenerativo", nome: "Regenerativo" },
+  { id: "prova", nome: "Prova" },
 ] as const;
 export type TipoTreino = (typeof TIPOS_TREINO)[number]["id"];
 export const ehTipoTreino = (v: string): v is TipoTreino => TIPOS_TREINO.some((t) => t.id === v);

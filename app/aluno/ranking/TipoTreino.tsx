@@ -33,7 +33,7 @@ export function TipoTreino({ atividadeId, inicial }: { atividadeId: number; inic
   return (
     <div className={`tipo-treino${salvando ? " salvando" : ""}`} role="group" aria-label="Tipo do treino">
       {TIPOS_TREINO.map((t) => (
-        <button key={t.id} type="button" aria-pressed={tipo === t.id} className={tipo === t.id ? "ativo" : undefined} onClick={() => marcar(t.id)}>
+        <button key={t.id} type="button" aria-pressed={tipo === t.id} className={`${tipo === t.id ? "ativo" : ""}${t.id === "prova" ? " prova" : ""}`.trim() || undefined} onClick={() => marcar(t.id)}>
           {t.nome}
         </button>
       ))}
