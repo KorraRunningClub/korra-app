@@ -11,6 +11,7 @@ export function AppHeader({ nome, treinador }: { nome?: string | null; treinador
         <ul>
           <li><Link href="/aluno">Minha área</Link></li>
           <li><Link href="/aluno/ranking">Ranking</Link></li>
+          <li><Link href="/aluno/provas">Provas</Link></li>
           <li><Link href="/aluno/diz-ai">Diz Aí</Link></li>
           <li><Link href="/aluno/forum">Fórum</Link></li>
           {treinador && <li><Link href="/treinador">Painel</Link></li>}
