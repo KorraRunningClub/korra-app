@@ -101,6 +101,7 @@ export default async function RankingPage({
         <div className="wrap">
           <div className="eyebrow">Desafios Korrá</div>
           <h1 style={{ marginTop: "14px" }}>Ranking</h1>
+          <Link className="link-conquistas" href="/aluno/conquistas">Conquistas disponíveis →</Link>
 
           {q.erro && <p className="msg erro" style={{ marginTop: 18 }}>{MSG[q.erro] ?? "Algo deu errado."}</p>}
           {q.conectado && <p className="msg" style={{ marginTop: 18 }}>Strava conectado! Importamos {q.conectado} corridas dos últimos 35 dias.</p>}

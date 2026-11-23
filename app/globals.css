@@ -686,3 +686,20 @@ footer.escuro{--bg:var(--verde-2)}
 .cores-fase input:focus-visible+span{outline:3px solid var(--amarelo);outline-offset:2px}
 .cores-fase i{font-style:normal}
 @media (max-width:700px){.cal-fase-rot{display:none}.cal-dia.com-fase{box-shadow:inset 0 3px 0 var(--fase)}}
+/* conquistas */
+.link-conquistas{display:inline-block;margin-top:12px;font-family:var(--f-label);font-weight:700;letter-spacing:.06em;text-transform:uppercase;font-size:15px}
+.conq-total{margin-top:14px;font-family:var(--f-label);font-weight:600;letter-spacing:.06em;text-transform:uppercase;font-size:15px}
+.conq-total b{font-family:var(--f-display);font-stretch:125%;font-weight:900;font-size:30px;margin-right:4px}
+.conq-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:14px;margin-top:16px}
+.conq-card{border:1.5px solid var(--line);border-radius:16px;padding:18px 16px;display:grid;justify-items:center;text-align:center;gap:6px;background:var(--bg)}
+.conq-card.ok{background:var(--verde);color:var(--creme);border-color:var(--verde)}
+.conq-card h3{font-size:19px;line-height:1.15}
+.conq-nivel{font-family:var(--f-label);font-weight:700;letter-spacing:.12em;text-transform:uppercase;font-size:12px;color:var(--muted)}
+.conq-card.ok .conq-nivel{color:var(--amarelo)}
+.conq-regra{font-size:14px;opacity:.8}
+.conq-data{font-size:13.5px;color:var(--amarelo);font-weight:600}
+.conq-prog{display:flex;align-items:center;gap:8px;width:100%;font-size:13px;font-weight:600}
+.conq-prog .barra{flex:1;height:8px;border-radius:99px;background:var(--creme-3);overflow:hidden}
+.conq-prog .barra span{display:block;height:100%;background:var(--verde-3);border-radius:99px}
+.medalha-svg{filter:drop-shadow(0 8px 10px rgba(0,0,0,.18))}
+.medalha-svg.bloqueada{filter:none;opacity:.9}

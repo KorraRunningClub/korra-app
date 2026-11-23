@@ -10,7 +10,13 @@ export function AppHeader({ nome, treinador }: { nome?: string | null; treinador
         </Link>
         <ul>
           <li><Link href="/aluno">Minha área</Link></li>
-          <li><Link href="/aluno/ranking">Ranking</Link></li>
+          <li className="tem-sub">
+            <Link className="sub-rotulo" href="/aluno/ranking" aria-haspopup="true">Ranking ▾</Link>
+            <ul className="submenu">
+              <li><Link href="/aluno/ranking"><b>Ranking</b><span>Quadros da semana, do mês e do semestre</span></Link></li>
+              <li><Link href="/aluno/conquistas"><b>Conquistas<i className="so-pc"> disponíveis</i></b><span>Medalhas para desbloquear</span></Link></li>
+            </ul>
+          </li>
           <li className="tem-sub">
             <Link className="sub-rotulo" href="/aluno/calendario" aria-haspopup="true">Calendário ▾</Link>
             <ul className="submenu">
