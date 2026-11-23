@@ -518,3 +518,8 @@ footer.escuro{--bg:var(--verde-2)}
 .aviso-esgotado{color:#8d2a17;font-weight:600;font-size:14.5px}
 .peca-escolha.sem{border-color:#c9725f}
 .btn[disabled]{opacity:.5;cursor:not-allowed;transform:none}
+/* onda amarela voadora da logo (hero) */
+.hero-mark .logo .w{transform-box:fill-box;transform-origin:50% 100%}
+.hero-mark.onda-voando .logo .w{opacity:0}
+.hero-mark.onda-pousou .logo .w{animation:onda-pousa .6s cubic-bezier(.2,.9,.3,1.4)}
+@keyframes onda-pousa{0%{transform:scale(1.08,.6)}45%{transform:scale(.96,1.25)}100%{transform:none}}
