@@ -531,4 +531,7 @@ footer.escuro{--bg:var(--verde-2)}
 @media (prefers-reduced-motion:reduce){.velocidade{display:none}}
 .ver-strava{color:#FC5200;font-weight:700;text-decoration:underline;white-space:nowrap}
 .treino-nome{display:inline-flex;align-items:center;gap:8px}
-.icone-horario{flex:none;color:var(--verde-3)}
+.icone-horario{flex:none}
+.icone-horario.sol{color:#E0A100}
+.icone-horario.entardecer{color:#E8622C}
+.icone-horario.lua{color:#4F5FA8}

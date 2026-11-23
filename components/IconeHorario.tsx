@@ -12,7 +12,7 @@ export function IconeHorario({ inicioLocal }: { inicioLocal: string }) {
   const p = periodoCorrida(inicioLocal);
   const comum = {
     width: 18, height: 18, viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: 1.6,
-    strokeLinecap: "round" as const, strokeLinejoin: "round" as const, role: "img", "aria-label": p.nome, className: "icone-horario",
+    strokeLinecap: "round" as const, strokeLinejoin: "round" as const, role: "img", "aria-label": p.nome, className: `icone-horario ${p.tipo}`,
   };
   if (p.tipo === "sol")
     return (
