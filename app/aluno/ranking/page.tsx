@@ -144,12 +144,13 @@ export default async function RankingPage({
               <h2 style={{ marginTop: 48, fontSize: "clamp(24px,3vw,32px)" }}>Minhas últimas corridas</h2>
               <div style={{ overflowX: "auto", marginTop: 14 }}>
                 <table className="tabela">
-                  <thead><tr><th>Data</th><th>Treino</th><th>Distância</th><th>Pace</th><th>Pausas</th><th></th></tr></thead>
+                  <thead><tr><th>Data</th><th>Hora</th><th>Treino</th><th>Distância</th><th>Pace</th><th>Pausas</th><th></th></tr></thead>
                   <tbody>
-                    {(minhas ?? []).length === 0 && <tr><td colSpan={6}>Nenhuma corrida importada ainda.</td></tr>}
+                    {(minhas ?? []).length === 0 && <tr><td colSpan={7}>Nenhuma corrida importada ainda.</td></tr>}
                     {(minhas ?? []).map((a) => (
                       <tr key={a.id}>
                         <td>{dataBR(a.inicio_local)}</td>
+                        <td>{a.inicio_local.slice(11, 16).replace(":", "h")}</td>
                         <td><span className="treino-nome"><IconeHorario inicioLocal={a.inicio_local} />{a.nome ?? "Corrida"}{a.esteira ? " · esteira" : ""}</span></td>
                         <td>{(Number(a.distancia_m) / 1000).toLocaleString("pt-BR", { maximumFractionDigits: 2 })} km</td>
                         <td>{pace(a.tempo_mov_s / (Number(a.distancia_m) / 1000))}</td>
