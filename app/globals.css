@@ -535,3 +535,11 @@ footer.escuro{--bg:var(--verde-2)}
 .icone-horario.sol{color:#E0A100}
 .icone-horario.entardecer{color:#E8622C}
 .icone-horario.lua{color:#4F5FA8}
+/* tipo do treino (marcado pelo aluno) */
+.tipo-treino{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.tipo-treino button{all:unset;cursor:pointer;font-family:var(--f-label);font-weight:600;letter-spacing:.04em;text-transform:uppercase;font-size:12.5px;padding:4px 10px;border-radius:999px;border:1.5px solid var(--line);color:var(--muted);background:transparent;transition:background .15s,color .15s,border-color .15s}
+.tipo-treino button:hover{border-color:var(--verde-3);color:var(--fg)}
+.tipo-treino button:focus-visible{outline:2px solid var(--amarelo);outline-offset:2px}
+.tipo-treino button.ativo{background:var(--verde);border-color:var(--verde);color:var(--creme)}
+.tipo-treino.salvando{opacity:.7}
+.tipo-erro{font-size:12.5px;color:#8d2a17;align-self:center}

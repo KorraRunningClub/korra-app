@@ -5,6 +5,7 @@ import { AppHeader } from "@/components/AppHeader";
 import { dataBR, mes, pace, semana } from "@/lib/semana";
 import { AbasRanking, type Board } from "./Abas";
 import { IconeHorario } from "@/components/IconeHorario";
+import { TipoTreino } from "./TipoTreino";
 import { META_CORRIDAS, META_KM, semestre, sequencias } from "@/lib/semestral";
 
 export const metadata = { title: "Ranking · Korrá Running Club" };
@@ -59,6 +60,12 @@ export default async function RankingPage({
     supabase.from("atividades").select("id", { count: "exact", head: true }).eq("user_id", user.id)
       .gte("inicio_local", hoje.inicio).lt("inicio_local", hoje.fim).gte("distancia_m", META_KM * 1000),
   ]);
+
+  const idsMinhas = (minhas ?? []).map((a) => a.id);
+  const { data: marcRaw } = idsMinhas.length
+    ? await supabase.from("treino_marcacoes").select("atividade_id, tipo").in("atividade_id", idsMinhas)
+    : { data: [] };
+  const marcacao = new Map((marcRaw ?? []).map((m) => [Number(m.atividade_id), m.tipo as string]));
 
   type LinhaSem = { user_id: string; nome: string | null; semanas_ok: string[]; km_total: number };
   const semLinhas = ((semRank.data ?? []) as LinhaSem[])
@@ -151,7 +158,10 @@ export default async function RankingPage({
                       <tr key={a.id}>
                         <td>{dataBR(a.inicio_local)}</td>
                         <td>{a.inicio_local.slice(11, 16).replace(":", "h")}</td>
-                        <td><span className="treino-nome"><IconeHorario inicioLocal={a.inicio_local} />{a.nome ?? "Corrida"}{a.esteira ? " · esteira" : ""}</span></td>
+                        <td>
+                          <span className="treino-nome"><IconeHorario inicioLocal={a.inicio_local} />{a.nome ?? "Corrida"}{a.esteira ? " · esteira" : ""}</span>
+                          <TipoTreino atividadeId={Number(a.id)} inicial={marcacao.get(Number(a.id)) ?? null} />
+                        </td>
                         <td>{(Number(a.distancia_m) / 1000).toLocaleString("pt-BR", { maximumFractionDigits: 2 })} km</td>
                         <td>{pace(a.tempo_mov_s / (Number(a.distancia_m) / 1000))}</td>
                         <td>{Math.round((a.tempo_total_s - a.tempo_mov_s) / 60)} min</td>
@@ -161,6 +171,8 @@ export default async function RankingPage({
                   </tbody>
                 </table>
               </div>
+
+              <p className="regra" style={{ marginTop: 10 }}>Depois de cada corrida, marque o tipo do treino. Isso vai valer para as conquistas da Korrá.</p>
 
               <form action="/aluno/preferencias" method="post" className="pref-ranking">
                 <span>{pref?.aparecer_ranking === false ? "Você está escondido do ranking." : "Você aparece no ranking para os outros alunos."}</span>
