@@ -2,6 +2,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { getCloudflareContext } from "@opennextjs/cloudflare";
 import { createAdmin } from "@/lib/supabase/admin";
 import { importarAtividade } from "@/lib/strava";
+import { recalcularSemestreSeguro } from "@/lib/semestral";
 
 // Verificação da assinatura do webhook (Strava chama uma vez ao criar).
 export async function GET(request: NextRequest) {
@@ -27,14 +28,17 @@ async function processar(ev: Evento) {
   if (ev.object_type === "athlete" && ev.updates?.authorized === "false") {
     await admin.from("strava_conexoes").delete().eq("user_id", c.user_id);
     await admin.from("atividades").delete().eq("user_id", c.user_id).eq("fonte", "strava");
+    await admin.from("sequencias_semestre").delete().eq("user_id", c.user_id);
     return;
   }
   if (ev.object_type !== "activity") return;
   if (ev.aspect_type === "delete") {
     await admin.from("atividades").delete().eq("id", ev.object_id);
-    return;
+  } else {
+    await importarAtividade(admin, c.user_id, ev.object_id);
   }
-  await importarAtividade(admin, c.user_id, ev.object_id);
+  // corrida nova/editada/apagada: refaz a conta do semestre direto do Strava
+  await recalcularSemestreSeguro(admin, c.user_id);
 }
 
 // Strava avisa aqui quando alguém cria, edita ou apaga uma atividade.

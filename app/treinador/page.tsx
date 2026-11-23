@@ -29,9 +29,9 @@ const OKS: Record<string, string> = {
 export default async function TreinadorPage({
   searchParams,
 }: {
-  searchParams: Promise<{ erro?: string; ok?: string }>;
+  searchParams: Promise<{ erro?: string; ok?: string; feitos?: string; restam?: string }>;
 }) {
-  const { erro, ok } = await searchParams;
+  const { erro, ok, feitos, restam } = await searchParams;
   const sessao = await getSessao();
   if (!sessao) redirect("/entrar?voltar=/treinador");
   if (sessao.perfil?.papel !== "treinador") redirect("/aluno");
@@ -232,11 +232,21 @@ export default async function TreinadorPage({
           </div>
 
           <h2 id="strava" style={{ marginTop: "64px", fontSize: "clamp(26px,3.4vw,36px)" }}>Strava</h2>
-          {ok?.startsWith("strava") && <p className="msg" style={{ marginTop: "14px" }}>{OKS[ok]}</p>}
+          {ok?.startsWith("strava") && (
+            <p className="msg" style={{ marginTop: "14px" }}>
+              {ok === "strava_semestral"
+                ? `Ranking semestral recalculado para ${feitos ?? 0} aluno(s).${Number(restam) > 0 ? ` Faltam ${restam}: clique de novo.` : " Todos em dia!"}`
+                : OKS[ok]}
+            </p>
+          )}
           {erro?.startsWith("strava") && <p className="msg erro" style={{ marginTop: "14px" }}>{ERROS[erro]}</p>}
           <div className="strava-box">
             <p>Para os treinos entrarem sozinhos no <a href="/aluno/ranking">ranking</a>, ligue a atualização automática uma única vez (depois de configurar as chaves do Strava no Cloudflare).</p>
             <form action="/treinador/strava" method="post"><button className="btn btn-strava" type="submit">Ligar atualização automática</button></form>
+          </div>
+          <div className="strava-box">
+            <p><b>Ranking semestral.</b> Atualiza sozinho a cada corrida nova. Se quiser forçar agora (por exemplo, na primeira vez), clique abaixo — ele faz alguns alunos por vez.</p>
+            <form action="/treinador/semestral" method="post"><button className="btn btn-ghost" type="submit">Recalcular semestre</button></form>
           </div>
         </div>
       </main>

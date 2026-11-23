@@ -2,6 +2,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { getSessao } from "@/lib/supabase/server";
 import { createAdmin } from "@/lib/supabase/admin";
 import { importarRecentes, trocarCodigo } from "@/lib/strava";
+import { recalcularSemestreSeguro } from "@/lib/semestral";
 
 export async function GET(request: NextRequest) {
   const url = new URL(request.url);
@@ -31,6 +32,7 @@ export async function GET(request: NextRequest) {
     });
     if (error) throw error;
     const n = await importarRecentes(admin, sessao.user.id);
+    await recalcularSemestreSeguro(admin, sessao.user.id);
     const res = ir(`?conectado=${n}`);
     res.cookies.delete("strava_state");
     return res;
