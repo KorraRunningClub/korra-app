@@ -1,6 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { getSessao } from "@/lib/supabase/server";
-import { TIPOS_EVENTO, somarDias } from "@/lib/calendario";
+import { CORES_FASE, TIPOS_EVENTO, somarDias } from "@/lib/calendario";
 
 const txt = (v: FormDataEntryValue | null, max: number) => String(v ?? "").trim().slice(0, max);
 const horaOk = (v: string) => (/^\d{2}:\d{2}$/.test(v) ? v : null);
@@ -18,6 +18,27 @@ export async function POST(request: NextRequest) {
   const id = txt(form.get("id"), 40);
 
   try {
+    if (acao === "fase_apagar") {
+      const { error } = await db.from("fases").delete().eq("id", id);
+      if (error) throw error;
+      return ir("&ok=fase_apagada");
+    }
+    if (acao === "fase_criar" || acao === "fase_editar") {
+      const nome = txt(form.get("nome"), 60);
+      const inicio = txt(form.get("inicio"), 10);
+      const fim = txt(form.get("fim"), 10);
+      const cor = txt(form.get("cor"), 20);
+      if (nome.length < 2) return ir("&erro=fase_nome");
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(inicio) || !/^\d{4}-\d{2}-\d{2}$/.test(fim) || fim < inicio) return ir("&erro=fase_datas");
+      if (!(cor in CORES_FASE)) return ir("&erro=fase_cor");
+      const linha = { nome, inicio, fim, cor, descricao: txt(form.get("descricao"), 2000) || null };
+      const { error } = acao === "fase_editar"
+        ? await db.from("fases").update(linha).eq("id", id)
+        : await db.from("fases").insert(linha);
+      if (error) throw error;
+      return NextResponse.redirect(new URL(`/aluno/calendario?mes=${inicio.slice(0, 7)}&ok=fase`, request.url), { status: 303 });
+    }
+
     if (acao === "apagar" || acao === "apagar_serie") {
       if (acao === "apagar_serie") {
         const { data: ev } = await db.from("eventos").select("grupo, data").eq("id", id).single();

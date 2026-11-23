@@ -52,3 +52,22 @@ export const mesVizinho = (mes: string, n: number) => {
   const d = new Date(Date.UTC(a, m - 1 + n, 1));
   return d.toISOString().slice(0, 7);
 };
+
+// Fases do treinamento (períodos coloridos)
+export const CORES_FASE: Record<string, { nome: string; hex: string }> = {
+  vermelho: { nome: "Vermelho", hex: "#D64541" },
+  laranja: { nome: "Laranja", hex: "#E8622C" },
+  amarelo: { nome: "Amarelo", hex: "#E0A100" },
+  verde: { nome: "Verde", hex: "#4E8A4A" },
+  azul: { nome: "Azul", hex: "#3E6FB0" },
+  roxo: { nome: "Roxo", hex: "#7B57A6" },
+  cinza: { nome: "Cinza", hex: "#8A8B7E" },
+};
+export const FASES_SUGERIDAS: { nome: string; cor: string }[] = [
+  { nome: "Período de base", cor: "verde" },
+  { nome: "Período específico", cor: "laranja" },
+  { nome: "Período competitivo", cor: "vermelho" },
+  { nome: "Polimento", cor: "azul" },
+  { nome: "Transição / recuperação", cor: "cinza" },
+];
+export type Fase = { id: string; nome: string; descricao: string | null; inicio: string; fim: string; cor: string };

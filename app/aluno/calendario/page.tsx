@@ -3,7 +3,9 @@ import { redirect } from "next/navigation";
 import { getSessao } from "@/lib/supabase/server";
 import { AppHeader } from "@/components/AppHeader";
 import { hojeSP } from "@/lib/semana";
-import { DIAS_SEMANA, MESES, TIPOS_EVENTO, gradeDoMes, horario, linkMaps, mapaEmbed, mesVizinho, type Evento } from "@/lib/calendario";
+import { CORES_FASE, DIAS_SEMANA, FASES_SUGERIDAS, MESES, TIPOS_EVENTO, gradeDoMes, horario, linkMaps, mapaEmbed, mesVizinho, type Evento, type Fase } from "@/lib/calendario";
+import type React from "react";
+import { diasAte } from "@/lib/provas";
 import { nomeDistancia, type Prova } from "@/lib/provas";
 
 export const metadata = { title: "Calendário · Korrá Running Club" };
@@ -13,6 +15,8 @@ const OK: Record<string, string> = {
   serie: "Eventos criados (repetindo toda semana).",
   salvo: "Evento atualizado.",
   apagado: "Evento apagado.",
+  fase: "Fase salva no calendário.",
+  fase_apagada: "Fase apagada.",
 };
 const ERRO: Record<string, string> = {
   tipo: "Escolha o tipo do evento.",
@@ -21,6 +25,9 @@ const ERRO: Record<string, string> = {
   permissao: "Só o treinador pode mexer no calendário.",
   tabela: "O calendário ainda está sendo ligado (falta rodar o SQL no Supabase).",
   salvar: "Não conseguimos salvar. Tente de novo.",
+  fase_nome: "Dê um nome à fase.",
+  fase_datas: "Confira as datas da fase (o fim precisa ser depois do início).",
+  fase_cor: "Escolha uma cor.",
 };
 
 const porExtenso = (iso: string) =>
@@ -29,7 +36,7 @@ const porExtenso = (iso: string) =>
 export default async function CalendarioPage({
   searchParams,
 }: {
-  searchParams: Promise<{ mes?: string; evento?: string; novo?: string; editar?: string; ok?: string; erro?: string }>;
+  searchParams: Promise<{ mes?: string; evento?: string; novo?: string; editar?: string; fase?: string; verfase?: string; ok?: string; erro?: string }>;
 }) {
   const sessao = await getSessao();
   if (!sessao) redirect("/entrar?voltar=/aluno/calendario");
@@ -45,13 +52,16 @@ export default async function CalendarioPage({
   let eventos: Evento[] = [];
   let provas: Prova[] = [];
   let minhasProvas = new Set<string>();
+  let fases: Fase[] = [];
   if (liberado) {
-    const [{ data: ev }, { data: pv }, { data: ins }] = await Promise.all([
+    const [{ data: ev }, { data: pv }, { data: ins }, { data: fs }] = await Promise.all([
       supabase.from("eventos").select("id, tipo, titulo, data, hora_inicio, hora_fim, local_nome, endereco, descricao, prova_id, grupo")
         .gte("data", g.inicio).lte("data", g.fim).order("data").order("hora_inicio", { nullsFirst: true }),
       supabase.from("provas").select("id, nome, data, distancia, distancia_km, cidade, link").gte("data", hoje).order("data"),
       supabase.from("prova_inscricoes").select("prova_id").eq("user_id", user.id),
+      supabase.from("fases").select("id, nome, descricao, inicio, fim, cor").lte("inicio", g.fim > hoje ? g.fim : hoje).gte("fim", g.inicio < hoje ? g.inicio : hoje).order("inicio"),
     ]);
+    fases = (fs ?? []) as Fase[];
     eventos = (ev ?? []) as Evento[];
     provas = (pv ?? []) as Prova[];
     minhasProvas = new Set((ins ?? []).map((i) => i.prova_id as string));
@@ -70,6 +80,41 @@ export default async function CalendarioPage({
   const novoDia = treinador && q.novo && /^\d{4}-\d{2}-\d{2}$/.test(q.novo) ? q.novo : null;
   const provaDoEvento = aberto?.prova_id ? provas.find((p) => p.id === aberto!.prova_id) ?? null : null;
   const fechar = `/aluno/calendario?mes=${mes}`;
+  const faseDoDia = (d: string) => fases.find((f) => f.inicio <= d && f.fim >= d) ?? null;
+  const faseAtual = faseDoDia(hoje);
+  const fasesNaTela = fases.filter((f) => f.inicio <= g.fim && f.fim >= g.inicio);
+  const faseAberta = q.verfase ? fases.find((f) => f.id === q.verfase) ?? null : null;
+  const faseEditando = treinador && q.fase && q.fase !== "nova" ? fases.find((f) => f.id === q.fase) ?? null : null;
+  const faseNova = treinador && q.fase === "nova";
+  const corDe = (f: Fase) => ({ "--fase": CORES_FASE[f.cor]?.hex ?? "#8A8B7E" }) as React.CSSProperties;
+  const formFase = (f: Fase | null) => (
+    <form action="/aluno/calendario/acao" method="post" className="evento-form">
+      <input type="hidden" name="acao" value={f ? "fase_editar" : "fase_criar"} />
+      {f && <input type="hidden" name="id" value={f.id} />}
+      <input type="hidden" name="mes" value={mes} />
+      <div className="field"><label htmlFor="fa-nome">Nome da fase</label>
+        <input id="fa-nome" name="nome" list="fases-sugeridas" required maxLength={60} defaultValue={f?.nome ?? ""} placeholder="Ex.: Período de base" />
+        <datalist id="fases-sugeridas">{FASES_SUGERIDAS.map((x) => <option key={x.nome} value={x.nome} />)}</datalist>
+      </div>
+      <div className="linha-campos" style={{ gridTemplateColumns: "1fr 1fr" }}>
+        <div className="field"><label htmlFor="fa-ini">De</label><input id="fa-ini" name="inicio" type="date" required defaultValue={f?.inicio ?? hoje} /></div>
+        <div className="field"><label htmlFor="fa-fim">Até</label><input id="fa-fim" name="fim" type="date" required defaultValue={f?.fim ?? ""} /></div>
+      </div>
+      <fieldset className="field cores-fase"><legend>Cor</legend>
+        {Object.entries(CORES_FASE).map(([k, c]) => (
+          <label key={k} title={c.nome}>
+            <input type="radio" name="cor" value={k} defaultChecked={(f?.cor ?? "verde") === k} />
+            <span style={{ background: c.hex }} aria-hidden="true" /> <i>{c.nome}</i>
+          </label>
+        ))}
+      </fieldset>
+      <div className="field"><label htmlFor="fa-desc">O que acontece nessa fase</label><textarea id="fa-desc" name="descricao" rows={4} maxLength={2000} defaultValue={f?.descricao ?? ""} placeholder="Ex.: Construção de volume em ritmo leve, fortalecimento 2x por semana..." /></div>
+      <div className="evento-form-acoes">
+        <button className="btn btn-primary" type="submit">{f ? "Salvar fase" : "Criar fase"}</button>
+        <Link className="btn-link" href={fechar}>Cancelar</Link>
+      </div>
+    </form>
+  );
 
   const formEvento = (e: Evento | null, dia: string) => (
     <form action="/aluno/calendario/acao" method="post" className="evento-form">
@@ -135,6 +180,23 @@ export default async function CalendarioPage({
                 <Link href={`/aluno/calendario?mes=${mesVizinho(mes, 1)}`} aria-label="Próximo mês">→</Link>
                 {mes !== hoje.slice(0, 7) && <Link className="cal-hoje" href="/aluno/calendario">Hoje</Link>}
               </div>
+              {(faseAtual || fasesNaTela.length > 0 || treinador) && (
+                <div className="fases-faixa">
+                  {faseAtual && (
+                    <Link className="fase-atual" style={corDe(faseAtual)} href={`${fechar}&verfase=${faseAtual.id}`}>
+                      <span className="fase-rot">Fase atual</span>
+                      <b>{faseAtual.nome}</b>
+                      <span>até {faseAtual.fim.split("-").reverse().join("/")} · {diasAte(faseAtual.fim, hoje) === 0 ? "último dia" : `faltam ${diasAte(faseAtual.fim, hoje)} dias`}</span>
+                    </Link>
+                  )}
+                  {fasesNaTela.filter((f) => f.id !== faseAtual?.id).map((f) => (
+                    <Link key={f.id} className="fase-chip" style={corDe(f)} href={`${fechar}&verfase=${f.id}`}>
+                      <i aria-hidden="true" /> {f.nome} <span>{f.inicio.split("-").reverse().slice(0, 2).join("/")}–{f.fim.split("-").reverse().slice(0, 2).join("/")}</span>
+                    </Link>
+                  ))}
+                  {treinador && <Link className="btn btn-ghost fase-nova" href={`${fechar}&fase=nova`}>+ Nova fase</Link>}
+                </div>
+              )}
               <div className="cal-legenda">
                 {Object.entries(TIPOS_EVENTO).map(([k, t]) => <span key={k}><i className={`ponto ${t.cor}`} />{t.nome}</span>)}
               </div>
@@ -144,8 +206,13 @@ export default async function CalendarioPage({
                 {g.dias.map((d) => {
                   const fora = d.slice(0, 7) !== mes;
                   const evs = porDia.get(d) ?? [];
+                  const fase = faseDoDia(d);
+                  const dow = (new Date(`${d}T12:00:00Z`).getUTCDay() + 6) % 7;
+                  const rotulo = fase && (d === fase.inicio || dow === 0 || d === g.dias[0]);
                   return (
-                    <div key={d} role="gridcell" className={`cal-dia${fora ? " fora" : ""}${d === hoje ? " hoje" : ""}${d < hoje ? " passado" : ""}`}>
+                    <div key={d} role="gridcell" style={fase ? corDe(fase) : undefined}
+                      className={`cal-dia${fora ? " fora" : ""}${d === hoje ? " hoje" : ""}${d < hoje ? " passado" : ""}${fase ? " com-fase" : ""}`}>
+                      {rotulo && <Link className="cal-fase-rot" href={`${fechar}&verfase=${fase.id}`}>{fase.nome}</Link>}
                       <div className="cal-dia-topo">
                         <span className="cal-num">{Number(d.slice(8))}</span>
                         {treinador && <Link className="cal-mais" href={`/aluno/calendario?mes=${mes}&novo=${d}`} aria-label={`Criar evento em ${d}`}>+</Link>}
@@ -231,6 +298,42 @@ export default async function CalendarioPage({
                   )}
                 </div>
               )}
+            </div>
+          </div>
+        )}
+
+        {/* janela da fase */}
+        {faseAberta && (
+          <div className="modal-fundo">
+            <Link className="modal-fora" href={fechar} aria-label="Fechar" />
+            <div className="modal" role="dialog" aria-modal="true" aria-labelledby="fa-titulo" style={corDe(faseAberta)}>
+              <Link className="modal-x" href={fechar} aria-label="Fechar">×</Link>
+              <span className="fase-tag">Fase do treinamento</span>
+              <h2 id="fa-titulo">{faseAberta.nome}</h2>
+              <p className="ev-quando"><b>{porExtenso(faseAberta.inicio)}</b> até <b>{porExtenso(faseAberta.fim)}</b></p>
+              <p className="regra">
+                {faseAberta.inicio > hoje ? `Começa em ${diasAte(faseAberta.inicio, hoje)} dias.` : faseAberta.fim >= hoje ? (diasAte(faseAberta.fim, hoje) === 0 ? "Último dia desta fase." : `Faltam ${diasAte(faseAberta.fim, hoje)} dias para terminar.`) : "Fase encerrada."}
+              </p>
+              {faseAberta.descricao && <p className="ev-desc">{faseAberta.descricao}</p>}
+              {treinador && (
+                <div className="ev-admin">
+                  <Link className="btn btn-ghost" href={`${fechar}&fase=${faseAberta.id}`}>Editar</Link>
+                  <form action="/aluno/calendario/acao" method="post">
+                    <input type="hidden" name="acao" value="fase_apagar" /><input type="hidden" name="id" value={faseAberta.id} /><input type="hidden" name="mes" value={mes} />
+                    <button className="btn-link" type="submit">Apagar fase</button>
+                  </form>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+        {(faseNova || faseEditando) && (
+          <div className="modal-fundo">
+            <Link className="modal-fora" href={fechar} aria-label="Fechar" />
+            <div className="modal" role="dialog" aria-modal="true" aria-label={faseEditando ? "Editar fase" : "Nova fase"}>
+              <Link className="modal-x" href={fechar} aria-label="Fechar">×</Link>
+              <h2>{faseEditando ? "Editar fase" : "Nova fase do treinamento"}</h2>
+              {formFase(faseEditando)}
             </div>
           </div>
         )}
