@@ -76,6 +76,47 @@ export async function POST(request: NextRequest) {
       return ir("?ok=movimento");
     }
 
+    if (acao === "pedido_pago" || acao === "pedido_entregar" || acao === "pedido_cancelar") {
+      const id = String(form.get("id") ?? "");
+      const { data: pedido } = await db.from("pedidos").select("id, codigo, nome, item_nome, quantidade, valor, status").eq("id", id).single();
+      const agora = new Date().toISOString();
+      // pendente → pago (Pix recebido: venda entra no caixa) → entregue (peças saem do estoque)
+      if (!pedido) return ir("?erro=pedido");
+      if (acao === "pedido_pago") {
+        if (pedido.status !== "pendente") return ir("?erro=pedido");
+        const { error } = await db.from("loja_movimentos").insert({
+          tipo: "venda",
+          valor: Number(pedido.valor),
+          descricao: `Pedido #${pedido.codigo} · ${pedido.quantidade}x ${pedido.item_nome} · ${pedido.nome} (Pix)`.slice(0, 200),
+        });
+        if (error) throw error;
+        const { error: e2 } = await db.from("pedidos").update({ status: "pago", pago_em: agora }).eq("id", id);
+        if (e2) throw e2;
+        return ir("?ok=pago");
+      }
+      if (acao === "pedido_entregar") {
+        if (pedido.status !== "pago") return ir("?erro=pedido");
+        const { data: itens } = await db.from("pedido_itens").select("estoque_item_id").eq("pedido_id", id);
+        const conta = new Map<string, number>();
+        for (const it of itens ?? []) if (it.estoque_item_id) conta.set(it.estoque_item_id, (conta.get(it.estoque_item_id) ?? 0) + 1);
+        if (conta.size) {
+          const { data: est } = await db.from("estoque_itens").select("id, quantidade").in("id", [...conta.keys()]);
+          for (const e of est ?? []) {
+            await db.from("estoque_itens")
+              .update({ quantidade: Math.max(0, e.quantidade - (conta.get(e.id) ?? 0)), atualizado_em: agora })
+              .eq("id", e.id);
+          }
+        }
+        const { error } = await db.from("pedidos").update({ status: "entregue", finalizado_em: agora }).eq("id", id);
+        if (error) throw error;
+        return ir("?ok=entregue");
+      }
+      if (pedido.status !== "pendente") return ir("?erro=pedido");
+      const { error } = await db.from("pedidos").update({ status: "cancelado", finalizado_em: agora }).eq("id", id);
+      if (error) throw error;
+      return ir("?ok=cancelado");
+    }
+
     if (acao === "apagar_mov") {
       await db.from("loja_movimentos").delete().eq("id", String(form.get("id") ?? ""));
       return ir("?ok=apagado");

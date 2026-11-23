@@ -24,7 +24,41 @@ export type TipoMov = keyof typeof TIPOS_MOV;
 
 export const reais = (v: number) => v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 
-export function linkPedido(nome: string) {
-  const texto = `Olá! Quero o ${nome} da Korrá. Cor: Estampa: Tamanho:`;
-  return `https://wa.me/5548985001468?text=${encodeURIComponent(texto)}`;
+export const WHATS_LOJA = "5548985001468";
+export const PIX_CHAVE = "arthurcanonica@hotmail.com"; // chave Pix (e-mail) — Arthur Canônica
+
+/** Peças que compõem cada item do catálogo (1 unidade). */
+export const PECAS_DO_ITEM: Record<string, ("camiseta" | "squeeze")[]> = {
+  camiseta: ["camiseta"],
+  squeeze: ["squeeze"],
+  "kit-cs": ["camiseta", "squeeze"],
+  "kit-2c": ["camiseta", "camiseta"],
+  "kit-2cs": ["camiseta", "camiseta", "squeeze"],
+};
+
+export type PecaEscolhida = { tipo: "camiseta" | "squeeze"; cor?: string; estampa?: string; tamanho?: string };
+
+/** Nome da peça igual ao usado no estoque. */
+export const nomeEstoque = (p: PecaEscolhida) =>
+  p.tipo === "squeeze" ? "Squeeze Korrá" : `Camiseta ${p.cor} · ${p.estampa} · ${p.tamanho}`;
+
+/** Página de pedido (formulário com tamanho, cor, quantidade...). */
+export const linkPedido = (id: string) => `/loja/pedir?item=${encodeURIComponent(id)}`;
+
+export function mensagemPedido(o: { codigo: string; item: ItemLoja; qtd: number; pecas: PecaEscolhida[]; nome: string; obs?: string | null }) {
+  const linhas = [
+    `Olá, Arthur! Quero fazer um pedido na loja da Korrá.`,
+    ``,
+    `*Pedido #${o.codigo}*`,
+    `${o.qtd}x ${o.item.nome} (${reais(o.item.preco)} cada)`,
+    ``,
+    `Peças:`,
+    ...o.pecas.map((p) => `• ${nomeEstoque(p)}`),
+    ``,
+    `*Total: ${reais(o.item.preco * o.qtd)}*`,
+    `Nome: ${o.nome}`,
+  ];
+  if (o.obs) linhas.push(`Obs.: ${o.obs}`);
+  linhas.push(``, `Pagamento via Pix (chave: ${PIX_CHAVE}). Vou enviar o comprovante aqui.`);
+  return `https://wa.me/${WHATS_LOJA}?text=${encodeURIComponent(linhas.join("\n"))}`;
 }

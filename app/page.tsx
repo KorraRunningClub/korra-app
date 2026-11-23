@@ -225,7 +225,7 @@ export default function Home() {
                       </div>
                       <div className="produto-lado">
                         <div className="preco"><span className="cur">R$</span><span className="val">{inteiro}</span><span className="cent">,{cent}</span></div>
-                        <a className="pedir" href={linkPedido(item.nome)} target="_blank" rel="noopener noreferrer">Pedir →</a>
+                        <a className="pedir" href={linkPedido(item.id)}>Pedir →</a>
                       </div>
                     </li>
                   );

@@ -491,3 +491,25 @@ footer.escuro{--bg:var(--verde-2)}
 .linha-campos{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
 .lista-remover{list-style:none;margin:14px 0 0;padding:0;display:grid;gap:4px;max-width:520px;font-size:14.5px}
 .lista-remover li{display:flex;justify-content:space-between;gap:10px;padding:4px 0;border-bottom:1px solid var(--line)}
+
+/* pedidos da loja */
+.pedido-wrap{max-width:640px}
+.voltar-loja{font-family:var(--f-label);font-weight:700;letter-spacing:.06em;text-transform:uppercase;font-size:14px;color:var(--fg)}
+.pedido-form{max-width:640px;margin-top:22px}
+.peca-escolha{border:1.5px solid var(--line);border-radius:10px;padding:14px;margin:0;display:grid;gap:10px;background:var(--bg)}
+.peca-escolha legend,.peca-escolha>b{font-family:var(--f-display);font-stretch:112%;font-weight:800;text-transform:uppercase;font-size:15px;padding:0 6px}
+.pedido-total{display:flex;justify-content:space-between;align-items:baseline;border-top:1.5px solid var(--line);padding-top:14px}
+.pedido-total b{font-family:var(--f-display);font-stretch:125%;font-weight:900;font-size:32px}
+@media (max-width:520px){.peca-escolha .linha-campos{grid-template-columns:1fr 1fr}.peca-escolha .linha-campos .field:last-child{grid-column:1/-1}}
+.pedidos-lista{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px;margin-top:14px}
+.pedido-card{border:1.5px solid var(--line);border-radius:12px;padding:16px;display:grid;gap:8px;background:var(--creme-2)}
+.pedido-card ul{margin:0;padding-left:18px;font-size:15px}
+.pedido-topo{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.pedido-acoes{display:flex;gap:14px;align-items:center;flex-wrap:wrap;margin-top:4px}
+.reserva{display:block;font-size:12px;font-weight:600;color:var(--verde-3);margin-top:2px;white-space:nowrap}
+.reserva.falta{color:#8d2a17}
+.pedidos-grupo{margin-top:20px;font-family:var(--f-label);font-weight:700;letter-spacing:.08em;text-transform:uppercase;font-size:15px}
+.pedido-card.pago{border-color:var(--verde-3);background:var(--creme-3)}
+.pix-box{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 14px;padding:14px 16px;border-radius:10px;border:1.5px dashed var(--verde-3);background:var(--bg)}
+.pix-rot{font-family:var(--f-label);font-weight:600;letter-spacing:.1em;text-transform:uppercase;font-size:13px;color:var(--muted);flex-basis:100%}
+.pix-chave{font-weight:700;font-size:17px;word-break:break-all}
