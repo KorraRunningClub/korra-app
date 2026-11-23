@@ -9,7 +9,7 @@ export const metadata = { title: "Fazer pedido · Loja Korrá" };
 
 const ERRO: Record<string, string> = {
   nome: "Coloque seu nome para a gente saber de quem é o pedido.",
-  pecas: "Escolha cor, estampa e tamanho de todas as camisetas.",
+  pecas: "Escolha estilo, cor e tamanho de todas as camisetas.",
   salvar: "Não conseguimos registrar o pedido agora. Tente de novo ou chame no WhatsApp (48) 98500-1468.",
 };
 

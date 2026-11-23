@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { CATALOGO, CORES, ESTAMPAS, PECAS_DO_ITEM, PIX_CHAVE, TAMANHOS, reais } from "@/lib/loja";
+import { CATALOGO, CORES, ESTILOS, NOME_ESTILO, PECAS_DO_ITEM, PIX_CHAVE, TAMANHOS, reais } from "@/lib/loja";
 
 export function FormPedido({ itemInicial, nome, telefone }: { itemInicial: string; nome: string; telefone: string }) {
   const [itemId, setItemId] = useState(itemInicial);
@@ -51,10 +51,10 @@ export function FormPedido({ itemInicial, nome, telefone }: { itemInicial: strin
             <legend>Camiseta {pecas.filter((p) => p === "camiseta").length > 1 ? nCamiseta : ""}</legend>
             <input type="hidden" name={`p${i}_tipo`} value="camiseta" />
             <div className="linha-campos">
+              <div className="field"><label htmlFor={`p${i}s`}>Estilo</label>
+                <select id={`p${i}s`} name={`p${i}_estilo`} required defaultValue="">{[<option key="" value="" disabled>Escolha</option>, ...ESTILOS.map((c) => <option key={c} value={c}>{NOME_ESTILO[c]}</option>)]}</select></div>
               <div className="field"><label htmlFor={`p${i}c`}>Cor</label>
                 <select id={`p${i}c`} name={`p${i}_cor`} required defaultValue="">{[<option key="" value="" disabled>Escolha</option>, ...CORES.map((c) => <option key={c}>{c}</option>)]}</select></div>
-              <div className="field"><label htmlFor={`p${i}e`}>Estampa</label>
-                <select id={`p${i}e`} name={`p${i}_estampa`} required defaultValue="">{[<option key="" value="" disabled>Escolha</option>, ...ESTAMPAS.map((c) => <option key={c}>{c}</option>)]}</select></div>
               <div className="field"><label htmlFor={`p${i}t`}>Tamanho</label>
                 <select id={`p${i}t`} name={`p${i}_tamanho`} required defaultValue="">{[<option key="" value="" disabled>Escolha</option>, ...TAMANHOS.map((c) => <option key={c}>{c}</option>)]}</select></div>
             </div>

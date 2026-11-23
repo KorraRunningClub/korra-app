@@ -1,7 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { getSessao } from "@/lib/supabase/server";
 import { lerValor } from "@/lib/despesas";
-import { CORES, ESTAMPAS, TAMANHOS, TIPOS_MOV, type TipoMov } from "@/lib/loja";
+import { CORES, ESTILOS, TAMANHOS, TIPOS_MOV, nomeCamiseta, type TipoMov } from "@/lib/loja";
 
 export async function POST(request: NextRequest) {
   const form = await request.formData();
@@ -16,8 +16,8 @@ export async function POST(request: NextRequest) {
     if (acao === "semear") {
       const linhas: { produto: string; nome: string; ordem: number }[] = [];
       let ordem = 0;
-      for (const cor of CORES) for (const est of ESTAMPAS) for (const tam of TAMANHOS)
-        linhas.push({ produto: "camiseta", nome: `Camiseta ${cor} · ${est} · ${tam}`, ordem: ordem++ });
+      for (const cor of CORES) for (const estilo of ESTILOS) for (const tam of TAMANHOS)
+        linhas.push({ produto: "camiseta", nome: nomeCamiseta(cor, estilo, tam), ordem: ordem++ });
       linhas.push({ produto: "squeeze", nome: "Squeeze Korrá", ordem: ordem++ });
       const { error } = await db.from("estoque_itens").upsert(linhas, { onConflict: "nome", ignoreDuplicates: true });
       if (error) throw error;
@@ -28,8 +28,9 @@ export async function POST(request: NextRequest) {
       const produto = String(form.get("produto") ?? "");
       let nome = String(form.get("nome") ?? "").trim();
       if (produto === "camiseta") {
-        const cor = String(form.get("cor") ?? ""), est = String(form.get("estampa") ?? ""), tam = String(form.get("tamanho") ?? "");
-        nome = `Camiseta ${cor} · ${est} · ${tam}`;
+        const cor = String(form.get("cor") ?? ""), tam = String(form.get("tamanho") ?? "");
+        const estilo = String(form.get("estilo") ?? "Tradicional");
+        nome = nomeCamiseta(cor, estilo, tam);
       } else if (produto === "squeeze" && !nome) nome = "Squeeze Korrá";
       if (!["camiseta", "squeeze", "outro"].includes(produto) || nome.length < 3) return ir("?erro=item");
       const qtd = Math.max(0, parseInt(String(form.get("quantidade") ?? "0"), 10) || 0);

@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 import { getSessao } from "@/lib/supabase/server";
 import { AppHeader } from "@/components/AppHeader";
-import { CATALOGO, CORES, ESTAMPAS, TAMANHOS, TIPOS_MOV, reais, type TipoMov } from "@/lib/loja";
+import { CATALOGO, CORES, ESTILOS, NOME_ESTILO, TAMANHOS, TIPOS_MOV, nomeCamiseta, reais, type TipoMov } from "@/lib/loja";
 
 export const metadata = { title: "Loja e estoque · Korrá Running Club" };
 
@@ -70,7 +70,7 @@ export default async function LojaAdmin({ searchParams }: { searchParams: Promis
 
   const porNome = new Map(itens.map((i) => [i.nome, i]));
   const naMatriz = new Set<string>();
-  const linhas = CORES.flatMap((cor) => ESTAMPAS.map((est) => ({ cor, est })));
+  const linhas = CORES.flatMap((cor) => ESTILOS.map((estilo) => ({ cor, estilo })));
   const outros = () => itens.filter((i) => !naMatriz.has(i.id));
   const dataBR = (d: string) => d.split("-").reverse().join("/");
 
@@ -153,7 +153,7 @@ export default async function LojaAdmin({ searchParams }: { searchParams: Promis
           <h2 id="estoque" style={{ marginTop: 56, fontSize: "clamp(26px,3.4vw,36px)" }}>Estoque</h2>
           {itens.length === 0 ? (
             <div className="strava-box" style={{ marginTop: 16 }}>
-              <p>Comece criando a lista padrão: camisetas preta e branca, estampa no peito e nas costas, do PP ao XGG, mais o squeeze. Depois é só contar.</p>
+              <p>Comece criando a lista padrão: camisetas preta e branca, tradicional e baby look, do P ao GG, mais o squeeze. Depois é só contar.</p>
               <form action="/treinador/loja/acao" method="post">
                 <input type="hidden" name="acao" value="semear" />
                 <button className="btn btn-primary" type="submit">Criar lista padrão</button>
@@ -169,20 +169,20 @@ export default async function LojaAdmin({ searchParams }: { searchParams: Promis
                     <tr><th>Camiseta</th>{TAMANHOS.map((t) => <th key={t}>{t}</th>)}<th>Total</th></tr>
                   </thead>
                   <tbody>
-                    {linhas.map(({ cor, est }) => {
+                    {linhas.map(({ cor, estilo }) => {
                       let total = 0;
                       return (
-                        <tr key={`${cor}-${est}`}>
-                          <td><span className={`bola-cor ${cor === "Preta" ? "preta" : "branca"}`} /> {cor} · {est}</td>
+                        <tr key={`${cor}-${estilo}`}>
+                          <td><span className={`bola-cor ${cor === "Preta" ? "preta" : "branca"}`} /> {cor} · {estilo}</td>
                           {TAMANHOS.map((t) => {
-                            const it = porNome.get(`Camiseta ${cor} · ${est} · ${t}`);
+                            const it = porNome.get(nomeCamiseta(cor, estilo, t));
                             if (!it) return <td key={t}>—</td>;
                             naMatriz.add(it.id);
                             total += it.quantidade;
                             return (
                               <td key={t}>
                                 <input className={`qtd${it.quantidade === 0 ? " zero" : ""}`} name={`q_${it.id}`} type="number" min={0} inputMode="numeric"
-                                  defaultValue={it.quantidade} aria-label={`${cor} ${est} ${t}`} />
+                                  defaultValue={it.quantidade} aria-label={`${cor} ${estilo} ${t}`} />
                                 {reservado.get(it.id) ? (
                                   <span className={`reserva${(reservado.get(it.id) ?? 0) > it.quantidade ? " falta" : ""}`}>{reservado.get(it.id)} reserv.</span>
                                 ) : null}
@@ -222,7 +222,7 @@ export default async function LojaAdmin({ searchParams }: { searchParams: Promis
                 </div>
                 <div className="linha-campos">
                   <div className="field"><label htmlFor="e-cor">Cor</label><select id="e-cor" name="cor">{CORES.map((c) => <option key={c}>{c}</option>)}</select></div>
-                  <div className="field"><label htmlFor="e-est">Estampa</label><select id="e-est" name="estampa">{ESTAMPAS.map((c) => <option key={c}>{c}</option>)}</select></div>
+                  <div className="field"><label htmlFor="e-estilo">Estilo</label><select id="e-estilo" name="estilo">{ESTILOS.map((c) => <option key={c} value={c}>{NOME_ESTILO[c]}</option>)}</select></div>
                   <div className="field"><label htmlFor="e-tam">Tamanho</label><select id="e-tam" name="tamanho">{TAMANHOS.map((c) => <option key={c}>{c}</option>)}</select></div>
                 </div>
                 <div className="field"><label htmlFor="e-nome">Nome (para squeeze ou outro produto)</label><input id="e-nome" name="nome" placeholder="Ex.: Boné Korrá" /></div>

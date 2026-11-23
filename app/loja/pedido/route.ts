@@ -1,7 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { createAdmin } from "@/lib/supabase/admin";
 import { getSessao } from "@/lib/supabase/server";
-import { CATALOGO, CORES, ESTAMPAS, PECAS_DO_ITEM, TAMANHOS, mensagemPedido, nomeEstoque, type PecaEscolhida } from "@/lib/loja";
+import { CATALOGO, CORES, ESTILOS, PECAS_DO_ITEM, TAMANHOS, mensagemPedido, nomeEstoque, type PecaEscolhida } from "@/lib/loja";
 
 const curto = (v: FormDataEntryValue | null, max: number) => String(v ?? "").trim().slice(0, max);
 
@@ -32,11 +32,11 @@ export async function POST(request: NextRequest) {
       continue;
     }
     const cor = String(form.get(`p${i}_cor`) ?? "");
-    const estampa = String(form.get(`p${i}_estampa`) ?? "");
     const tamanho = String(form.get(`p${i}_tamanho`) ?? "");
-    if (!(CORES as readonly string[]).includes(cor) || !(ESTAMPAS as readonly string[]).includes(estampa) || !(TAMANHOS as readonly string[]).includes(tamanho))
+    const estilo = String(form.get(`p${i}_estilo`) ?? "");
+    if (!(ESTILOS as readonly string[]).includes(estilo) || !(CORES as readonly string[]).includes(cor) || !(TAMANHOS as readonly string[]).includes(tamanho))
       return volta("pecas");
-    pecas.push({ tipo: "camiseta", cor, estampa, tamanho });
+    pecas.push({ tipo: "camiseta", cor, estilo, tamanho });
   }
 
   try {

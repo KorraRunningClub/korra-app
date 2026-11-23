@@ -2,7 +2,7 @@
 export type ItemLoja = { id: string; nome: string; detalhe: string; preco: number; separado?: number; destaque?: boolean };
 
 export const CATALOGO: ItemLoja[] = [
-  { id: "camiseta", nome: "Camiseta oficial", detalhe: "Preta ou branca · estampa no peito ou logo nas costas", preco: 99.99 },
+  { id: "camiseta", nome: "Camiseta oficial", detalhe: "Preta ou branca · tradicional unissex ou baby look · P ao GG", preco: 99.99 },
   { id: "squeeze", nome: "Squeeze Korrá", detalhe: "Garrafa flexível pra levar no treino e na prova", preco: 59.99 },
   { id: "kit-cs", nome: "Kit 1 camiseta + 1 squeeze", detalhe: "O kit pra começar", preco: 139.99, separado: 159.98 },
   { id: "kit-2c", nome: "Kit 2 camisetas", detalhe: "Uma pra treinar, outra pra prova", preco: 179.99, separado: 199.98 },
@@ -10,8 +10,11 @@ export const CATALOGO: ItemLoja[] = [
 ];
 
 export const CORES = ["Preta", "Branca"] as const;
-export const ESTAMPAS = ["Peito", "Costas"] as const;
-export const TAMANHOS = ["PP", "P", "M", "G", "GG", "XGG"] as const;
+export const TAMANHOS = ["P", "M", "G", "GG"] as const;
+/** Estilo da camiseta: valor curto (usado no estoque) e nome mostrado ao cliente. */
+export const ESTILOS = ["Tradicional", "Baby look"] as const;
+export const NOME_ESTILO: Record<string, string> = { Tradicional: "Tradicional unissex", "Baby look": "Baby look" };
+export const nomeCamiseta = (cor: string, estilo: string, tamanho: string) => `Camiseta ${cor} · ${estilo} · ${tamanho}`;
 
 export const TIPOS_MOV = {
   saldo_inicial: { nome: "Saldo inicial", sinal: 1 },
@@ -36,11 +39,11 @@ export const PECAS_DO_ITEM: Record<string, ("camiseta" | "squeeze")[]> = {
   "kit-2cs": ["camiseta", "camiseta", "squeeze"],
 };
 
-export type PecaEscolhida = { tipo: "camiseta" | "squeeze"; cor?: string; estampa?: string; tamanho?: string };
+export type PecaEscolhida = { tipo: "camiseta" | "squeeze"; cor?: string; estilo?: string; tamanho?: string };
 
 /** Nome da peça igual ao usado no estoque. */
 export const nomeEstoque = (p: PecaEscolhida) =>
-  p.tipo === "squeeze" ? "Squeeze Korrá" : `Camiseta ${p.cor} · ${p.estampa} · ${p.tamanho}`;
+  p.tipo === "squeeze" ? "Squeeze Korrá" : nomeCamiseta(p.cor!, p.estilo!, p.tamanho!);
 
 /** Página de pedido (formulário com tamanho, cor, quantidade...). */
 export const linkPedido = (id: string) => `/loja/pedir?item=${encodeURIComponent(id)}`;
