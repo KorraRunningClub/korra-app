@@ -579,3 +579,85 @@ footer.escuro{--bg:var(--verde-2)}
 .form-tempo{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:end;margin-top:6px}
 .form-tempo label{grid-column:1/-1;font-family:var(--f-label);font-weight:600;letter-spacing:.1em;text-transform:uppercase;font-size:13px;color:var(--muted)}
 .form-tempo input{font:inherit;font-size:17px;padding:10px 12px;border-radius:8px;border:1.5px solid var(--line);background:var(--bg);color:var(--fg);min-width:0}
+/* menu "Calendário" com submenu */
+.nav .tem-sub{position:relative}
+.nav .submenu{display:none;position:absolute;top:100%;left:-16px;z-index:60;min-width:290px;flex-direction:column;gap:0;padding:8px;margin-top:10px;background:var(--bg);border:1.5px solid var(--line);border-radius:14px;box-shadow:0 18px 40px -18px rgba(0,0,0,.35);text-transform:none;letter-spacing:0}
+.nav .submenu::before{content:"";position:absolute;left:0;right:0;top:-14px;height:14px}
+.nav .tem-sub:hover>.submenu,.nav .tem-sub:focus-within>.submenu{display:flex}
+.nav .submenu a{display:grid;gap:2px;padding:10px 12px;border-radius:10px;opacity:1}
+.nav .submenu a:hover{background:var(--creme-2);text-decoration:none}
+.nav .submenu b{font-family:var(--f-label);font-weight:700;letter-spacing:.06em;text-transform:uppercase;font-size:15px}
+.nav .submenu i{font-style:normal}
+.nav .submenu span{font-family:var(--f-body);font-weight:400;font-size:13.5px;opacity:.7}
+@media (max-width:900px){
+  .app-header .nav .tem-sub{display:contents}
+  .app-header .nav .tem-sub>.sub-rotulo{display:none}
+  .app-header .nav .submenu{display:contents}
+  .app-header .nav .submenu a{display:block;padding:7px 14px;border-radius:999px;background:var(--creme-3)}
+  .app-header .nav .submenu span,.app-header .nav .submenu .so-pc{display:none}
+  .app-header .nav .submenu b{font-family:inherit;font-size:14px;font-weight:600;letter-spacing:.08em}
+}
+/* calendário da assessoria */
+.cal-nav{display:flex;align-items:center;gap:14px;margin-top:28px;flex-wrap:wrap}
+.cal-nav h2{font-size:clamp(28px,4vw,44px);text-transform:capitalize;min-width:0}
+.cal-nav h2 span{color:var(--muted)}
+.cal-nav a{font-family:var(--f-label);font-weight:700;font-size:22px;text-decoration:none;width:44px;height:44px;display:grid;place-items:center;border-radius:999px;border:1.5px solid var(--line)}
+.cal-nav a:hover{border-color:var(--tinta)}
+.cal-nav .cal-hoje{width:auto;padding:0 16px;font-size:14px;letter-spacing:.08em;text-transform:uppercase}
+.cal-legenda{display:flex;flex-wrap:wrap;gap:8px 18px;margin-top:12px;font-size:14px}
+.cal-legenda span{display:inline-flex;align-items:center;gap:6px}
+.ponto{display:inline-block;width:11px;height:11px;border-radius:99px}
+.cal{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px;margin-top:16px}
+.cal-dow{font-family:var(--f-label);font-weight:700;letter-spacing:.1em;text-transform:uppercase;font-size:13px;color:var(--muted);padding:4px 8px}
+.cal-dia{min-height:clamp(84px,11vw,130px);border:1.5px solid var(--line);border-radius:10px;padding:6px;display:flex;flex-direction:column;gap:4px;background:var(--bg);min-width:0}
+.cal-dia.fora{opacity:.45}
+.cal-dia.passado .cal-ev{opacity:.6}
+.cal-dia.hoje{border-color:var(--tinta);box-shadow:inset 0 0 0 1.5px var(--tinta)}
+.cal-dia.hoje .cal-num{background:var(--amarelo);border-radius:99px;padding:0 7px}
+.cal-dia-topo{display:flex;justify-content:space-between;align-items:center}
+.cal-num{font-family:var(--f-label);font-weight:700;font-size:15px}
+.cal-mais{font-weight:700;font-size:18px;line-height:1;text-decoration:none;width:24px;height:24px;display:grid;place-items:center;border-radius:99px;opacity:.35}
+.cal-dia:hover .cal-mais{opacity:1;background:var(--creme-2)}
+.cal-ev{display:block;font-size:12.5px;line-height:1.25;padding:4px 6px;border-radius:6px;text-decoration:none;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cal-ev:hover{filter:brightness(.95);text-decoration:underline}
+.cal-ev b{font-weight:700}
+.ev-coletivo{background:var(--verde);color:var(--creme)}
+.ev-presencial{background:#7f8f72;color:#fff}
+.ev-prova{background:var(--amarelo);color:var(--tinta)}
+.ev-encontro{background:#E8622C;color:#fff}
+.ev-aviso{background:#c9c7b3;color:var(--tinta)}
+@media (max-width:700px){
+  .cal{gap:3px}
+  .cal-dow{padding:2px;text-align:center;font-size:11px}
+  .cal-dia{min-height:52px;padding:4px;gap:3px;border-radius:8px}
+  .cal-num{font-size:13px}
+  .cal-mais{display:none}
+  .cal-ev{font-size:0;padding:0;height:6px;border-radius:99px}
+  .cal-ev b,.cal-ev span{display:none}
+}
+.agenda{list-style:none;padding:0;margin:14px 0 0;display:grid;gap:10px}
+.agenda li a{display:flex;gap:16px;align-items:center;border:1.5px solid var(--line);border-radius:12px;padding:12px 16px;text-decoration:none}
+.agenda li a:hover{border-color:var(--tinta)}
+.agenda li.passado{opacity:.55}
+.agenda-data{display:grid;justify-items:center;min-width:52px;font-family:var(--f-label);font-weight:600;text-transform:uppercase;letter-spacing:.06em;font-size:13px}
+.agenda-data b{font-family:var(--f-display);font-stretch:125%;font-weight:900;font-size:28px;line-height:1}
+.agenda-info{display:grid;gap:3px;min-width:0}
+.agenda-tipo{justify-self:start;font-family:var(--f-label);font-weight:700;letter-spacing:.08em;text-transform:uppercase;font-size:12px;padding:3px 9px;border-radius:999px}
+.modal-fundo{position:fixed;inset:0;z-index:90;display:grid;place-items:center;padding:16px;background:rgba(31,37,30,.55)}
+.modal-fora{position:absolute;inset:0}
+.modal{position:relative;width:min(620px,100%);max-height:calc(100vh - 32px);overflow:auto;background:var(--bg);color:var(--fg);border-radius:18px;padding:clamp(22px,4vw,34px);display:grid;gap:14px;box-shadow:0 30px 80px -30px rgba(0,0,0,.6)}
+.modal h2{font-size:clamp(26px,3.4vw,36px);padding-right:30px}
+.modal-x{position:absolute;top:12px;right:14px;font-size:30px;line-height:1;text-decoration:none;width:40px;height:40px;display:grid;place-items:center;border-radius:99px}
+.modal-x:hover{background:var(--creme-2)}
+.ev-quando{font-size:17px;text-transform:none}
+.ev-quando b::first-letter{text-transform:uppercase}
+.ev-local{display:grid;gap:10px;justify-items:start}
+.ev-mapa{width:100%;height:220px;border:0;border-radius:12px}
+.ev-desc{white-space:pre-line;font-size:16px;border-top:1.5px solid var(--line);padding-top:12px}
+.ev-prova-box{display:grid;gap:10px;padding:14px;border-radius:12px;background:rgba(254,210,97,.25)}
+.ev-inscrever{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.ev-inscrever select{font:inherit;padding:10px 12px;border-radius:8px;border:1.5px solid var(--line);background:var(--bg)}
+.ev-admin{display:flex;gap:16px;flex-wrap:wrap;align-items:center;border-top:1.5px solid var(--line);padding-top:12px}
+.evento-form{display:grid;gap:12px}
+.evento-form-acoes{display:flex;gap:16px;align-items:center;flex-wrap:wrap}
+.field input[type=time],.field input[type=date]{min-width:0}
