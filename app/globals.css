@@ -270,7 +270,11 @@ footer.escuro{--bg:var(--verde-2)}
 .quadro .valor{font-variant-numeric:tabular-nums;font-weight:600}
 .quadro .quem{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .pref-ranking{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-top:32px;font-size:15px}
-.powered{margin-top:10px;font-size:13px;opacity:.6}
+.powered{margin-top:18px;line-height:0}
+.powered img{height:15px;width:auto}
+.connect-strava{display:inline-block;line-height:0;border-radius:6px}
+.connect-strava img{height:48px;width:auto;display:block}
+.connect-strava:focus-visible{outline:3px solid var(--amarelo);outline-offset:2px}
 
 /* ranking: abas + pódio */
 .ranking-abas{margin-top:16px;display:grid;gap:18px}
@@ -525,3 +529,4 @@ footer.escuro{--bg:var(--verde-2)}
   transform:translateX(110%);animation:corre var(--t) linear var(--d) infinite;will-change:transform}
 @keyframes corre{from{transform:translateX(var(--w))}to{transform:translateX(calc(-100vw - var(--w)))}}
 @media (prefers-reduced-motion:reduce){.velocidade{display:none}}
+.ver-strava{color:#FC5200;font-weight:700;text-decoration:underline;white-space:nowrap}

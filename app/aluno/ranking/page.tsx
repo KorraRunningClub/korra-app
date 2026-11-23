@@ -116,7 +116,10 @@ export default async function RankingPage({
                 ) : (
                   <>
                     <p>Conecte seu Strava para seus treinos entrarem no ranking automaticamente.</p>
-                    <a className="btn btn-strava" href="/strava/conectar">Conectar com o Strava</a>
+                    <a className="connect-strava" href="/strava/conectar">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src="/strava/connect-with-strava.svg" width={237} height={48} alt="Connect with Strava" />
+                    </a>
                   </>
                 )}
               </div>
@@ -140,9 +143,9 @@ export default async function RankingPage({
               <h2 style={{ marginTop: 48, fontSize: "clamp(24px,3vw,32px)" }}>Minhas últimas corridas</h2>
               <div style={{ overflowX: "auto", marginTop: 14 }}>
                 <table className="tabela">
-                  <thead><tr><th>Data</th><th>Treino</th><th>Distância</th><th>Pace</th><th>Pausas</th></tr></thead>
+                  <thead><tr><th>Data</th><th>Treino</th><th>Distância</th><th>Pace</th><th>Pausas</th><th></th></tr></thead>
                   <tbody>
-                    {(minhas ?? []).length === 0 && <tr><td colSpan={5}>Nenhuma corrida importada ainda.</td></tr>}
+                    {(minhas ?? []).length === 0 && <tr><td colSpan={6}>Nenhuma corrida importada ainda.</td></tr>}
                     {(minhas ?? []).map((a) => (
                       <tr key={a.id}>
                         <td>{dataBR(a.inicio_local)}</td>
@@ -150,6 +153,7 @@ export default async function RankingPage({
                         <td>{(Number(a.distancia_m) / 1000).toLocaleString("pt-BR", { maximumFractionDigits: 2 })} km</td>
                         <td>{pace(a.tempo_mov_s / (Number(a.distancia_m) / 1000))}</td>
                         <td>{Math.round((a.tempo_total_s - a.tempo_mov_s) / 60)} min</td>
+                        <td><a className="ver-strava" href={`https://www.strava.com/activities/${a.id}`} target="_blank" rel="noopener noreferrer">View on Strava</a></td>
                       </tr>
                     ))}
                   </tbody>
@@ -161,7 +165,10 @@ export default async function RankingPage({
                 <input type="hidden" name="aparecer_ranking" value={pref?.aparecer_ranking === false ? "sim" : "nao"} />
                 <button className="btn-link" type="submit">{pref?.aparecer_ranking === false ? "Voltar a aparecer" : "Não quero aparecer"}</button>
               </form>
-              <p className="powered">Dados de atividades fornecidos pelo Strava.</p>
+              <p className="powered">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src="/strava/powered-by-strava.svg" width={146} height={15} alt="Powered by Strava" />
+              </p>
             </>
           )}
         </div>
