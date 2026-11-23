@@ -518,8 +518,10 @@ footer.escuro{--bg:var(--verde-2)}
 .aviso-esgotado{color:#8d2a17;font-weight:600;font-size:14.5px}
 .peca-escolha.sem{border-color:#c9725f}
 .btn[disabled]{opacity:.5;cursor:not-allowed;transform:none}
-/* onda amarela voadora da logo (hero) */
-.hero-mark .logo .w{transform-box:fill-box;transform-origin:50% 100%}
-.hero-mark.onda-voando .logo .w{opacity:0}
-.hero-mark.onda-pousou .logo .w{animation:onda-pousa .6s cubic-bezier(.2,.9,.3,1.4)}
-@keyframes onda-pousa{0%{transform:scale(1.08,.6)}45%{transform:scale(.96,1.25)}100%{transform:none}}
+/* linhas de velocidade no fundo da home */
+.velocidade{position:fixed;inset:0;overflow:hidden;pointer-events:none;z-index:40}
+.velocidade i{position:absolute;right:0;height:var(--h);width:var(--w);top:var(--y);border-radius:99px;
+  background:linear-gradient(90deg,var(--c),var(--c) 30%,transparent);opacity:var(--o);
+  transform:translateX(110%);animation:corre var(--t) linear var(--d) infinite;will-change:transform}
+@keyframes corre{from{transform:translateX(var(--w))}to{transform:translateX(calc(-100vw - var(--w)))}}
+@media (prefers-reduced-motion:reduce){.velocidade{display:none}}

@@ -1,6 +1,6 @@
 import type React from "react";
 import { Logo } from "@/components/Logo";
-import { OndaVoadora } from "@/components/OndaVoadora";
+import { LinhasVelocidade } from "@/components/LinhasVelocidade";
 import { CATALOGO, linkPedido } from "@/lib/loja";
 
 // Peças da loja: posição (x,y) e largura (w) em % — "d" = computador (área da seção toda), "m" = celular (área abaixo do cartão).
@@ -41,6 +41,7 @@ export default function Home() {
   return (
     <>
       <SiteHeader />
+      <LinhasVelocidade />
       <main id="inicio">
         <section className="hero">
           <div className="wrap hero-grid">
@@ -57,7 +58,6 @@ export default function Home() {
             </div>
             <div className="hero-mark">
               <Logo />
-              <OndaVoadora />
               <div className="tag">Running Club</div>
             </div>
           </div>
