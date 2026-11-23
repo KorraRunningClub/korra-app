@@ -63,9 +63,9 @@ export default async function RankingPage({
 
   const idsMinhas = (minhas ?? []).map((a) => a.id);
   const { data: marcRaw } = idsMinhas.length
-    ? await supabase.from("treino_marcacoes").select("atividade_id, tipo").in("atividade_id", idsMinhas)
+    ? await supabase.from("treino_marcacoes").select("atividade_id, tipo, companhia").in("atividade_id", idsMinhas)
     : { data: [] };
-  const marcacao = new Map((marcRaw ?? []).map((m) => [Number(m.atividade_id), m.tipo as string]));
+  const marcacao = new Map((marcRaw ?? []).map((m) => [Number(m.atividade_id), { tipo: m.tipo as string | null, companhia: m.companhia as string | null }]));
 
   type LinhaSem = { user_id: string; nome: string | null; semanas_ok: string[]; km_total: number };
   const semLinhas = ((semRank.data ?? []) as LinhaSem[])
@@ -160,7 +160,7 @@ export default async function RankingPage({
                         <td>{a.inicio_local.slice(11, 16).replace(":", "h")}</td>
                         <td>
                           <span className="treino-nome"><IconeHorario inicioLocal={a.inicio_local} />{a.nome ?? "Corrida"}{a.esteira ? " · esteira" : ""}</span>
-                          <TipoTreino atividadeId={Number(a.id)} inicial={marcacao.get(Number(a.id)) ?? null} />
+                          <TipoTreino atividadeId={Number(a.id)} inicial={marcacao.get(Number(a.id))?.tipo ?? null} companhia={marcacao.get(Number(a.id))?.companhia ?? null} />
                         </td>
                         <td>{(Number(a.distancia_m) / 1000).toLocaleString("pt-BR", { maximumFractionDigits: 2 })} km</td>
                         <td>{pace(a.tempo_mov_s / (Number(a.distancia_m) / 1000))}</td>
@@ -172,7 +172,7 @@ export default async function RankingPage({
                 </table>
               </div>
 
-              <p className="regra" style={{ marginTop: 10 }}>Depois de cada corrida, marque o tipo do treino. Isso vai valer para as conquistas da Korrá.</p>
+              <p className="regra" style={{ marginTop: 10 }}>Depois de cada corrida, marque o tipo do treino e se correu sozinho, em dupla ou em grupo. Isso vai valer para as conquistas da Korrá.</p>
 
               <form action="/aluno/preferencias" method="post" className="pref-ranking">
                 <span>{pref?.aparecer_ranking === false ? "Você está escondido do ranking." : "Você aparece no ranking para os outros alunos."}</span>

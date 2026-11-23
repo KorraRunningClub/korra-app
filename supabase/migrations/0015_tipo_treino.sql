@@ -29,3 +29,10 @@ grant select, insert, update, delete on public.treino_marcacoes to service_role;
 alter table public.treino_marcacoes drop constraint if exists treino_marcacoes_tipo_check;
 alter table public.treino_marcacoes add constraint treino_marcacoes_tipo_check
   check (tipo in ('intervalado', 'rodagem', 'longao', 'fartlek', 'regenerativo', 'prova'));
+
+-- Com quem correu (sozinho, dupla, grupo); o tipo passa a ser opcional
+alter table public.treino_marcacoes alter column tipo drop not null;
+alter table public.treino_marcacoes add column if not exists companhia text;
+alter table public.treino_marcacoes drop constraint if exists treino_marcacoes_companhia_check;
+alter table public.treino_marcacoes add constraint treino_marcacoes_companhia_check
+  check (companhia in ('sozinho', 'dupla', 'grupo'));
