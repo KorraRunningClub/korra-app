@@ -2,7 +2,7 @@ import { redirect } from "next/navigation";
 import { getSessao } from "@/lib/supabase/server";
 import { AppHeader } from "@/components/AppHeader";
 import { dataBR, hojeSP, pace } from "@/lib/semana";
-import { CATEGORIAS_PROVA, DISTANCIAS, diasAte, kmDaProva, nomeDistancia, tempoBR, type Prova } from "@/lib/provas";
+import { CATEGORIAS_PROVA, DISTANCIAS, UFS, diasAte, kmDaProva, nomeDistancia, nomeUF, tempoBR, type Prova } from "@/lib/provas";
 
 export const metadata = { title: "Provas · Korrá Running Club" };
 
@@ -14,6 +14,8 @@ const OK: Record<string, string> = {
   tempo: "Tempo registrado. Parabéns pela prova!",
   nao_correu: "Anotado. Bora para a próxima.",
   removida: "Prova removida da sua lista.",
+  uf_casa: "Estado atualizado.",
+  uf_prova: "Estado da prova salvo.",
 };
 const ERRO: Record<string, string> = {
   nome: "Coloque o nome da prova.",
@@ -21,6 +23,7 @@ const ERRO: Record<string, string> = {
   distancia: "Escolha a distância.",
   escolha: "Escolha uma prova da lista.",
   ja_inscrito: "Essa prova já está na sua lista.",
+  uf: "Escolha o estado.",
   tempo: "Confira o tempo (ex.: 52:30 ou 1:45:10).",
   tabela: "A área de provas ainda está sendo ligada. Fale com o treinador.",
   salvar: "Não conseguimos salvar agora. Tente de novo.",
@@ -41,14 +44,16 @@ export default async function ProvasPage({ searchParams }: { searchParams: Promi
   const { ok, erro } = await searchParams;
   const hoje = hojeSP();
 
+  const { data: eu } = await supabase.from("perfis").select("uf_casa").eq("id", user.id).maybeSingle<{ uf_casa: string | null }>();
+  const ufCasa = eu?.uf_casa ?? "SC";
   let minhas: Inscricao[] = [];
   let lista: Prova[] = [];
   const participantes = new Map<string, { nome: string; categoria: string }[]>();
   if (liberado) {
     const [{ data: insc }, { data: provas }, { data: parts }] = await Promise.all([
-      supabase.from("prova_inscricoes").select("id, categoria, status, tempo_oficial_s, provas(id, nome, data, distancia, distancia_km, cidade, link)")
+      supabase.from("prova_inscricoes").select("id, categoria, status, tempo_oficial_s, provas(id, nome, data, distancia, distancia_km, cidade, link, uf, criado_por)")
         .eq("user_id", user.id),
-      supabase.from("provas").select("id, nome, data, distancia, distancia_km, cidade, link").gte("data", hoje).order("data"),
+      supabase.from("provas").select("id, nome, data, distancia, distancia_km, cidade, link, uf, criado_por").gte("data", hoje).order("data"),
       supabase.rpc("provas_participantes"),
     ]);
     minhas = ((insc ?? []) as unknown as Inscricao[]).filter((i) => i.provas).sort((a, b) => a.provas.data.localeCompare(b.provas.data));
@@ -75,6 +80,16 @@ export default async function ProvasPage({ searchParams }: { searchParams: Promi
     const nomes = o.slice(0, 3).map((x) => primeiro(x.nome)).join(", ");
     return `${nomes}${o.length > 3 ? ` e mais ${o.length - 3}` : ""} também ${o.length === 1 ? "vai" : "vão"}`;
   };
+  const semUF = (p: Prova) =>
+    !p.uf && (treinador || p.criado_por === user.id) ? (
+      <form action="/aluno/provas/acao" method="post" className="uf-prova">
+        <input type="hidden" name="acao" value="uf_prova" /><input type="hidden" name="prova_id" value={p.id} />
+        <label>Estado da prova:
+          <select name="uf" required defaultValue=""><option value="" disabled>UF</option>{UFS.map((u) => <option key={u}>{u}</option>)}<option value="EX">Exterior</option></select>
+        </label>
+        <button className="btn-link" type="submit">salvar</button>
+      </form>
+    ) : null;
   const acoes = (i: Inscricao) => (
     <div className="prova-acoes">
       <form action="/aluno/provas/acao" method="post">
@@ -88,9 +103,10 @@ export default async function ProvasPage({ searchParams }: { searchParams: Promi
       </form>
     </div>
   );
-  const info = (p: Prova) => (
+  const info = (p: Prova) => (<>{infoBase(p)}{semUF(p)}</>);
+  const infoBase = (p: Prova) => (
     <span className="prova-info">
-      {dataBR(p.data)} · {nomeDistancia(p)}{p.cidade ? ` · ${p.cidade}` : ""}
+      {dataBR(p.data)} · {nomeDistancia(p)}{p.cidade ? ` · ${p.cidade}` : ""}{p.uf ? ` · ${nomeUF(p.uf)}` : ""}
       {p.link && <> · <a href={p.link} target="_blank" rel="noopener noreferrer">site da prova ↗</a></>}
     </span>
   );
@@ -106,6 +122,16 @@ export default async function ProvasPage({ searchParams }: { searchParams: Promi
             Coloque aqui as provas em que você está inscrito. A <b>prova-alvo</b> é aquela em que buscamos a sua melhor performance; as{" "}
             <b>secundárias</b> fazem parte do processo de treino.
           </p>
+          {liberado && (
+            <form action="/aluno/provas/acao" method="post" className="uf-casa">
+              <input type="hidden" name="acao" value="uf_casa" />
+              <label>Você mora em
+                <select name="uf" defaultValue={ufCasa}>{UFS.map((u) => <option key={u}>{u}</option>)}</select>
+              </label>
+              <button className="btn-link" type="submit">salvar</button>
+              <span className="regra">(serve para a conquista O Viajante)</span>
+            </form>
+          )}
           {ok && <p className="msg" style={{ marginTop: 16 }}>{OK[ok] ?? "Pronto."}</p>}
           {erro && <p className="msg erro" style={{ marginTop: 16 }}>{ERRO[erro] ?? "Algo deu errado."}</p>}
 
@@ -216,7 +242,12 @@ export default async function ProvasPage({ searchParams }: { searchParams: Promi
                         </select>
                       </div>
                       <div className="field"><label htmlFor="n-km">Quantos km? (só para trail ou outra distância)</label><input id="n-km" name="distancia_km" inputMode="decimal" placeholder="Ex.: 25" /></div>
-                      <div className="field"><label htmlFor="n-cid">Cidade</label><input id="n-cid" name="cidade" maxLength={80} placeholder="Ex.: Florianópolis" /></div>
+                      <div className="linha-campos" style={{ gridTemplateColumns: "2fr 1fr" }}>
+                        <div className="field"><label htmlFor="n-cid">Cidade</label><input id="n-cid" name="cidade" maxLength={80} placeholder="Ex.: Florianópolis" /></div>
+                        <div className="field"><label htmlFor="n-uf">Estado</label>
+                          <select id="n-uf" name="uf" required defaultValue={ufCasa}>{UFS.map((u) => <option key={u}>{u}</option>)}<option value="EX">Exterior</option></select>
+                        </div>
+                      </div>
                       <div className="field"><label htmlFor="n-link">Site da prova (opcional)</label><input id="n-link" name="link" maxLength={300} placeholder="Ex.: www.provadeexemplo.com.br" /></div>
                       <fieldset className="field cat-escolha"><legend>Para você, ela é:</legend>
                         <label><input type="radio" name="categoria" value="alvo" /> Prova-alvo</label>

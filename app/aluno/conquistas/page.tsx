@@ -16,14 +16,25 @@ export default async function ConquistasPage() {
   const liberado = perfil?.status === "ativo" || treinador;
 
   // Provas concluídas (em ordem de data), para saber quando cada meta foi batida
-  let datasProvas: string[] = [];
+  let feitas: { data: string; uf: string | null }[] = [];
+  let ufCasa = "SC";
   if (liberado) {
-    const { data } = await supabase.from("prova_inscricoes").select("provas(data)").eq("user_id", user.id).eq("status", "concluida");
-    datasProvas = ((data ?? []) as unknown as { provas: { data: string } | null }[])
-      .map((r) => r.provas?.data).filter((d): d is string => Boolean(d)).sort();
+    const [{ data }, { data: eu }] = await Promise.all([
+      supabase.from("prova_inscricoes").select("provas(data, uf)").eq("user_id", user.id).eq("status", "concluida"),
+      supabase.from("perfis").select("uf_casa").eq("id", user.id).maybeSingle<{ uf_casa: string | null }>(),
+    ]);
+    feitas = ((data ?? []) as unknown as { provas: { data: string; uf: string | null } | null }[])
+      .map((r) => r.provas).filter((p): p is { data: string; uf: string | null } => Boolean(p)).sort((a, b) => a.data.localeCompare(b.data));
+    ufCasa = eu?.uf_casa ?? "SC";
   }
-  const progresso: Record<string, { feito: number; datas: string[] }> = { provas: { feito: datasProvas.length, datas: datasProvas } };
-  const total = CONQUISTAS.filter((c) => (progresso[c.categoria]?.feito ?? 0) >= c.meta).length;
+  const fora = feitas.filter((p) => p.uf && p.uf !== ufCasa);
+  // o que cada tipo de conquista conta
+  const progresso: Record<string, { feito: number; datas: string[] }> = {
+    provas: { feito: feitas.length, datas: feitas.map((p) => p.data) },
+    provas_fora: { feito: fora.length, datas: fora.map((p) => p.data) },
+  };
+  const prog = (c: (typeof CONQUISTAS)[number]) => progresso[c.conta ?? c.categoria] ?? { feito: 0, datas: [] };
+  const total = CONQUISTAS.filter((c) => prog(c).feito >= c.meta).length;
 
   return (
     <>
@@ -41,24 +52,25 @@ export default async function ConquistasPage() {
             <p className="msg" style={{ marginTop: 24 }}>As conquistas liberam assim que sua matrícula estiver ativa.</p>
           ) : (
             Object.entries(CATEGORIAS_CONQUISTA).map(([cat, info]) => {
-              const p = progresso[cat] ?? { feito: 0, datas: [] };
+              const pc = progresso[cat] ?? { feito: 0, datas: [] };
               return (
                 <section key={cat} style={{ marginTop: 40 }}>
                   <h2 className="sub-provas">{info.nome}</h2>
                   <p className="regra" style={{ marginTop: 6 }}>
-                    {info.descricao} Você tem <b>{p.feito}</b>.{" "}
+                    {info.descricao} Você tem <b>{pc.feito}</b>.{" "}
                     {cat === "provas" && <Link href="/aluno/provas">Lançar uma prova →</Link>}
                   </p>
                   <div className="conq-grid">
                     {CONQUISTAS.filter((c) => c.categoria === cat).map((c) => {
+                      const p = prog(c);
                       const ok = p.feito >= c.meta;
                       const pct = Math.min(100, Math.round((p.feito / c.meta) * 100));
                       return (
                         <div key={c.id} className={`conq-card${ok ? " ok" : ""}`}>
-                          <Medalha nivel={c.nivel} numero={c.meta} liberada={ok} />
+                          <Medalha nivel={c.nivel} numero={c.meta} liberada={ok} simbolo={c.simbolo} />
                           <span className="conq-nivel">{CORES_NIVEL[c.nivel].nome}</span>
                           <h3>{c.nome}</h3>
-                          <p className="conq-regra">{c.meta} {c.unidade} concluídas</p>
+                          <p className="conq-regra">{c.regra ?? `${c.meta} ${c.unidade} concluídas`}</p>
                           {ok ? (
                             <p className="conq-data">Conquistada em {dataBR(p.datas[c.meta - 1] ?? "")}</p>
                           ) : (

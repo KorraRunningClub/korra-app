@@ -11,7 +11,11 @@ export const DISTANCIAS: Record<string, { nome: string; km: number | null }> = {
 export const CATEGORIAS_PROVA = { alvo: "Prova-alvo", secundaria: "Prova secundária" } as const;
 export type CategoriaProva = keyof typeof CATEGORIAS_PROVA;
 
-export type Prova = { id: string; nome: string; data: string; distancia: string; distancia_km: number | null; cidade: string | null; link: string | null };
+export type Prova = { id: string; nome: string; data: string; distancia: string; distancia_km: number | null; cidade: string | null; link: string | null; uf?: string | null; criado_por?: string | null };
+
+export const UFS = ["AC","AL","AP","AM","BA","CE","DF","ES","GO","MA","MT","MS","MG","PA","PB","PR","PE","PI","RJ","RN","RS","RO","RR","SC","SP","SE","TO"];
+export const nomeUF = (uf: string | null | undefined) => (uf === "EX" ? "Exterior" : uf ?? "");
+export const ufValida = (v: string) => v === "EX" || UFS.includes(v);
 
 export const kmDaProva = (p: Pick<Prova, "distancia" | "distancia_km">) =>
   p.distancia_km ? Number(p.distancia_km) : DISTANCIAS[p.distancia]?.km ?? null;

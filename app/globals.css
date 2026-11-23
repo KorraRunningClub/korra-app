@@ -703,3 +703,6 @@ footer.escuro{--bg:var(--verde-2)}
 .conq-prog .barra span{display:block;height:100%;background:var(--verde-3);border-radius:99px}
 .medalha-svg{filter:drop-shadow(0 8px 10px rgba(0,0,0,.18))}
 .medalha-svg.bloqueada{filter:none;opacity:.9}
+.uf-casa,.uf-prova{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:10px;font-size:14.5px}
+.uf-casa select,.uf-prova select{font:inherit;padding:4px 8px;border-radius:6px;border:1.5px solid var(--line);background:var(--bg);color:var(--fg);margin-left:6px}
+.uf-prova{margin-top:4px;font-size:13.5px}
