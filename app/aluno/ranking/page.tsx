@@ -4,6 +4,7 @@ import { getSessao } from "@/lib/supabase/server";
 import { AppHeader } from "@/components/AppHeader";
 import { dataBR, mes, pace, semana } from "@/lib/semana";
 import { AbasRanking, type Board } from "./Abas";
+import { IconeHorario } from "@/components/IconeHorario";
 import { META_CORRIDAS, META_KM, semestre, sequencias } from "@/lib/semestral";
 
 export const metadata = { title: "Ranking · Korrá Running Club" };
@@ -149,7 +150,7 @@ export default async function RankingPage({
                     {(minhas ?? []).map((a) => (
                       <tr key={a.id}>
                         <td>{dataBR(a.inicio_local)}</td>
-                        <td>{a.nome ?? "Corrida"}{a.esteira ? " · esteira" : ""}</td>
+                        <td><span className="treino-nome"><IconeHorario inicioLocal={a.inicio_local} />{a.nome ?? "Corrida"}{a.esteira ? " · esteira" : ""}</span></td>
                         <td>{(Number(a.distancia_m) / 1000).toLocaleString("pt-BR", { maximumFractionDigits: 2 })} km</td>
                         <td>{pace(a.tempo_mov_s / (Number(a.distancia_m) / 1000))}</td>
                         <td>{Math.round((a.tempo_total_s - a.tempo_mov_s) / 60)} min</td>
