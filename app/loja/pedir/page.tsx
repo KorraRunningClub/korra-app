@@ -4,12 +4,16 @@ import { SiteFooter } from "@/components/SiteFooter";
 import { getSessao } from "@/lib/supabase/server";
 import { CATALOGO } from "@/lib/loja";
 import { FormPedido } from "./FormPedido";
+import { createAdmin } from "@/lib/supabase/admin";
+import { disponibilidade } from "@/lib/disponibilidade";
 
+export const dynamic = "force-dynamic";
 export const metadata = { title: "Fazer pedido · Loja Korrá" };
 
 const ERRO: Record<string, string> = {
   nome: "Coloque seu nome para a gente saber de quem é o pedido.",
   pecas: "Escolha estilo, cor e tamanho de todas as camisetas.",
+  esgotado: "Uma das peças acabou de esgotar. Confira os tamanhos disponíveis e tente de novo.",
   salvar: "Não conseguimos registrar o pedido agora. Tente de novo ou chame no WhatsApp (48) 98500-1468.",
 };
 
@@ -17,6 +21,7 @@ export default async function PedirPage({ searchParams }: { searchParams: Promis
   const { item: id, erro } = await searchParams;
   const item = CATALOGO.find((c) => c.id === id) ?? CATALOGO[0];
   const sessao = await getSessao().catch(() => null);
+  const disp = await disponibilidade(createAdmin()).catch(() => null);
   let telefone = "";
   if (sessao) {
     const { data } = await sessao.supabase.from("perfis").select("telefone").eq("id", sessao.user.id).single<{ telefone: string | null }>();
@@ -35,7 +40,7 @@ export default async function PedirPage({ searchParams }: { searchParams: Promis
             Escolha as peças e clique em enviar: o pedido fica registrado e abre o WhatsApp com a mensagem pronta. É só mandar.
           </p>
           {erro && <p className="msg erro" style={{ marginTop: 16 }}>{ERRO[erro] ?? "Algo deu errado."}</p>}
-          <FormPedido itemInicial={item.id} nome={sessao?.perfil?.nome ?? ""} telefone={telefone} />
+          <FormPedido itemInicial={item.id} nome={sessao?.perfil?.nome ?? ""} telefone={telefone} disp={disp} />
         </div>
       </main>
       <SiteFooter />

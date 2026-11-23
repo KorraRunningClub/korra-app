@@ -1,11 +1,17 @@
 "use client";
 
 import { useState } from "react";
-import { CATALOGO, CORES, ESTILOS, NOME_ESTILO, PECAS_DO_ITEM, PIX_CHAVE, TAMANHOS, reais } from "@/lib/loja";
+import { CATALOGO, CORES, ESTILOS, NOME_ESTILO, PECAS_DO_ITEM, PIX_CHAVE, TAMANHOS, nomeCamiseta, reais } from "@/lib/loja";
 
-export function FormPedido({ itemInicial, nome, telefone }: { itemInicial: string; nome: string; telefone: string }) {
+type Escolha = { estilo: string; cor: string; tamanho: string };
+const vazia: Escolha = { estilo: "", cor: "", tamanho: "" };
+
+export function FormPedido({
+  itemInicial, nome, telefone, disp,
+}: { itemInicial: string; nome: string; telefone: string; disp: Record<string, number> | null }) {
   const [itemId, setItemId] = useState(itemInicial);
   const [qtd, setQtd] = useState(1);
+  const [escolhas, setEscolhas] = useState<Escolha[]>([]);
   const [copiado, setCopiado] = useState(false);
   const copiar = async () => {
     try {
@@ -14,10 +20,39 @@ export function FormPedido({ itemInicial, nome, telefone }: { itemInicial: strin
       setTimeout(() => setCopiado(false), 2500);
     } catch {}
   };
+
   const item = CATALOGO.find((c) => c.id === itemId) ?? CATALOGO[0];
   const pecas = Array.from({ length: qtd }, () => PECAS_DO_ITEM[item.id] ?? []).flat();
+  const esc = (i: number) => escolhas[i] ?? vazia;
+  const mudar = (i: number, campo: keyof Escolha, valor: string) =>
+    setEscolhas((atual) => {
+      const novo = [...atual];
+      novo[i] = { ...(novo[i] ?? vazia), [campo]: valor };
+      return novo;
+    });
+
+  // quanto sobra de cada peça, descontando o que já foi escolhido nas outras linhas deste pedido
+  const sobra = (nomeItem: string, ignorar: number) => {
+    if (!disp) return Infinity;
+    let n = disp[nomeItem] ?? 0;
+    pecas.forEach((tipo, j) => {
+      if (j === ignorar) return;
+      if (tipo === "squeeze" && nomeItem === "Squeeze Korrá") n--;
+      const e = esc(j);
+      if (tipo === "camiseta" && e.estilo && e.cor && e.tamanho && nomeCamiseta(e.cor, e.estilo, e.tamanho) === nomeItem) n--;
+    });
+    return n;
+  };
+  const squeezeFalta = pecas.some((t, i) => t === "squeeze" && sobra("Squeeze Korrá", i) <= 0);
+  const camisetaFalta = pecas.some((t, i) => {
+    const e = esc(i);
+    return t === "camiseta" && e.estilo && e.cor && e.tamanho && sobra(nomeCamiseta(e.cor, e.estilo, e.tamanho), i) <= 0;
+  });
+  const bloqueado = squeezeFalta || camisetaFalta;
   let nCamiseta = 0;
   let nSqueeze = 0;
+  const totCam = pecas.filter((p) => p === "camiseta").length;
+  const totSq = pecas.filter((p) => p === "squeeze").length;
 
   return (
     <form className="panel pedido-form" action="/loja/pedido" method="post">
@@ -37,27 +72,45 @@ export function FormPedido({ itemInicial, nome, telefone }: { itemInicial: strin
       {pecas.map((tipo, i) => {
         if (tipo === "squeeze") {
           nSqueeze++;
+          const resta = sobra("Squeeze Korrá", i);
           return (
-            <div key={i} className="peca-escolha">
-              <b>Squeeze {pecas.filter((p) => p === "squeeze").length > 1 ? nSqueeze : ""}</b>
-              <span className="regra">Modelo único</span>
+            <div key={i} className={`peca-escolha${resta <= 0 ? " sem" : ""}`}>
+              <b>Squeeze {totSq > 1 ? nSqueeze : ""}</b>
+              <span className={resta <= 0 ? "aviso-esgotado" : "regra"}>{resta <= 0 ? "Esgotado no momento" : "Modelo único · disponível"}</span>
               <input type="hidden" name={`p${i}_tipo`} value="squeeze" />
             </div>
           );
         }
         nCamiseta++;
+        const e = esc(i);
+        const pronto = e.estilo && e.cor;
+        const restaTam = (t: string) => (pronto ? sobra(nomeCamiseta(e.cor, e.estilo, t), i) : Infinity);
+        const escolhida = pronto && e.tamanho ? restaTam(e.tamanho) : Infinity;
         return (
-          <fieldset key={i} className="peca-escolha">
-            <legend>Camiseta {pecas.filter((p) => p === "camiseta").length > 1 ? nCamiseta : ""}</legend>
+          <fieldset key={i} className={`peca-escolha${escolhida <= 0 ? " sem" : ""}`}>
+            <legend>Camiseta {totCam > 1 ? nCamiseta : ""}</legend>
             <input type="hidden" name={`p${i}_tipo`} value="camiseta" />
             <div className="linha-campos">
               <div className="field"><label htmlFor={`p${i}s`}>Estilo</label>
-                <select id={`p${i}s`} name={`p${i}_estilo`} required defaultValue="">{[<option key="" value="" disabled>Escolha</option>, ...ESTILOS.map((c) => <option key={c} value={c}>{NOME_ESTILO[c]}</option>)]}</select></div>
+                <select id={`p${i}s`} name={`p${i}_estilo`} required value={e.estilo} onChange={(ev) => mudar(i, "estilo", ev.target.value)}>
+                  <option value="" disabled>Escolha</option>
+                  {ESTILOS.map((c) => <option key={c} value={c}>{NOME_ESTILO[c]}</option>)}
+                </select></div>
               <div className="field"><label htmlFor={`p${i}c`}>Cor</label>
-                <select id={`p${i}c`} name={`p${i}_cor`} required defaultValue="">{[<option key="" value="" disabled>Escolha</option>, ...CORES.map((c) => <option key={c}>{c}</option>)]}</select></div>
+                <select id={`p${i}c`} name={`p${i}_cor`} required value={e.cor} onChange={(ev) => mudar(i, "cor", ev.target.value)}>
+                  <option value="" disabled>Escolha</option>
+                  {CORES.map((c) => <option key={c}>{c}</option>)}
+                </select></div>
               <div className="field"><label htmlFor={`p${i}t`}>Tamanho</label>
-                <select id={`p${i}t`} name={`p${i}_tamanho`} required defaultValue="">{[<option key="" value="" disabled>Escolha</option>, ...TAMANHOS.map((c) => <option key={c}>{c}</option>)]}</select></div>
+                <select id={`p${i}t`} name={`p${i}_tamanho`} required value={e.tamanho} onChange={(ev) => mudar(i, "tamanho", ev.target.value)}>
+                  <option value="" disabled>{pronto ? "Escolha" : "Escolha estilo e cor"}</option>
+                  {TAMANHOS.map((t) => {
+                    const r = restaTam(t);
+                    return <option key={t} value={t} disabled={r <= 0}>{t}{r <= 0 ? " · esgotado" : r <= 2 ? ` · últimas ${r}` : ""}</option>;
+                  })}
+                </select></div>
             </div>
+            {escolhida <= 0 && <span className="aviso-esgotado">Esse tamanho esgotou. Escolha outro.</span>}
           </fieldset>
         );
       })}
@@ -75,7 +128,8 @@ export function FormPedido({ itemInicial, nome, telefone }: { itemInicial: strin
         <span className="pix-chave">{PIX_CHAVE}</span>
         <button type="button" className="btn-link" onClick={copiar}>{copiado ? "Copiada!" : "Copiar chave"}</button>
       </div>
-      <button className="btn btn-primary" type="submit">Enviar pedido pelo WhatsApp →</button>
+      {bloqueado && <p className="aviso-esgotado">Alguma peça do pedido está esgotada. Troque o tamanho ou o produto, ou chame o Arthur no WhatsApp (48) 98500-1468 para encomendar.</p>}
+      <button className="btn btn-primary" type="submit" disabled={bloqueado}>Enviar pedido pelo WhatsApp →</button>
       <p className="regra"><b>Pagamento somente via Pix</b>, na chave acima (Arthur Canônica). Depois de enviar o pedido, mande o comprovante na mesma conversa do WhatsApp. O pedido é confirmado quando o Arthur recebe o comprovante, e a entrega é combinada por lá.</p>
     </form>
   );

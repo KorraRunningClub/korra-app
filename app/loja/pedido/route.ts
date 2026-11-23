@@ -1,5 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { createAdmin } from "@/lib/supabase/admin";
+import { disponibilidade } from "@/lib/disponibilidade";
 import { getSessao } from "@/lib/supabase/server";
 import { CATALOGO, CORES, ESTILOS, PECAS_DO_ITEM, TAMANHOS, mensagemPedido, nomeEstoque, type PecaEscolhida } from "@/lib/loja";
 
@@ -41,6 +42,13 @@ export async function POST(request: NextRequest) {
 
   try {
     const admin = createAdmin();
+    // confere de novo se ainda tem peça (alguém pode ter pedido antes)
+    const disp = await disponibilidade(admin);
+    if (disp) {
+      const precisa = new Map<string, number>();
+      for (const p of pecas) precisa.set(nomeEstoque(p), (precisa.get(nomeEstoque(p)) ?? 0) + 1);
+      for (const [n, q] of precisa) if ((disp[n] ?? 0) < q) return volta("esgotado");
+    }
     const sessao = await getSessao().catch(() => null);
     const nomes = [...new Set(pecas.map(nomeEstoque))];
     const { data: estoque } = await admin.from("estoque_itens").select("id, nome").in("nome", nomes);
