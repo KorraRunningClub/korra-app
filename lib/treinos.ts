@@ -18,3 +18,12 @@ export const COMPANHIAS = [
 ] as const;
 export type Companhia = (typeof COMPANHIAS)[number]["id"];
 export const ehCompanhia = (v: string): v is Companhia => COMPANHIAS.some((t) => t.id === v);
+
+// Categorias do treino complementar (o aluno pode marcar mais de uma)
+export const CATEGORIAS_COMPL = [
+  { id: "forca", nome: "Treino de força" },
+  { id: "flexibilidade", nome: "Flexibilidade" },
+  { id: "pliometria", nome: "Pliometria" },
+  { id: "potencia", nome: "Potência" },
+] as const;
+export const ehCategoriaCompl = (v: string) => CATEGORIAS_COMPL.some((c) => c.id === v);

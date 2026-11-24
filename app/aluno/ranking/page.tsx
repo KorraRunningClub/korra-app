@@ -6,6 +6,7 @@ import { dataBR, mes, pace, semana } from "@/lib/semana";
 import { AbasRanking, type Board } from "./Abas";
 import { IconeHorario } from "@/components/IconeHorario";
 import { TipoTreino } from "./TipoTreino";
+import { CategoriasCompl } from "./CategoriasCompl";
 import { META_CORRIDAS, META_KM, semestre, sequencias } from "@/lib/semestral";
 
 export const metadata = { title: "Ranking · Korrá Running Club" };
@@ -62,7 +63,19 @@ export default async function RankingPage({
       .gte("inicio_local", hoje.inicio).lt("inicio_local", hoje.fim).gte("distancia_m", META_KM * 1000),
   ]);
 
-  const compl = await supabase.rpc("ranking_complementar", { p_inicio: s.segunda, p_fim: s.fim.slice(0, 10) });
+  const [compl, { data: complRaw }] = await Promise.all([
+    supabase.rpc("ranking_complementar", { p_inicio: s.segunda, p_fim: s.fim.slice(0, 10) }),
+    supabase.from("treinos_extras").select("id, data, inicio_local, descricao, strava_id, categorias")
+      .eq("user_id", user.id).not("strava_id", "is", null).order("data", { ascending: false }).limit(8),
+  ]);
+  type Compl = { id: string; data: string; inicio_local: string | null; descricao: string | null; strava_id: number; categorias: string[] | null };
+  type Corrida = NonNullable<typeof minhas>[number];
+  const atividadesLista = [
+    ...(minhas ?? []).map((a) => ({ k: "corrida" as const, quando: String(a.inicio_local), a })),
+    ...((complRaw ?? []) as Compl[]).map((c) => ({ k: "compl" as const, quando: c.inicio_local ?? `${c.data}T00:00:00`, c })),
+  ].sort((x, y) => y.quando.localeCompare(x.quando)).slice(0, 10) as (
+    { k: "corrida"; quando: string; a: Corrida } | { k: "compl"; quando: string; c: Compl }
+  )[];
   const idsMinhas = (minhas ?? []).map((a) => a.id);
   const { data: marcRaw } = idsMinhas.length
     ? await supabase.from("treino_marcacoes").select("atividade_id, tipo, companhia").in("atividade_id", idsMinhas)
@@ -163,31 +176,47 @@ export default async function RankingPage({
               </p>
               <p className="regra" style={{ marginTop: 14 }}>Valem corridas de rua, trilha e esteira. Caminhadas não contam. Os 3 primeiros de cada quadro levam medalha.</p>
 
-              <h2 style={{ marginTop: 48, fontSize: "clamp(24px,3vw,32px)" }}>Minhas últimas corridas</h2>
+              <h2 style={{ marginTop: 48, fontSize: "clamp(24px,3vw,32px)" }}>Minhas últimas atividades</h2>
               <div style={{ overflowX: "auto", marginTop: 14 }}>
                 <table className="tabela">
                   <thead><tr><th>Data</th><th>Hora</th><th>Treino</th><th>Distância</th><th>Pace</th><th>Pausas</th><th></th></tr></thead>
                   <tbody>
-                    {(minhas ?? []).length === 0 && <tr><td colSpan={7}>Nenhuma corrida importada ainda.</td></tr>}
-                    {(minhas ?? []).map((a) => (
-                      <tr key={a.id}>
-                        <td>{dataBR(a.inicio_local)}</td>
-                        <td>{a.inicio_local.slice(11, 16).replace(":", "h")}</td>
+                    {atividadesLista.length === 0 && <tr><td colSpan={7}>Nenhuma atividade importada ainda.</td></tr>}
+                    {atividadesLista.map((x) => x.k === "corrida" ? (
+                      <tr key={`r${x.a.id}`}>
+                        <td>{dataBR(x.a.inicio_local)}</td>
+                        <td>{x.a.inicio_local.slice(11, 16).replace(":", "h")}</td>
                         <td>
-                          <span className="treino-nome"><IconeHorario inicioLocal={a.inicio_local} />{a.nome ?? "Corrida"}{a.esteira ? " · esteira" : ""}</span>
-                          <TipoTreino atividadeId={Number(a.id)} inicial={marcacao.get(Number(a.id))?.tipo ?? null} companhia={marcacao.get(Number(a.id))?.companhia ?? null} />
+                          <span className="treino-nome"><IconeHorario inicioLocal={x.a.inicio_local} />{x.a.nome ?? "Corrida"}{x.a.esteira ? " · esteira" : ""}</span>
+                          <TipoTreino atividadeId={Number(x.a.id)} inicial={marcacao.get(Number(x.a.id))?.tipo ?? null} companhia={marcacao.get(Number(x.a.id))?.companhia ?? null} />
                         </td>
-                        <td>{(Number(a.distancia_m) / 1000).toLocaleString("pt-BR", { maximumFractionDigits: 2 })} km</td>
-                        <td>{pace(a.tempo_mov_s / (Number(a.distancia_m) / 1000))}</td>
-                        <td>{Math.round((a.tempo_total_s - a.tempo_mov_s) / 60)} min</td>
-                        <td><a className="ver-strava" href={`https://www.strava.com/activities/${a.id}`} target="_blank" rel="noopener noreferrer">View on Strava</a></td>
+                        <td>{(Number(x.a.distancia_m) / 1000).toLocaleString("pt-BR", { maximumFractionDigits: 2 })} km</td>
+                        <td>{pace(x.a.tempo_mov_s / (Number(x.a.distancia_m) / 1000))}</td>
+                        <td>{Math.round((x.a.tempo_total_s - x.a.tempo_mov_s) / 60)} min</td>
+                        <td><a className="ver-strava" href={`https://www.strava.com/activities/${x.a.id}`} target="_blank" rel="noopener noreferrer">View on Strava</a></td>
+                      </tr>
+                    ) : (
+                      <tr key={`c${x.c.id}`} className="linha-compl">
+                        <td>{dataBR(x.c.data)}</td>
+                        <td>{x.c.inicio_local ? x.c.inicio_local.slice(11, 16).replace(":", "h") : "—"}</td>
+                        <td>
+                          <span className="treino-nome">
+                            <svg className="icone-horario halter" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" aria-label="Treino complementar" role="img">
+                              <path d="M6.5 6.5v11M3.5 9v6M17.5 6.5v11M20.5 9v6M6.5 12h11" />
+                            </svg>
+                            {x.c.descricao ?? "Treino complementar"}
+                          </span>
+                          <CategoriasCompl id={x.c.id} inicial={x.c.categorias ?? []} />
+                        </td>
+                        <td>—</td><td>—</td><td>—</td>
+                        <td><a className="ver-strava" href={`https://www.strava.com/activities/${x.c.strava_id}`} target="_blank" rel="noopener noreferrer">View on Strava</a></td>
                       </tr>
                     ))}
                   </tbody>
                 </table>
               </div>
 
-              <p className="regra" style={{ marginTop: 10 }}>Depois de cada corrida, marque o tipo do treino e se correu sozinho, em dupla ou em grupo. Isso vai valer para as conquistas da Korrá.</p>
+              <p className="regra" style={{ marginTop: 10 }}>Depois de cada corrida, marque o tipo do treino e se correu sozinho, em dupla ou em grupo. Nos treinos complementares (musculação etc.), marque o que você treinou: pode ser mais de uma opção. Isso vai valer para as conquistas da Korrá.</p>
 
               <form action="/aluno/preferencias" method="post" className="pref-ranking">
                 <span>{pref?.aparecer_ranking === false ? "Você está escondido do ranking." : "Você aparece no ranking para os outros alunos."}</span>

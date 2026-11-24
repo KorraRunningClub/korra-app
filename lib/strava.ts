@@ -11,7 +11,7 @@ const COMPLEMENTARES: Record<string, "forca" | "mobilidade" | "outro"> = {
 function paraExtra(a: AtividadeStrava, userId: string) {
   const tipo = COMPLEMENTARES[a.sport_type || a.type];
   if (!tipo) return null;
-  return { user_id: userId, data: a.start_date_local.slice(0, 10), tipo, descricao: a.name?.slice(0, 120) ?? null, strava_id: a.id };
+  return { user_id: userId, data: a.start_date_local.slice(0, 10), inicio_local: a.start_date_local.replace("Z", ""), tipo, descricao: a.name?.slice(0, 120) ?? null, strava_id: a.id };
 }
 
 export function stravaConfigurado() {
