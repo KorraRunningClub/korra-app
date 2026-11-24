@@ -2,6 +2,17 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 
 const API = "https://www.strava.com/api/v3";
 const TIPOS_CORRIDA = new Set(["Run", "TrailRun", "VirtualRun"]);
+// Treinos de força/complementares do Strava → entram como "treino extra" (ranking Força / compl. e ciclo)
+const COMPLEMENTARES: Record<string, "forca" | "mobilidade" | "outro"> = {
+  WeightTraining: "forca", Crossfit: "forca", HighIntensityIntervalTraining: "forca",
+  Yoga: "mobilidade", Pilates: "mobilidade", Workout: "outro",
+};
+
+function paraExtra(a: AtividadeStrava, userId: string) {
+  const tipo = COMPLEMENTARES[a.sport_type || a.type];
+  if (!tipo) return null;
+  return { user_id: userId, data: a.start_date_local.slice(0, 10), tipo, descricao: a.name?.slice(0, 120) ?? null, strava_id: a.id };
+}
 
 export function stravaConfigurado() {
   return Boolean(process.env.STRAVA_CLIENT_ID && process.env.STRAVA_CLIENT_SECRET && process.env.SUPABASE_SECRET_KEY);
@@ -86,6 +97,7 @@ export async function importarRecentes(admin: SupabaseClient, userId: string, di
   if (!token) return 0;
   const depois = Math.floor(Date.now() / 1000) - dias * 86400;
   const linhas: NonNullable<ReturnType<typeof paraLinha>>[] = [];
+  const extras: NonNullable<ReturnType<typeof paraExtra>>[] = [];
   for (let pagina = 1; pagina <= 3; pagina++) {
     const r = await fetch(`${API}/athlete/activities?after=${depois}&per_page=100&page=${pagina}`, {
       headers: { Authorization: `Bearer ${token}` },
@@ -95,10 +107,16 @@ export async function importarRecentes(admin: SupabaseClient, userId: string, di
     for (const a of lista) {
       const l = paraLinha(a, userId);
       if (l) linhas.push(l);
+      const x = paraExtra(a, userId);
+      if (x) extras.push(x);
     }
     if (lista.length < 100) break;
   }
   if (linhas.length) await admin.from("atividades").upsert(linhas);
+  if (extras.length) {
+    const { error } = await admin.from("treinos_extras").upsert(extras, { onConflict: "strava_id" });
+    if (error) console.error("strava extras", error);
+  }
   return linhas.length;
 }
 
@@ -109,10 +127,15 @@ export async function importarAtividade(admin: SupabaseClient, userId: string, a
   const r = await fetch(`${API}/activities/${atividadeId}`, { headers: { Authorization: `Bearer ${token}` } });
   if (r.status === 404) {
     await admin.from("atividades").delete().eq("id", atividadeId);
+    await admin.from("treinos_extras").delete().eq("strava_id", atividadeId);
     return;
   }
   if (!r.ok) throw new Error(`Strava atividade ${r.status}`);
-  const l = paraLinha(await r.json(), userId);
+  const a: AtividadeStrava = await r.json();
+  const l = paraLinha(a, userId);
   if (l) await admin.from("atividades").upsert(l);
   else await admin.from("atividades").delete().eq("id", atividadeId);
+  const x = paraExtra(a, userId);
+  if (x) await admin.from("treinos_extras").upsert(x, { onConflict: "strava_id" });
+  else await admin.from("treinos_extras").delete().eq("strava_id", atividadeId);
 }

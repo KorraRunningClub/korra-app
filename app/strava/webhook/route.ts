@@ -28,12 +28,14 @@ async function processar(ev: Evento) {
   if (ev.object_type === "athlete" && ev.updates?.authorized === "false") {
     await admin.from("strava_conexoes").delete().eq("user_id", c.user_id);
     await admin.from("atividades").delete().eq("user_id", c.user_id).eq("fonte", "strava");
+    await admin.from("treinos_extras").delete().eq("user_id", c.user_id).not("strava_id", "is", null);
     await admin.from("sequencias_semestre").delete().eq("user_id", c.user_id);
     return;
   }
   if (ev.object_type !== "activity") return;
   if (ev.aspect_type === "delete") {
     await admin.from("atividades").delete().eq("id", ev.object_id);
+    await admin.from("treinos_extras").delete().eq("strava_id", ev.object_id);
   } else {
     await importarAtividade(admin, c.user_id, ev.object_id);
   }

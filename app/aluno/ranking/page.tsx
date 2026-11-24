@@ -98,7 +98,7 @@ export default async function RankingPage({
       chave: "forca",
       aba: "Força / compl.",
       titulo: "Treino de força ou complementar da semana",
-      regra: "Quantos dias da semana você fez força, mobilidade ou outro treino complementar. Vale 1 por dia; marque logo abaixo do quadro.",
+      regra: "Quantos dias da semana você fez força, mobilidade ou outro treino complementar (do Strava ou marcados aqui). Vale 1 por dia.",
       linhas: ((compl.data ?? []) as { user_id: string; nome: string | null; valor: number }[])
         .map((l) => ({ id: l.user_id, nome: nomeCurto(l.nome), valor: `${l.valor} dia${Number(l.valor) === 1 ? "" : "s"}`, eu: l.user_id === user.id })),
     },
@@ -168,7 +168,7 @@ export default async function RankingPage({
               <div id="complementar" className="complementar-box">
                 <div>
                   <b>Fez força ou um treino complementar?</b>
-                  <span className="regra"> Marque para entrar no quadro “Força / compl.”{(meusExtras ?? []).length ? ` · nesta semana: ${new Set((meusExtras ?? []).map((e) => e.data)).size} dia(s)` : ""}</span>
+                  <span className="regra"> Treinos de musculação, crossfit, yoga e pilates salvos no Strava entram sozinhos. Se não usou o Strava, marque aqui{(meusExtras ?? []).length ? ` · nesta semana: ${new Set((meusExtras ?? []).map((e) => e.data)).size} dia(s)` : ""}</span>
                 </div>
                 {q.extra === "ok" && <p className="msg" style={{ margin: 0 }}>Treino marcado. Boa!</p>}
                 <form action="/aluno/treino-extra" method="post" className="extra-form claro">

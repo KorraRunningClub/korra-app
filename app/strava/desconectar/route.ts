@@ -15,6 +15,7 @@ export async function POST(request: NextRequest) {
   }
   await admin.from("strava_conexoes").delete().eq("user_id", sessao.user.id);
   await admin.from("atividades").delete().eq("user_id", sessao.user.id).eq("fonte", "strava");
+  await admin.from("treinos_extras").delete().eq("user_id", sessao.user.id).not("strava_id", "is", null);
   await admin.from("sequencias_semestre").delete().eq("user_id", sessao.user.id);
   return NextResponse.redirect(new URL("/aluno/ranking?desconectado=1", request.url), { status: 303 });
 }
