@@ -4,7 +4,7 @@ import { getSessao } from "@/lib/supabase/server";
 import { AppHeader } from "@/components/AppHeader";
 import { Medalha } from "@/components/Medalha";
 import { dataBR } from "@/lib/semana";
-import { CATEGORIAS_CONQUISTA, CONQUISTAS, CORES_NIVEL } from "@/lib/conquistas";
+import { CATEGORIAS_CONQUISTA, CONQUISTAS } from "@/lib/conquistas";
 
 export const metadata = { title: "Conquistas disponíveis · Korrá Running Club" };
 
@@ -73,7 +73,7 @@ export default async function ConquistasPage() {
                       return (
                         <div key={c.id} className={`conq-card${ok ? " ok" : ""}`}>
                           <Medalha nivel={c.nivel} numero={c.meta} liberada={ok} simbolo={c.simbolo} figura={c.figura} />
-                          <span className="conq-nivel">{CORES_NIVEL[c.nivel].nome}</span>
+                          <span className="conq-nivel">Conquista</span>
                           <h3>{c.nome}</h3>
                           <p className="conq-regra">{c.regra ?? `${c.meta} ${c.unidade} concluídas`}</p>
                           {ok ? (
