@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Logo } from "./Logo";
+import { SinoAvisos } from "./SinoAvisos";
 
 export function AppHeader({ nome, treinador }: { nome?: string | null; treinador?: boolean }) {
   return (
@@ -14,7 +15,8 @@ export function AppHeader({ nome, treinador }: { nome?: string | null; treinador
               <Link className="sub-rotulo" href="/aluno" aria-haspopup="true">Minha área ▾</Link>
               <ul className="submenu">
                 <li><Link href="/aluno"><b>Minha área</b><span>Seus dados e atalhos</span></Link></li>
-                <li><Link href="/treinador/agenda"><b><i className="so-pc">Minha </i>Agenda</b><span>Seus horários de personal e treinos (só você vê)</span></Link></li>
+                <li><Link href="/treinador/agenda"><b><i className="so-pc">Minha </i>Agenda</b><span>Horários e financeiro do personal (só você vê)</span></Link></li>
+                <li><Link href="/treinador/mensagens"><b>Mensagens</b><span>Avisos de planos vencendo</span></Link></li>
               </ul>
             </li>
           ) : (
@@ -39,6 +41,7 @@ export function AppHeader({ nome, treinador }: { nome?: string | null; treinador
           {treinador && <li><Link href="/treinador">Painel</Link></li>}
         </ul>
         <div className="nav-cta">
+          {treinador && <SinoAvisos />}
           {nome && <span className="aluno">{nome}</span>}
           <form action="/sair" method="post">
             <button className="btn btn-ghost" type="submit">Sair</button>

@@ -29,11 +29,16 @@ export async function POST(request: NextRequest) {
       return ir("&ok=apagado");
     }
     const tipo = txt(form.get("tipo"), 20);
-    const titulo = txt(form.get("titulo"), 120);
+    const personalId = txt(form.get("personal_id"), 40) || null;
+    let titulo = txt(form.get("titulo"), 120);
+    if (!titulo && personalId) {
+      const { data: al } = await db.from("personal_alunos").select("nome").eq("id", personalId).single();
+      if (al) titulo = `Personal · ${al.nome}`;
+    }
     const data = txt(form.get("data"), 10);
     const hi = txt(form.get("hora_inicio"), 5), hf = txt(form.get("hora_fim"), 5);
     if (!(tipo in TIPOS_AGENDA) || !titulo || !/^\d{4}-\d{2}-\d{2}$/.test(data) || !/^\d{2}:\d{2}$/.test(hi) || !/^\d{2}:\d{2}$/.test(hf) || hf <= hi) return ir("&erro=dados");
-    const base = { tipo, titulo, data, hora_inicio: hi, hora_fim: hf, local: txt(form.get("local"), 120) || null, obs: txt(form.get("obs"), 1000) || null };
+    const base = { tipo, titulo, data, hora_inicio: hi, hora_fim: hf, local: txt(form.get("local"), 120) || null, obs: txt(form.get("obs"), 1000) || null, personal_id: personalId };
     if (acao === "editar") {
       const { error } = await db.from("agenda_itens").update(base).eq("id", id);
       if (error) throw error;

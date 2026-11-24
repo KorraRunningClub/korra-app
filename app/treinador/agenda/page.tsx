@@ -6,11 +6,16 @@ import { AppHeader } from "@/components/AppHeader";
 import { hojeSP } from "@/lib/semana";
 import { DIAS_SEMANA, MESES, somarDias, TIPOS_EVENTO, type Evento } from "@/lib/calendario";
 import { HORA_FIM, HORA_INI, TIPOS_AGENDA, emFaixas, hhmm, minutos, type ItemAgenda } from "@/lib/agenda";
+import { PLANOS, SITUACOES, diasPara, fimDoPlano, type AlunoPersonal } from "@/lib/personal";
 
 export const metadata = { title: "Minha agenda · Korrá Running Club" };
 
-const OK: Record<string, string> = { criado: "Horário adicionado.", serie: "Horários adicionados (toda semana).", salvo: "Horário atualizado.", apagado: "Horário apagado." };
-const ERRO: Record<string, string> = { dados: "Confira o título, a data e os horários (o fim precisa ser depois do início).", tabela: "A agenda ainda está sendo ligada (falta rodar o SQL no Supabase).", salvar: "Não conseguimos salvar. Tente de novo." };
+const OK: Record<string, string> = {
+  criado: "Horário adicionado.", serie: "Horários adicionados (toda semana).", salvo: "Horário atualizado.", apagado: "Horário apagado.",
+  personal_criado: "Aluno de personal adicionado.", personal_salvo: "Aluno atualizado.", personal_pago: "Pagamento registrado.",
+  personal_renovado: "Plano renovado para o próximo período.", personal_apagado: "Aluno removido.",
+};
+const ERRO: Record<string, string> = { personal: "Confira nome, plano, valor e data de início.", dados: "Confira o título, a data e os horários (o fim precisa ser depois do início).", tabela: "A agenda ainda está sendo ligada (falta rodar o SQL no Supabase).", salvar: "Não conseguimos salvar. Tente de novo." };
 
 const segundaDe = (d: string) => somarDias(d, -((new Date(`${d}T12:00:00Z`).getUTCDay() + 6) % 7));
 const br = (d: string) => d.split("-").reverse().slice(0, 2).join("/");
@@ -23,7 +28,7 @@ const pos = (ini: string, fim: string) => {
 export default async function AgendaPage({
   searchParams,
 }: {
-  searchParams: Promise<{ semana?: string; item?: string; novo?: string; hora?: string; editar?: string; ok?: string; erro?: string }>;
+  searchParams: Promise<{ semana?: string; item?: string; novo?: string; hora?: string; editar?: string; aluno?: string; ok?: string; erro?: string }>;
 }) {
   const sessao = await getSessao();
   if (!sessao) redirect("/entrar?voltar=/treinador/agenda");
@@ -35,10 +40,22 @@ export default async function AgendaPage({
   const dias = Array.from({ length: 7 }, (_, i) => somarDias(seg, i));
   const dom = dias[6];
 
-  const [{ data: it }, { data: ev }] = await Promise.all([
-    supabase.from("agenda_itens").select("id, tipo, titulo, data, hora_inicio, hora_fim, local, obs, grupo").gte("data", seg).lte("data", dom).order("hora_inicio"),
+  const [{ data: it }, { data: ev }, { data: pa }] = await Promise.all([
+    supabase.from("agenda_itens").select("id, tipo, titulo, data, hora_inicio, hora_fim, local, obs, grupo, personal_id").gte("data", seg).lte("data", dom).order("hora_inicio"),
     supabase.from("eventos").select("id, tipo, titulo, data, hora_inicio, hora_fim, local_nome, endereco, descricao, prova_id, grupo").gte("data", seg).lte("data", dom),
+    supabase.from("personal_alunos").select("id, nome, telefone, plano, valor, inicio, fim, pago, pago_em, situacao, obs").order("nome"),
   ]);
+  const alunosP = (pa ?? []) as AlunoPersonal[];
+  const ordemSit = { ativo: 0, pausado: 1, cancelado: 2 } as const;
+  const listaP = [...alunosP].sort((a, b) => ordemSit[a.situacao] - ordemSit[b.situacao] || a.fim.localeCompare(b.fim));
+  const ativosP = alunosP.filter((a) => a.situacao === "ativo");
+  const mensalEquiv = ativosP.reduce((t, a) => t + (PLANOS[a.plano].meses ? Number(a.valor) / PLANOS[a.plano].meses : 0), 0);
+  const aReceber = ativosP.filter((a) => !a.pago).reduce((t, a) => t + Number(a.valor), 0);
+  const vencendo = ativosP.filter((a) => diasPara(a.fim, hoje) <= 7).length;
+  const alunoEditando = q.aluno && q.aluno !== "novo" ? alunosP.find((a) => a.id === q.aluno) ?? null : null;
+  const alunoNovo = q.aluno === "novo";
+  const reais = (v: number) => v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+  const dbr = (d: string | null) => (d ? d.split("-").reverse().join("/") : "—");
   const itens = (it ?? []) as ItemAgenda[];
   const eventos = ((ev ?? []) as Evento[]).filter((e) => e.hora_inicio);
   const base = `/treinador/agenda?semana=${seg}`;
@@ -72,7 +89,15 @@ export default async function AgendaPage({
           {Object.entries(TIPOS_AGENDA).map(([k, t]) => <option key={k} value={k}>{t.nome}</option>)}
         </select>
       </div>
-      <div className="field"><label htmlFor="ag-tit">Título</label><input id="ag-tit" name="titulo" required maxLength={120} defaultValue={i?.titulo ?? ""} placeholder="Ex.: Personal · Maria" /></div>
+      {ativosP.length > 0 && (
+        <div className="field"><label htmlFor="ag-al">Aluno de personal (opcional)</label>
+          <select id="ag-al" name="personal_id" defaultValue={(i as (ItemAgenda & { personal_id?: string | null }) | null)?.personal_id ?? ""}>
+            <option value="">Nenhum</option>
+            {ativosP.map((a) => <option key={a.id} value={a.id}>{a.nome}</option>)}
+          </select>
+        </div>
+      )}
+      <div className="field"><label htmlFor="ag-tit">Título {ativosP.length > 0 && "(se escolher o aluno, pode deixar em branco)"}</label><input id="ag-tit" name="titulo" maxLength={120} defaultValue={i?.titulo ?? ""} placeholder="Ex.: Personal · Maria" /></div>
       <div className="linha-campos">
         <div className="field"><label htmlFor="ag-data">Data</label><input id="ag-data" name="data" type="date" required defaultValue={i?.data ?? dia} /></div>
         <div className="field"><label htmlFor="ag-hi">Início</label><input id="ag-hi" name="hora_inicio" type="time" required defaultValue={i ? hhmm(i.hora_inicio) : hora} /></div>
@@ -91,6 +116,40 @@ export default async function AgendaPage({
       <div className="evento-form-acoes">
         <button className="btn btn-primary" type="submit">{i ? "Salvar" : "Adicionar"}</button>
         <Link className="btn-link" href={base}>Cancelar</Link>
+      </div>
+    </form>
+  );
+
+
+  const formAluno = (a: AlunoPersonal | null) => (
+    <form action="/treinador/personal/acao" method="post" className="evento-form">
+      <input type="hidden" name="acao" value={a ? "editar" : "criar"} />
+      {a && <input type="hidden" name="id" value={a.id} />}
+      <input type="hidden" name="semana" value={seg} />
+      <div className="field"><label htmlFor="pa-nome">Nome do aluno</label><input id="pa-nome" name="nome" required maxLength={100} defaultValue={a?.nome ?? ""} /></div>
+      <div className="field"><label htmlFor="pa-tel">WhatsApp (opcional)</label><input id="pa-tel" name="telefone" inputMode="tel" maxLength={20} defaultValue={a?.telefone ?? ""} /></div>
+      <div className="linha-campos">
+        <div className="field"><label htmlFor="pa-plano">Plano</label>
+          <select id="pa-plano" name="plano" defaultValue={a?.plano ?? "mensal"}>{Object.entries(PLANOS).map(([k, p]) => <option key={k} value={k}>{p.nome}</option>)}</select>
+        </div>
+        <div className="field"><label htmlFor="pa-valor">Valor do plano (R$)</label><input id="pa-valor" name="valor" inputMode="decimal" required defaultValue={a ? String(a.valor).replace(".", ",") : ""} placeholder="ex.: 600,00" /></div>
+        <div className="field"><label htmlFor="pa-sit">Situação</label>
+          <select id="pa-sit" name="situacao" defaultValue={a?.situacao ?? "ativo"}>{Object.entries(SITUACOES).map(([k, n]) => <option key={k} value={k}>{n}</option>)}</select>
+        </div>
+      </div>
+      <div className="linha-campos" style={{ gridTemplateColumns: "1fr 1fr" }}>
+        <div className="field"><label htmlFor="pa-ini">Início</label><input id="pa-ini" name="inicio" type="date" required defaultValue={a?.inicio ?? hoje} /></div>
+        <div className="field"><label htmlFor="pa-fim">Fim</label><input id="pa-fim" name="fim" type="date" defaultValue={a?.fim ?? ""} /></div>
+      </div>
+      <label className="check-linha"><input type="checkbox" name="fim_auto" value="1" defaultChecked={!a} /> Calcular o fim pelo plano (mensal +1 mês, trimestral +3, semestral +6, anual +12)</label>
+      <div className="linha-campos" style={{ gridTemplateColumns: "1fr 1fr" }}>
+        <label className="check-linha"><input type="checkbox" name="pago" value="1" defaultChecked={a?.pago ?? false} /> Já pagou</label>
+        <div className="field"><label htmlFor="pa-pg">Data do pagamento</label><input id="pa-pg" name="pago_em" type="date" defaultValue={a?.pago_em ?? ""} /></div>
+      </div>
+      <div className="field"><label htmlFor="pa-obs">Observações</label><textarea id="pa-obs" name="obs" rows={2} maxLength={500} defaultValue={a?.obs ?? ""} /></div>
+      <div className="evento-form-acoes">
+        <button className="btn btn-primary" type="submit">{a ? "Salvar" : "Adicionar aluno"}</button>
+        <Link className="btn-link" href={`${base}#financeiro`}>Cancelar</Link>
       </div>
     </form>
   );
@@ -159,6 +218,72 @@ export default async function AgendaPage({
             </div>
           </div>
           <p className="regra" style={{ marginTop: 10 }}>Clique num horário vazio para adicionar. Os eventos da assessoria aparecem tracejados.</p>
+
+          <section id="financeiro" style={{ marginTop: 56 }}>
+            <div className="fin-topo">
+              <h2 className="sub-provas">Controle financeiro · Personal</h2>
+              <Link className="btn btn-primary" href={`${base}&aluno=novo#financeiro`}>+ Aluno de personal</Link>
+            </div>
+            <div className="grid-cards" style={{ marginTop: 14 }}>
+              <div className="tile"><span className="k">Alunos ativos</span><span className="v">{ativosP.length}</span><span>{alunosP.length - ativosP.length} pausados ou cancelados</span></div>
+              <div className="tile"><span className="k">Receita por mês</span><span className="v">{reais(mensalEquiv)}</span><span>planos ativos divididos por mês</span></div>
+              <div className="tile"><span className="k">A receber</span><span className="v">{reais(aReceber)}</span><span>planos ativos ainda não pagos</span></div>
+              <div className="tile"><span className="k">Vencendo em 7 dias</span><span className="v">{vencendo}</span><span>avisamos 1 dia antes em Mensagens</span></div>
+            </div>
+            {listaP.length === 0 ? (
+              <p className="msg" style={{ marginTop: 16 }}>Nenhum aluno de personal ainda. Clique em “+ Aluno de personal”.</p>
+            ) : (
+              <div style={{ overflowX: "auto", marginTop: 16 }}>
+                <table className="tabela fin-tabela">
+                  <thead><tr><th>Aluno</th><th>Plano</th><th>Valor</th><th>Início</th><th>Fim</th><th>Pagamento</th><th>Situação</th><th></th></tr></thead>
+                  <tbody>
+                    {listaP.map((a) => {
+                      const d = diasPara(a.fim, hoje);
+                      return (
+                        <tr key={a.id} className={a.situacao !== "ativo" ? "inativo" : undefined}>
+                          <td><b>{a.nome}</b>{a.telefone && <><br /><a className="regra" href={`https://wa.me/55${a.telefone.replace(/\D/g, "")}`} target="_blank" rel="noopener noreferrer">WhatsApp</a></>}</td>
+                          <td>{PLANOS[a.plano].nome}</td>
+                          <td>{reais(Number(a.valor))}</td>
+                          <td>{dbr(a.inicio)}</td>
+                          <td>
+                            {dbr(a.fim)}
+                            {a.situacao === "ativo" && <span className={`vence ${d < 0 ? "vencido" : d <= 1 ? "urgente" : d <= 7 ? "logo" : ""}`}>{d < 0 ? `venceu há ${-d}d` : d === 0 ? "vence hoje" : d === 1 ? "vence amanhã" : `em ${d} dias`}</span>}
+                          </td>
+                          <td>
+                            <form action="/treinador/personal/acao" method="post">
+                              <input type="hidden" name="acao" value="pago" /><input type="hidden" name="id" value={a.id} /><input type="hidden" name="semana" value={seg} />
+                              <input type="hidden" name="pago" value={a.pago ? "0" : "1"} />
+                              <button className={`pg ${a.pago ? "ok" : "pendente"}`} type="submit" title={a.pago ? "Clique para marcar como pendente" : "Clique para marcar como pago hoje"}>
+                                {a.pago ? `Pago ${dbr(a.pago_em).slice(0, 5)}` : "Pendente"}
+                              </button>
+                            </form>
+                          </td>
+                          <td>
+                            <form action="/treinador/personal/acao" method="post" className="sit-form">
+                              <input type="hidden" name="acao" value="situacao" /><input type="hidden" name="id" value={a.id} /><input type="hidden" name="semana" value={seg} />
+                              <select name="situacao" defaultValue={a.situacao} className={`sit ${a.situacao}`} aria-label="Situação">
+                                {Object.entries(SITUACOES).map(([k, n]) => <option key={k} value={k}>{n}</option>)}
+                              </select>
+                              <button className="btn-link" type="submit">ok</button>
+                            </form>
+                          </td>
+                          <td className="fin-acoes">
+                            <Link className="btn-link" href={`${base}&aluno=${a.id}#financeiro`}>Editar</Link>
+                            {a.plano !== "avulso" && (
+                              <form action="/treinador/personal/acao" method="post">
+                                <input type="hidden" name="acao" value="renovar" /><input type="hidden" name="id" value={a.id} /><input type="hidden" name="semana" value={seg} />
+                                <button className="btn-link" type="submit" title={`Novo período: ${dbr(a.fim)} a ${dbr(fimDoPlano(a.fim, a.plano))}`}>Renovar</button>
+                              </form>
+                            )}
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </section>
         </div>
 
         {aberto && !editando && (
@@ -188,6 +313,22 @@ export default async function AgendaPage({
                   </form>
                 )}
               </div>
+            </div>
+          </div>
+        )}
+        {(alunoNovo || alunoEditando) && (
+          <div className="modal-fundo">
+            <Link className="modal-fora" href={`${base}#financeiro`} aria-label="Fechar" />
+            <div className="modal" role="dialog" aria-modal="true" aria-label={alunoEditando ? "Editar aluno" : "Novo aluno de personal"}>
+              <Link className="modal-x" href={`${base}#financeiro`} aria-label="Fechar">×</Link>
+              <h2>{alunoEditando ? "Editar aluno" : "Novo aluno de personal"}</h2>
+              {formAluno(alunoEditando)}
+              {alunoEditando && (
+                <form action="/treinador/personal/acao" method="post" style={{ borderTop: "1.5px solid var(--line)", paddingTop: 12 }}>
+                  <input type="hidden" name="acao" value="apagar" /><input type="hidden" name="id" value={alunoEditando.id} /><input type="hidden" name="semana" value={seg} />
+                  <button className="btn-link" type="submit">Remover aluno (apaga o histórico dele)</button>
+                </form>
+              )}
             </div>
           </div>
         )}
