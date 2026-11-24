@@ -278,7 +278,7 @@ footer.escuro{--bg:var(--verde-2)}
 
 /* ranking: abas + pódio */
 .ranking-abas{margin-top:16px;display:grid;gap:18px}
-.abas{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px}
+.abas{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:10px}
 @media (max-width:900px){.abas{grid-template-columns:repeat(2,minmax(0,1fr))}.aba:last-child:nth-child(odd){grid-column:1/-1}}
 .meu-semestre{margin-top:18px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
 .meu-semestre>div{padding:14px 16px;border-radius:12px;border:1.5px solid var(--line);display:grid;gap:2px}
@@ -815,3 +815,5 @@ footer.escuro{--bg:var(--verde-2)}
 .avisos li.nova{border-color:#D9562B;background:rgba(217,86,43,.07)}
 .avisos li p{font-size:14.5px;margin-top:4px}
 .avisos-acoes{display:flex;gap:14px;align-items:center}
+.complementar-box{margin-top:18px;padding:16px 18px;border-radius:12px;border:1.5px dashed var(--verde-3);display:grid;gap:10px}
+.extra-form.claro select,.extra-form.claro input{border-color:var(--line);background:var(--bg);color:var(--fg)}
