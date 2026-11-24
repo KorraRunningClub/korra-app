@@ -27,6 +27,7 @@ export function AppHeader({ nome, treinador }: { nome?: string | null; treinador
           <li><Link href="/aluno/diz-ai">Diz Aí</Link></li>
           <li><Link href="/aluno/forum">Fórum</Link></li>
           {treinador && <li><Link href="/treinador">Painel</Link></li>}
+          {treinador && <li><Link href="/treinador/agenda">Agenda</Link></li>}
         </ul>
         <div className="nav-cta">
           {nome && <span className="aluno">{nome}</span>}

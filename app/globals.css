@@ -757,3 +757,33 @@ footer.escuro{--bg:var(--verde-2)}
 .ader-badge.boa{background:#FBEFC8;color:#7a5a00}
 .ader-badge.baixa{background:#F9D9CB;color:#8d2a17}
 .ader-badge.neutra{background:var(--creme-2);color:var(--muted);font-size:14px;font-family:var(--f-label)}
+/* agenda pessoal do treinador */
+.ag-novo{margin-left:auto}
+.ag-resumo{display:flex;flex-wrap:wrap;gap:8px 18px;margin-top:12px;font-size:14px;align-items:center}
+.ag-resumo span{display:inline-flex;align-items:center;gap:6px}
+.ag-resumo b{font-family:var(--f-display);font-stretch:125%;font-weight:900;font-size:22px}
+.ag-scroll{overflow-x:auto;margin-top:16px;-webkit-overflow-scrolling:touch}
+.ag{display:grid;grid-template-columns:52px repeat(7,minmax(110px,1fr));grid-template-rows:auto 1080px;min-width:820px;border:1.5px solid var(--line);border-radius:12px;overflow:hidden;background:var(--bg)}
+.ag-canto{border-bottom:1.5px solid var(--line)}
+.ag-dia-cab{display:grid;justify-items:center;padding:8px 4px;border-bottom:1.5px solid var(--line);border-left:1px solid var(--line)}
+.ag-dia-cab span{font-family:var(--f-label);font-weight:700;letter-spacing:.1em;text-transform:uppercase;font-size:12px;color:var(--muted)}
+.ag-dia-cab b{font-family:var(--f-display);font-stretch:112%;font-weight:900;font-size:22px;line-height:1.1}
+.ag-dia-cab.hoje b{background:var(--amarelo);border-radius:99px;padding:0 8px}
+.ag-horas{position:relative}
+.ag-horas span{position:absolute;right:6px;transform:translateY(-50%);font-size:11.5px;font-weight:600;color:var(--muted)}
+.ag-horas span:first-child{transform:none}
+.ag-col{position:relative;border-left:1px solid var(--line);background-image:linear-gradient(var(--line) 1px,transparent 1px);background-size:100% calc(100% / 18)}
+.ag-col.hoje{background-color:rgba(254,210,97,.1)}
+.ag-slot{position:absolute;left:0;right:0;display:block}
+.ag-slot:hover{background:rgba(56,66,55,.07)}
+.ag-slot:hover::after{content:"+";position:absolute;right:6px;top:2px;font-weight:700;opacity:.5}
+.ag-item{position:absolute;left:2px;width:calc(100% - 4px);border-radius:8px;padding:4px 6px;font-size:12px;line-height:1.2;text-decoration:none;overflow:hidden;display:flex;flex-direction:column;gap:1px;z-index:2;box-shadow:0 2px 6px -3px rgba(0,0,0,.35)}
+.ag-item:hover{filter:brightness(.95);z-index:3}
+.ag-item span{font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ag-item small{opacity:.8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ag-personal{background:#E8622C;color:#fff}
+.ag-assessoria{background:var(--verde);color:var(--creme)}
+.ag-treino{background:#3E6FB0;color:#fff}
+.ag-outro{background:#c9c7b3;color:var(--tinta)}
+.ag-evento{background:transparent;color:var(--verde);border:1.5px dashed var(--verde);box-shadow:none;z-index:1}
+.ponto.ag-evento{border:1.5px dashed var(--verde)}
