@@ -18,11 +18,14 @@ export default async function ConquistasPage() {
   // Provas concluídas (em ordem de data), para saber quando cada meta foi batida
   let feitas: { data: string; uf: string | null }[] = [];
   let ufCasa = "SC";
+  let diasPontos: string[] = [];
   if (liberado) {
-    const [{ data }, { data: eu }] = await Promise.all([
+    const [{ data }, { data: eu }, { data: pts }] = await Promise.all([
       supabase.from("prova_inscricoes").select("provas(data, uf)").eq("user_id", user.id).eq("status", "concluida"),
       supabase.from("perfis").select("uf_casa").eq("id", user.id).maybeSingle<{ uf_casa: string | null }>(),
+      supabase.from("pontos_diz_ai").select("dia").eq("user_id", user.id).order("dia"),
     ]);
+    diasPontos = (pts ?? []).map((p) => p.dia as string);
     feitas = ((data ?? []) as unknown as { provas: { data: string; uf: string | null } | null }[])
       .map((r) => r.provas).filter((p): p is { data: string; uf: string | null } => Boolean(p)).sort((a, b) => a.data.localeCompare(b.data));
     ufCasa = eu?.uf_casa ?? "SC";
@@ -32,6 +35,8 @@ export default async function ConquistasPage() {
   const progresso: Record<string, { feito: number; datas: string[] }> = {
     provas: { feito: feitas.length, datas: feitas.map((p) => p.data) },
     provas_fora: { feito: fora.length, datas: fora.map((p) => p.data) },
+    // cada dia com post = 10 pontos; datas[n-1] = dia em que chegou a n pontos
+    pontos_diz_ai: { feito: diasPontos.length * 10, datas: diasPontos.flatMap((d) => Array(10).fill(d)) },
   };
   const prog = (c: (typeof CONQUISTAS)[number]) => progresso[c.conta ?? c.categoria] ?? { feito: 0, datas: [] };
   const total = CONQUISTAS.filter((c) => prog(c).feito >= c.meta).length;

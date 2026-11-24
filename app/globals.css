@@ -708,3 +708,6 @@ footer.escuro{--bg:var(--verde-2)}
 .uf-prova{margin-top:4px;font-size:13.5px}
 .medalha-svg.bloqueada .medalha-fig{filter:grayscale(1)}
 .conq-card .medalha-svg{width:128px;height:auto}
+.pontos-diz-ai{margin-top:10px;font-size:15px}
+.pontos-diz-ai b{font-family:var(--f-display);font-stretch:125%;font-weight:900;font-size:22px}
+.pontos-diz-ai span{color:var(--muted)}

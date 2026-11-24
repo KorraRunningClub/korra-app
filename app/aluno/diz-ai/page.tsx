@@ -37,6 +37,21 @@ async function limparVencidos() {
   }
 }
 
+async function PontosDizAi() {
+  const sessao = await getSessao();
+  if (!sessao) return null;
+  const { data } = await sessao.supabase.from("pontos_diz_ai").select("dia").eq("user_id", sessao.user.id);
+  const pontos = (data?.length ?? 0) * 10;
+  const hoje = new Date().toLocaleDateString("en-CA", { timeZone: "America/Sao_Paulo" });
+  const jaHoje = (data ?? []).some((p) => p.dia === hoje);
+  return (
+    <p className="pontos-diz-ai">
+      <b>{Math.min(pontos, 500)}</b>/500 pontos para <a href="/aluno/conquistas">Influencer da turma</a>
+      <span>{jaHoje ? " · os 10 pontos de hoje já estão garantidos" : " · poste hoje e ganhe +10"}</span>
+    </p>
+  );
+}
+
 export default async function DizAiPage({ searchParams }: { searchParams: Promise<{ abrir?: string }> }) {
   const sessao = await getSessao();
   if (!sessao) redirect("/entrar?voltar=/aluno/diz-ai");
@@ -70,6 +85,7 @@ export default async function DizAiPage({ searchParams }: { searchParams: Promis
           <div className="eyebrow">Comunidade Korrá</div>
           <h1 style={{ marginTop: 14 }}>Diz aí, como foi?</h1>
           <p style={{ marginTop: 10 }}>Terminou o treino? Posta uma foto ou um vídeo curto. Tudo some em 24 horas.</p>
+          <PontosDizAi />
 
           {!liberado ? (
             <p className="msg" style={{ marginTop: 24 }}>A comunidade libera assim que sua matrícula estiver ativa.</p>
