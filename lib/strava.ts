@@ -115,7 +115,7 @@ export async function importarRecentes(admin: SupabaseClient, userId: string, di
   if (linhas.length) await admin.from("atividades").upsert(linhas);
   if (extras.length) {
     const { error } = await admin.from("treinos_extras").upsert(extras, { onConflict: "strava_id" });
-    if (error) console.error("strava extras", error);
+    if (error) throw new Error(`treinos extras: ${error.message}`);
   }
   return linhas.length;
 }
