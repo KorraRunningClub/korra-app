@@ -2,6 +2,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { getSessao } from "@/lib/supabase/server";
 import { hojeSP } from "@/lib/semana";
 import { DISTANCIAS, lerTempo, ufValida } from "@/lib/provas";
+import { TIPOS_EXTRA } from "@/lib/ciclo";
 
 const txt = (v: FormDataEntryValue | null, max: number) => String(v ?? "").trim().slice(0, max);
 
@@ -51,6 +52,20 @@ export async function POST(request: NextRequest) {
       return ir("?ok=inscrito");
     }
 
+    if (acao === "extra") {
+      const data = txt(form.get("data"), 10);
+      const tipo = txt(form.get("tipo"), 20);
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(data) || data > hojeSP()) return ir("?erro=data");
+      if (!(tipo in TIPOS_EXTRA)) return ir("?erro=salvar");
+      const { error } = await db.from("treinos_extras").insert({ user_id: user.id, data, tipo });
+      if (error) throw error;
+      return ir("?ok=extra");
+    }
+    if (acao === "apagar_extra") {
+      const { error } = await db.from("treinos_extras").delete().eq("id", txt(form.get("id"), 40)).eq("user_id", user.id);
+      if (error) throw error;
+      return ir("?ok=extra_apagado");
+    }
     if (acao === "uf_casa") {
       const uf = txt(form.get("uf"), 2).toUpperCase();
       if (!ufValida(uf) || uf === "EX") return ir("?erro=uf");

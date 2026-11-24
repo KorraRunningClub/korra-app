@@ -2,11 +2,13 @@ import { redirect } from "next/navigation";
 import { getSessao } from "@/lib/supabase/server";
 import { AppHeader } from "@/components/AppHeader";
 import { dataBR, hojeSP, pace } from "@/lib/semana";
+import { CicloProgresso } from "@/components/CicloProgresso";
+import { TIPOS_EXTRA, inicioPadrao } from "@/lib/ciclo";
 import { CATEGORIAS_PROVA, DISTANCIAS, UFS, diasAte, kmDaProva, nomeDistancia, nomeUF, tempoBR, type Prova } from "@/lib/provas";
 
 export const metadata = { title: "Provas · Korrá Running Club" };
 
-type Inscricao = { id: string; categoria: "alvo" | "secundaria"; status: string; tempo_oficial_s: number | null; provas: Prova };
+type Inscricao = { id: string; categoria: "alvo" | "secundaria"; status: string; tempo_oficial_s: number | null; ciclo_semanas: number | null; ciclo_inicio: string | null; ciclo_meta: number | null; ciclo_ajustes: Record<string, number> | null; provas: Prova };
 
 const OK: Record<string, string> = {
   inscrito: "Prova adicionada! Bons treinos.",
@@ -14,6 +16,8 @@ const OK: Record<string, string> = {
   tempo: "Tempo registrado. Parabéns pela prova!",
   nao_correu: "Anotado. Bora para a próxima.",
   removida: "Prova removida da sua lista.",
+  extra: "Treino extra marcado. Boa!",
+  extra_apagado: "Treino extra removido.",
   uf_casa: "Estado atualizado.",
   uf_prova: "Estado da prova salvo.",
 };
@@ -51,7 +55,7 @@ export default async function ProvasPage({ searchParams }: { searchParams: Promi
   const participantes = new Map<string, { nome: string; categoria: string }[]>();
   if (liberado) {
     const [{ data: insc }, { data: provas }, { data: parts }] = await Promise.all([
-      supabase.from("prova_inscricoes").select("id, categoria, status, tempo_oficial_s, provas(id, nome, data, distancia, distancia_km, cidade, link, uf, criado_por)")
+      supabase.from("prova_inscricoes").select("id, categoria, status, tempo_oficial_s, ciclo_semanas, ciclo_inicio, ciclo_meta, ciclo_ajustes, provas(id, nome, data, distancia, distancia_km, cidade, link, uf, criado_por)")
         .eq("user_id", user.id),
       supabase.from("provas").select("id, nome, data, distancia, distancia_km, cidade, link, uf, criado_por").gte("data", hoje).order("data"),
       supabase.rpc("provas_participantes"),
@@ -71,6 +75,19 @@ export default async function ProvasPage({ searchParams }: { searchParams: Promi
   const aLancar = minhas.filter((i) => i.provas.data < hoje && i.status === "inscrito");
   const historico = minhas.filter((i) => i.status !== "inscrito").reverse();
   const jaTenho = new Set(minhas.map((i) => i.provas.id));
+  // treinos feitos (corridas + extras) para os ciclos
+  const comCiclo = alvos.filter((i) => i.ciclo_semanas && i.ciclo_meta);
+  let treinos: string[] = [];
+  let extras: { id: string; data: string; tipo: keyof typeof TIPOS_EXTRA }[] = [];
+  if (comCiclo.length) {
+    const desde = comCiclo.map((i) => i.ciclo_inicio ?? inicioPadrao(i.provas.data, i.ciclo_semanas!)).sort()[0];
+    const [{ data: atv }, { data: ex }] = await Promise.all([
+      supabase.from("atividades").select("inicio_local").eq("user_id", user.id).gte("inicio_local", `${desde}T00:00:00`),
+      supabase.from("treinos_extras").select("id, data, tipo").eq("user_id", user.id).gte("data", desde).order("data", { ascending: false }),
+    ]);
+    extras = (ex ?? []) as typeof extras;
+    treinos = [...(atv ?? []).map((a) => String(a.inicio_local).slice(0, 10)), ...extras.map((e) => e.data)];
+  }
   const disponiveis = lista.filter((p) => !jaTenho.has(p.id));
 
   const outros = (p: Prova) => (participantes.get(p.id) ?? []).filter((x) => x.nome !== perfil?.nome);
@@ -180,7 +197,38 @@ export default async function ProvasPage({ searchParams }: { searchParams: Promi
                         <h3>{i.provas.nome}</h3>
                         {info(i.provas)}
                         {quemVai(i.provas) && <p className="quem-vai">{quemVai(i.provas)}</p>}
-                        <p className="ciclo-aviso">Seu ciclo de treino para esta prova aparece aqui assim que o treinador configurar.</p>
+                        {i.ciclo_semanas && i.ciclo_meta ? (
+                          <>
+                            <CicloProgresso hoje={hoje} treinos={treinos}
+                              config={{ semanas: i.ciclo_semanas, inicio: i.ciclo_inicio, meta: i.ciclo_meta, ajustes: i.ciclo_ajustes, dataProva: i.provas.data }} />
+                            <details>
+                              <summary>Fez um treino que não é corrida? Marque aqui</summary>
+                              <form action="/aluno/provas/acao" method="post" className="extra-form">
+                                <input type="hidden" name="acao" value="extra" />
+                                <input type="date" name="data" defaultValue={hoje} max={hoje} aria-label="Data" />
+                                <select name="tipo" defaultValue="forca" aria-label="Tipo">
+                                  {Object.entries(TIPOS_EXTRA).map(([k, n]) => <option key={k} value={k}>{n}</option>)}
+                                </select>
+                                <button className="btn btn-primary" type="submit">Marcar treino extra</button>
+                              </form>
+                              {extras.length > 0 && (
+                                <ul className="extras-lista">
+                                  {extras.slice(0, 6).map((e) => (
+                                    <li key={e.id}>
+                                      {e.data.split("-").reverse().slice(0, 2).join("/")} · {TIPOS_EXTRA[e.tipo] ?? e.tipo}
+                                      <form action="/aluno/provas/acao" method="post">
+                                        <input type="hidden" name="acao" value="apagar_extra" /><input type="hidden" name="id" value={e.id} />
+                                        <button className="btn-link" type="submit">desfazer</button>
+                                      </form>
+                                    </li>
+                                  ))}
+                                </ul>
+                              )}
+                            </details>
+                          </>
+                        ) : (
+                          <p className="ciclo-aviso">Seu ciclo de treino para esta prova aparece aqui assim que o treinador configurar.</p>
+                        )}
                         {acoes(i)}
                       </div>
                     ))}
