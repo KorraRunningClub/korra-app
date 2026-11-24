@@ -1,6 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { getSessao } from "@/lib/supabase/server";
 import { CATEGORIAS, lerValor } from "@/lib/despesas";
+import { createAdmin } from "@/lib/supabase/admin";
 
 // Lançar ou apagar uma despesa (formulário simples do painel do treinador).
 export async function POST(request: NextRequest) {
@@ -15,7 +16,9 @@ export async function POST(request: NextRequest) {
 
   if (acao === "apagar") {
     const id = String(form.get("id") ?? "");
+    const { data: d } = await sessao.supabase.from("despesas").select("comprovante").eq("id", id).single();
     const { error } = await sessao.supabase.from("despesas").delete().eq("id", id);
+    if (!error && d?.comprovante) await createAdmin().storage.from("comprovantes").remove([d.comprovante]).catch(() => {});
     if (error) {
       console.error("apagar despesa falhou", error);
       return voltar("?erro=despesa");

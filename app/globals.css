@@ -818,3 +818,6 @@ footer.escuro{--bg:var(--verde-2)}
 .complementar-box{margin-top:18px;padding:16px 18px;border-radius:12px;border:1.5px dashed var(--verde-3);display:grid;gap:10px}
 .extra-form.claro select,.extra-form.claro input{border-color:var(--line);background:var(--bg);color:var(--fg)}
 .icone-horario.halter{color:#7B57A6}
+.despesa-acoes{display:flex;gap:14px;align-items:center;white-space:nowrap}
+.comp-link{font-weight:700;color:var(--verde)}
+.anexar{display:inline-flex;gap:6px;align-items:center}

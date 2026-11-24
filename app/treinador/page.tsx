@@ -3,6 +3,8 @@ import { getSessao } from "@/lib/supabase/server";
 import { AppHeader } from "@/components/AppHeader";
 import { formatarTelefone, idade } from "@/lib/cadastro";
 import { CATEGORIAS, brl, type Categoria } from "@/lib/despesas";
+import { createAdmin } from "@/lib/supabase/admin";
+import { AnexarComprovante } from "./AnexarComprovante";
 
 export const metadata = { title: "Painel do treinador · Korrá Running Club" };
 
@@ -49,10 +51,17 @@ export default async function TreinadorPage({
   const nomeMes = new Date(`${desde}T12:00:00`).toLocaleDateString("pt-BR", { month: "long", year: "numeric" });
   const { data: despesas } = await supabase
     .from("despesas")
-    .select("id, data, categoria, descricao, valor")
+    .select("id, data, categoria, descricao, valor, comprovante")
     .gte("data", desde)
     .order("data", { ascending: false })
     .order("criado_em", { ascending: false });
+  // links temporários (1 h) para ver os comprovantes
+  const comComp = (despesas ?? []).filter((d) => d.comprovante);
+  const linkComp = new Map<string, string>();
+  if (comComp.length) {
+    const { data: urls } = await createAdmin().storage.from("comprovantes").createSignedUrls(comComp.map((d) => d.comprovante as string), 3600).catch(() => ({ data: null }));
+    (urls ?? []).forEach((u, i) => u.signedUrl && linkComp.set(comComp[i].id, u.signedUrl));
+  }
   const porCategoria = new Map<string, number>();
   for (const d of despesas ?? []) porCategoria.set(d.categoria, (porCategoria.get(d.categoria) ?? 0) + Number(d.valor));
   const fmtData = (d: string) => d.split("-").reverse().join("/");
@@ -216,7 +225,9 @@ export default async function TreinadorPage({
                         <td>{CATEGORIAS[d.categoria as Categoria] ?? d.categoria}</td>
                         <td>{d.descricao ?? "—"}</td>
                         <td style={{ textAlign: "right", fontVariantNumeric: "tabular-nums" }}>{brl(Number(d.valor))}</td>
-                        <td>
+                        <td className="despesa-acoes">
+                          {linkComp.get(d.id) && <a className="comp-link" href={linkComp.get(d.id)} target="_blank" rel="noopener noreferrer">Ver comprovante</a>}
+                          <AnexarComprovante despesaId={d.id} temComprovante={Boolean(d.comprovante)} />
                           <form action="/treinador/despesas" method="post">
                             <input type="hidden" name="acao" value="apagar" />
                             <input type="hidden" name="id" value={d.id} />
