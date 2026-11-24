@@ -6,8 +6,6 @@ import { dataBR, mes, pace, semana } from "@/lib/semana";
 import { AbasRanking, type Board } from "./Abas";
 import { IconeHorario } from "@/components/IconeHorario";
 import { TipoTreino } from "./TipoTreino";
-import { TIPOS_EXTRA } from "@/lib/ciclo";
-import { hojeSP } from "@/lib/semana";
 import { META_CORRIDAS, META_KM, semestre, sequencias } from "@/lib/semestral";
 
 export const metadata = { title: "Ranking · Korrá Running Club" };
@@ -64,12 +62,7 @@ export default async function RankingPage({
       .gte("inicio_local", hoje.inicio).lt("inicio_local", hoje.fim).gte("distancia_m", META_KM * 1000),
   ]);
 
-  const [compl, { data: meusExtras }] = await Promise.all([
-    supabase.rpc("ranking_complementar", { p_inicio: s.segunda, p_fim: s.fim.slice(0, 10) }),
-    supabase.from("treinos_extras").select("id, data, tipo").eq("user_id", user.id).in("tipo", ["forca", "mobilidade", "outro"])
-      .gte("data", s.segunda).lte("data", s.domingo).order("data", { ascending: false }),
-  ]);
-  const hojeISO = hojeSP();
+  const compl = await supabase.rpc("ranking_complementar", { p_inicio: s.segunda, p_fim: s.fim.slice(0, 10) });
   const idsMinhas = (minhas ?? []).map((a) => a.id);
   const { data: marcRaw } = idsMinhas.length
     ? await supabase.from("treino_marcacoes").select("atividade_id, tipo, companhia").in("atividade_id", idsMinhas)
@@ -98,7 +91,7 @@ export default async function RankingPage({
       chave: "forca",
       aba: "Força / compl.",
       titulo: "Treino de força ou complementar da semana",
-      regra: "Quantos dias da semana você fez força, mobilidade ou outro treino complementar (do Strava ou marcados aqui). Vale 1 por dia.",
+      regra: "Quantos dias da semana você fez musculação, crossfit, HIIT, yoga ou pilates registrados no Strava. Vale 1 por dia.",
       linhas: ((compl.data ?? []) as { user_id: string; nome: string | null; valor: number }[])
         .map((l) => ({ id: l.user_id, nome: nomeCurto(l.nome), valor: `${l.valor} dia${Number(l.valor) === 1 ? "" : "s"}`, eu: l.user_id === user.id })),
     },
@@ -165,33 +158,9 @@ export default async function RankingPage({
 
               <AbasRanking boards={boards} />
 
-              <div id="complementar" className="complementar-box">
-                <div>
-                  <b>Fez força ou um treino complementar?</b>
-                  <span className="regra"> Treinos de musculação, crossfit, yoga e pilates salvos no Strava entram sozinhos. Se não usou o Strava, marque aqui{(meusExtras ?? []).length ? ` · nesta semana: ${new Set((meusExtras ?? []).map((e) => e.data)).size} dia(s)` : ""}</span>
-                </div>
-                {q.extra === "ok" && <p className="msg" style={{ margin: 0 }}>Treino marcado. Boa!</p>}
-                <form action="/aluno/treino-extra" method="post" className="extra-form claro">
-                  <input type="date" name="data" defaultValue={hojeISO} max={hojeISO} aria-label="Data" />
-                  <select name="tipo" defaultValue="forca" aria-label="Tipo">
-                    {Object.entries(TIPOS_EXTRA).filter(([k]) => k !== "corrida").map(([k, n]) => <option key={k} value={k}>{n}</option>)}
-                  </select>
-                  <button className="btn btn-primary" type="submit">Marcar treino</button>
-                </form>
-                {(meusExtras ?? []).length > 0 && (
-                  <ul className="extras-lista">
-                    {(meusExtras ?? []).map((e) => (
-                      <li key={e.id}>
-                        {dataBR(e.data)} · {TIPOS_EXTRA[e.tipo as keyof typeof TIPOS_EXTRA] ?? e.tipo}
-                        <form action="/aluno/treino-extra" method="post">
-                          <input type="hidden" name="acao" value="apagar" /><input type="hidden" name="id" value={e.id} />
-                          <button className="btn-link" type="submit">desfazer</button>
-                        </form>
-                      </li>
-                    ))}
-                  </ul>
-                )}
-              </div>
+              <p id="complementar" className="regra" style={{ marginTop: 10 }}>
+                Força / compl.: entram sozinhos os treinos de musculação, crossfit, HIIT, yoga e pilates salvos no Strava (1 por dia).
+              </p>
               <p className="regra" style={{ marginTop: 14 }}>Valem corridas de rua, trilha e esteira. Caminhadas não contam. Os 3 primeiros de cada quadro levam medalha.</p>
 
               <h2 style={{ marginTop: 48, fontSize: "clamp(24px,3vw,32px)" }}>Minhas últimas corridas</h2>
