@@ -67,7 +67,7 @@ export default async function ConquistasPage() {
                       const pct = Math.min(100, Math.round((p.feito / c.meta) * 100));
                       return (
                         <div key={c.id} className={`conq-card${ok ? " ok" : ""}`}>
-                          <Medalha nivel={c.nivel} numero={c.meta} liberada={ok} simbolo={c.simbolo} />
+                          <Medalha nivel={c.nivel} numero={c.meta} liberada={ok} simbolo={c.simbolo} figura={c.figura} />
                           <span className="conq-nivel">{CORES_NIVEL[c.nivel].nome}</span>
                           <h3>{c.nome}</h3>
                           <p className="conq-regra">{c.regra ?? `${c.meta} ${c.unidade} concluídas`}</p>

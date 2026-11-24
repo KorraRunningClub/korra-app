@@ -706,3 +706,5 @@ footer.escuro{--bg:var(--verde-2)}
 .uf-casa,.uf-prova{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:10px;font-size:14.5px}
 .uf-casa select,.uf-prova select{font:inherit;padding:4px 8px;border-radius:6px;border:1.5px solid var(--line);background:var(--bg);color:var(--fg);margin-left:6px}
 .uf-prova{margin-top:4px;font-size:13.5px}
+.medalha-svg.bloqueada .medalha-fig{filter:grayscale(1)}
+.conq-card .medalha-svg{width:128px;height:auto}
