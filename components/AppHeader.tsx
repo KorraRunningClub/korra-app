@@ -14,7 +14,6 @@ export function AppHeader({ nome, treinador }: { nome?: string | null; treinador
             <Link className="sub-rotulo" href="/aluno" aria-haspopup="true">Minha área ▾</Link>
             <ul className="submenu">
               <li><Link href="/aluno"><b>Minha área</b><span>Seus dados e atalhos</span></Link></li>
-              <li><Link href="/aluno/zonas"><b><i className="so-pc">Minhas </i>Zonas</b><span>Seus paces de treino, pelo último teste</span></Link></li>
               {treinador && <li><Link href="/treinador/agenda"><b><i className="so-pc">Minha </i>Agenda</b><span>Horários e financeiro do personal (só você vê)</span></Link></li>}
               {treinador && <li><Link href="/treinador/mensagens"><b>Mensagens</b><span>Avisos de planos vencendo</span></Link></li>}
             </ul>

@@ -36,7 +36,7 @@ export default async function ZonasTreinador({ searchParams }: { searchParams: P
           <h1 style={{ marginTop: 14 }}>Zonas de treino</h1>
           <p style={{ marginTop: 12, maxWidth: 760 }}>
             Escolha o teste que o aluno fez e coloque o <b>tempo total</b> ou o <b>pace médio</b>. As zonas são geradas na hora com o
-            modelo da Korrá e aparecem para o aluno em <b>Minha área → Minhas zonas</b>.
+            modelo da Korrá e aparecem para o aluno na <b>Minha área</b> dele.
           </p>
           <details className="gerenciar" style={{ marginTop: 14 }}>
             <summary>Ver os modelos (% da velocidade do teste)</summary>

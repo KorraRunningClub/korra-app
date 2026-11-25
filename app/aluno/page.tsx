@@ -1,6 +1,8 @@
 import { redirect } from "next/navigation";
 import { getSessao } from "@/lib/supabase/server";
 import { AppHeader } from "@/components/AppHeader";
+import { TabelaZonas } from "@/components/TabelaZonas";
+import { TESTES, type Teste } from "@/lib/zonas";
 
 export const metadata = { title: "Minha área · Korrá Running Club" };
 
@@ -34,6 +36,8 @@ export default async function AlunoPage({
   const valor = extra?.valor_mensal === null || extra?.valor_mensal === undefined ? 165 : Number(extra.valor_mensal);
   if (perfil?.papel !== "treinador" && !extra?.cadastro_completo) redirect("/aluno/cadastro");
   const status = STATUS[perfil?.status ?? "pendente"];
+  const { data: ultTeste } = await supabase.from("testes_zonas").select("teste, data, tempo_s").eq("user_id", user.id)
+    .order("data", { ascending: false }).order("criado_em", { ascending: false }).limit(1).maybeSingle<{ teste: Teste; data: string; tempo_s: number }>();
   const primeiroNome = perfil?.nome?.split(" ")[0];
 
   return (
@@ -67,11 +71,6 @@ export default async function AlunoPage({
               <a className="link-mapa" href="/aluno/cadastro">Editar cadastro →</a>
             </div>
             <div className="tile">
-              <span className="k">Minhas zonas de treino</span>
-              <span>Seus paces por zona, calculados no último teste.</span>
-              <a className="link-mapa" href="/aluno/zonas">Ver minhas zonas →</a>
-            </div>
-            <div className="tile">
               <span className="k">Desafios</span>
               <span>Corrida mais longa, mais rápida e maior quilometragem da semana.</span>
               <a className="link-mapa" href="/aluno/ranking">Ver ranking →</a>
@@ -91,6 +90,18 @@ export default async function AlunoPage({
               <span>Pagamento pelo app.</span>
             </div>
           </div>
+
+          <section id="zonas" style={{ marginTop: 48 }}>
+            <h2 className="sub-provas">Minhas zonas de treino</h2>
+            {ultTeste ? (
+              <>
+                <p className="regra" style={{ marginTop: 6 }}>Pelo seu {TESTES[ultTeste.teste].nome} em {ultTeste.data.split("-").reverse().join("/")}. Pace mais lento à esquerda, mais rápido à direita.</p>
+                <div className="zonas-destaque"><TabelaZonas teste={ultTeste.teste} tempoS={ultTeste.tempo_s} /></div>
+              </>
+            ) : (
+              <p className="regra" style={{ marginTop: 6 }}>Suas zonas aparecem aqui depois do seu primeiro teste (1600 m, 3000 m ou 5 km).</p>
+            )}
+          </section>
         </div>
       </main>
     </>
