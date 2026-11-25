@@ -841,3 +841,5 @@ footer.escuro{--bg:var(--verde-2)}
 .melhorou{color:#2f7a2b;font-weight:700}
 .piorou{color:#8d2a17;font-weight:700}
 .linha-teste{background:rgba(254,210,97,.18)}
+.tipo-treino button.teste.ativo{background:#3E6FB0;border-color:#3E6FB0;color:#fff}
+.pill.teste-aluno{background:#3E6FB0;color:#fff}

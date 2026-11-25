@@ -1,6 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { getSessao } from "@/lib/supabase/server";
 import { ehCompanhia, ehTipoTreino } from "@/lib/treinos";
+import { createAdmin } from "@/lib/supabase/admin";
 
 // Marca (ou desmarca) o tipo do treino ou com quem o aluno correu.
 export async function POST(request: NextRequest) {
@@ -28,6 +29,29 @@ export async function POST(request: NextRequest) {
   if (error) {
     console.error("treino marcacao", error);
     return NextResponse.json({ erro: "salvar" }, { status: 500 });
+  }
+  // marcou "Teste": avisa o treinador em Mensagens
+  if (campo === "tipo" && valor === "teste") {
+    try {
+      const admin = createAdmin();
+      const [{ data: treinadores }, { data: eu }] = await Promise.all([
+        admin.from("perfis").select("id").eq("papel", "treinador"),
+        admin.from("perfis").select("nome").eq("id", user.id).single(),
+      ]);
+      const dia = String(atv.inicio_local).slice(0, 10).split("-").reverse().join("/");
+      if (treinadores?.length) await admin.from("notificacoes").upsert(
+        treinadores.map((t) => ({
+          dono: t.id,
+          chave: `teste:${id}`,
+          titulo: `${eu?.nome ?? "Um aluno"} marcou um teste`,
+          texto: `Corrida de ${dia}. Confira e registre o teste para gerar as zonas.`,
+          link: `/treinador/aluno/${user.id}?aba=atividades&teste_de=${id}#marcar`,
+        })),
+        { onConflict: "dono,chave", ignoreDuplicates: true },
+      );
+    } catch (e) {
+      console.error("aviso teste", e);
+    }
   }
   // nada marcado: apaga a linha
   if (!linha.tipo && !linha.companhia) await supabase.from("treino_marcacoes").delete().eq("atividade_id", id).eq("user_id", user.id);

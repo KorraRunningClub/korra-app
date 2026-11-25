@@ -39,7 +39,7 @@ function Linha({ atividadeId, campo, opcoes, inicial, rotulo }: { atividadeId: n
           key={t.id}
           type="button"
           aria-pressed={valor === t.id}
-          className={[valor === t.id ? "ativo" : "", t.id === "prova" ? "prova" : ""].filter(Boolean).join(" ") || undefined}
+          className={[valor === t.id ? "ativo" : "", t.id === "prova" ? "prova" : t.id === "teste" ? "teste" : ""].filter(Boolean).join(" ") || undefined}
           onClick={() => marcar(t.id)}
         >
           {t.nome}

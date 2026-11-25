@@ -72,11 +72,13 @@ export default async function AtletaPage({ params, searchParams }: { params: Pro
   const hoje = hojeSP();
   const base = `/treinador/aluno/${id}`;
 
-  const [{ data: aluno }, { data: tz }, { data: atv }] = await Promise.all([
+  const [{ data: aluno }, { data: tz }, { data: atv }, { data: marcadas }] = await Promise.all([
     supabase.from("perfis").select("id, nome, email, status, objetivo").eq("id", id).maybeSingle(),
     supabase.from("testes_zonas").select("id, teste, data, tempo_s, obs, atividade_id").eq("user_id", id).order("data", { ascending: false }).order("criado_em", { ascending: false }),
     supabase.from("atividades").select("id, inicio_local, nome, distancia_m, tempo_mov_s, tempo_total_s").eq("user_id", id).order("inicio_local", { ascending: false }).limit(30),
+    supabase.from("treino_marcacoes").select("atividade_id").eq("user_id", id).eq("tipo", "teste"),
   ]);
+  const alunoMarcou = new Set((marcadas ?? []).map((m) => Number(m.atividade_id)));
   if (!aluno) notFound();
   const testes = (tz ?? []) as T[];
   const atividades = (atv ?? []) as A[];
@@ -230,7 +232,11 @@ export default async function AtletaPage({ params, searchParams }: { params: Pro
                         return (
                           <tr key={a.id} className={t ? "linha-teste" : undefined}>
                             <td>{dbr(a.inicio_local)} {a.inicio_local.slice(11, 16)}</td>
-                            <td>{a.nome ?? "Corrida"}{sug && !t && <span className="pill" style={{ marginLeft: 8 }}>parece {TESTES[sug].curto}</span>}</td>
+                            <td>
+                              {a.nome ?? "Corrida"}
+                              {alunoMarcou.has(Number(a.id)) && !t && <span className="pill teste-aluno" style={{ marginLeft: 8 }}>aluno marcou como teste</span>}
+                              {sug && !t && <span className="pill" style={{ marginLeft: 8 }}>parece {TESTES[sug].curto}</span>}
+                            </td>
                             <td>{(Number(a.distancia_m) / 1000).toLocaleString("pt-BR", { maximumFractionDigits: 2 })} km</td>
                             <td>{mmss(a.tempo_mov_s)}</td>
                             <td>{pace(a.tempo_mov_s / (Number(a.distancia_m) / 1000))}</td>
