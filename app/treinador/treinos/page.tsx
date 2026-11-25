@@ -4,7 +4,7 @@ import { getSessao } from "@/lib/supabase/server";
 import { AppHeader } from "@/components/AppHeader";
 import { FormTreino } from "./FormTreino";
 import {
-  FASES_TREINO, NIVEIS, SUBTIPOS, TIPOS, descansoTxt, qtd, seriesTxt, tempoNoPace, tempoTxt, totalSerie, zonaNome,
+  FASES_TREINO, NIVEIS, SUBTIPOS, TIPOS, descansoTxt, qtd, seriesDo, seriesTxt, tempoNoPace, tempoTxt, totalSerie, zonaNome,
   type Bloco, type FaseTreino, type TreinoModelo,
 } from "@/lib/biblioteca";
 import { calcularZonas, mmss, type Teste } from "@/lib/zonas";
@@ -115,15 +115,16 @@ export default async function Biblioteca({ searchParams }: { searchParams: Promi
                           {e.aquecimento && <li><span className="bib-rot">Aquecimento</span> {linhaBloco(e.aquecimento)}</li>}
                           {e.strides && <li><span className="bib-rot">Strides</span> {linhaBloco(e.strides)}</li>}
                           {e.strides && e.descanso_strides_s ? <li><span className="bib-rot">Descanso</span> {tempoTxt(e.descanso_strides_s)}</li> : null}
-                          {e.serie && (
-                            <li className="bib-serie"><span className="bib-rot">Série principal</span> {linhaBloco(e.serie, `${seriesTxt(e.serie)} × `)}
-                              {e.descanso_s ? <><br /><span className="regra">Descanso entre as séries: {descansoTxt(e.descanso_s, e.descanso_max_s)}</span></> : null}
+                          {seriesDo(e).map((sr, i, arr) => (
+                            <li key={i} className="bib-serie"><span className="bib-rot">Série principal{arr.length > 1 ? ` ${i + 1}` : ""}</span> {linhaBloco(sr, `${seriesTxt(sr)} × `)}
+                              {sr.descanso_s ? <><br /><span className="regra">Descanso entre as repetições: {descansoTxt(sr.descanso_s, sr.descanso_max_s)}</span></> : null}
+                              {sr.descanso_depois_s ? <><br /><span className="regra">Depois: {tempoTxt(sr.descanso_depois_s)} de descanso antes da próxima série</span></> : null}
+                              <br /><span className="regra">Total: {totalSerie(sr)}</span>
                             </li>
-                          )}
+                          ))}
                           {e.volta_calma && <li><span className="bib-rot">Volta à calma</span> {linhaBloco(e.volta_calma)}</li>}
                         </ol>
                       )}
-                      {e.serie && <p className="bib-total">Total na série principal: <b>{totalSerie(e)}</b></p>}
                       {t.obs && <p className="regra">{t.obs}</p>}
                       <div className="ev-admin">
                         <Link className="btn-link" href={`${base}&editar=${t.id}`}>Editar</Link>

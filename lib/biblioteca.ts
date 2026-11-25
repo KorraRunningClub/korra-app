@@ -28,11 +28,13 @@ export type Estrutura = {
   aquecimento?: Bloco;
   strides?: Bloco | null;
   descanso_strides_s?: number | null;
-  serie?: Bloco & { series: number; series_max?: number | null };
+  serie?: Bloco & { series: number; series_max?: number | null }; // formato antigo (1 série)
+  series?: Serie[]; // várias séries principais
   descanso_s?: number | null;
   descanso_max_s?: number | null;
   volta_calma?: Bloco;
 };
+export type Serie = Bloco & { series: number; series_max?: number | null; descanso_s?: number | null; descanso_max_s?: number | null; descanso_depois_s?: number | null };
 export type TreinoModelo = {
   id: string; fase: FaseTreino; nivel: Nivel; nome: string; tipo: TipoTreino; subtipo: Subtipo | null;
   estrutura: Estrutura; obs: string | null; ordem: number;
@@ -45,9 +47,14 @@ export const tempoTxt = (s: number) => (s < 60 ? `${s} s` : s % 60 === 0 ? `${s 
 export const descansoTxt = (a?: number | null, b?: number | null) => (!a ? "" : b && b !== a ? `${tempoTxt(a)} a ${tempoTxt(b)}` : tempoTxt(a));
 export const seriesTxt = (s: { series: number; series_max?: number | null }) => (s.series_max && s.series_max !== s.series ? `${s.series} a ${s.series_max}` : `${s.series}`);
 
-/** Total da série principal: "28 min" / "40 a 48 min" / "4 km" */
-export function totalSerie(e: Estrutura) {
-  const s = e.serie;
+/** Séries principais do treino (aceita o formato antigo de 1 série). */
+export function seriesDo(e: Estrutura): Serie[] {
+  if (e.series?.length) return e.series;
+  return e.serie ? [{ ...e.serie, descanso_s: e.descanso_s, descanso_max_s: e.descanso_max_s }] : [];
+}
+
+/** Total de uma série: "28 min" / "40 a 48 min" / "4 km" */
+export function totalSerie(s?: Serie | null) {
   if (!s) return "";
   const a = s.series * s.valor, b = (s.series_max ?? s.series) * s.valor;
   const fmt = (x: number) =>

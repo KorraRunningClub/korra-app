@@ -883,3 +883,5 @@ footer.escuro{--bg:var(--verde-2)}
 .pasta.sub .pasta-corpo{padding:0 14px 14px}
 .pasta.sub .pasta-conta{background:var(--bg)}
 .pasta-novo{font-weight:700;justify-self:start}
+.serie-bloco{background:rgba(254,210,97,.12)}
+.add-serie{justify-self:start}

@@ -1,6 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { getSessao } from "@/lib/supabase/server";
-import { FASES_TREINO, NIVEIS, SUBTIPOS, TIPOS, UNIDADES, type Bloco, type Estrutura } from "@/lib/biblioteca";
+import { FASES_TREINO, NIVEIS, SUBTIPOS, TIPOS, UNIDADES, type Bloco, type Estrutura, type Serie } from "@/lib/biblioteca";
 
 const txt = (v: FormDataEntryValue | null, max: number) => String(v ?? "").trim().slice(0, max);
 const numero = (v: string) => { const x = Number(v.replace(",", ".")); return Number.isFinite(x) && x > 0 ? x : null; };
@@ -47,20 +47,28 @@ export async function POST(request: NextRequest) {
       subtipo = txt(form.get("subtipo"), 30);
       if (!(subtipo in SUBTIPOS)) return ir("&erro=dados");
       const aq = bloco("aquecimento"), st = bloco("strides", false), vc = bloco("volta_calma");
-      const series = parseInt(txt(form.get("series"), 3), 10);
-      const seriesMaxT = txt(form.get("series_max"), 3);
-      const seriesMax = seriesMaxT ? parseInt(seriesMaxT, 10) : null;
-      const sv = numero(txt(form.get("serie_valor"), 10));
-      const su = txt(form.get("serie_unidade"), 4);
-      const sz = parseInt(txt(form.get("serie_zona"), 2), 10);
-      if (aq === "erro" || st === "erro" || vc === "erro" || !aq || !vc || !(series >= 1) || (seriesMax !== null && !(seriesMax >= series)) ||
-        sv === null || !(su in UNIDADES) || !(sz >= 1 && sz <= 6)) return ir("&erro=dados");
-      const [d1, d2] = txt(form.get("descanso"), 30).split(/\s*(?:a|-|até)\s*/);
+      const n = Math.min(10, Math.max(1, parseInt(txt(form.get("n_series"), 2), 10) || 1));
+      const series: Serie[] = [];
+      for (let i = 0; i < n; i++) {
+        const reps = parseInt(txt(form.get(`s${i}_series`), 3), 10);
+        const maxT = txt(form.get(`s${i}_series_max`), 3);
+        const repsMax = maxT ? parseInt(maxT, 10) : null;
+        const valor = numero(txt(form.get(`s${i}_valor`), 10));
+        const unidade = txt(form.get(`s${i}_unidade`), 4);
+        const zona = parseInt(txt(form.get(`s${i}_zona`), 2), 10);
+        if (!(reps >= 1) || (repsMax !== null && !(repsMax >= reps)) || valor === null || !(unidade in UNIDADES) || !(zona >= 1 && zona <= 6)) return ir("&erro=dados");
+        const [d1, d2] = txt(form.get(`s${i}_descanso`), 30).split(/\s*(?:a|-|até)\s*/);
+        series.push({
+          series: reps, series_max: repsMax, valor, unidade: unidade as Bloco["unidade"], zona,
+          descanso_s: segundos(d1 ?? ""), descanso_max_s: d2 ? segundos(d2) : null,
+          descanso_depois_s: i < n - 1 ? segundos(txt(form.get(`s${i}_descanso_depois`), 20)) : null,
+        });
+      }
+      if (aq === "erro" || st === "erro" || vc === "erro" || !aq || !vc) return ir("&erro=dados");
       estrutura = {
         aquecimento: aq, strides: st,
         descanso_strides_s: segundos(txt(form.get("descanso_strides"), 20)),
-        serie: { series, series_max: seriesMax, valor: sv, unidade: su as Bloco["unidade"], zona: sz },
-        descanso_s: segundos(d1 ?? ""), descanso_max_s: d2 ? segundos(d2) : null,
+        series,
         volta_calma: vc,
       };
     } else {
