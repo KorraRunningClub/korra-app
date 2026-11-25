@@ -4,7 +4,7 @@ import { getSessao } from "@/lib/supabase/server";
 import { AppHeader } from "@/components/AppHeader";
 import { TabelaZonas } from "@/components/TabelaZonas";
 import { hojeSP, pace } from "@/lib/semana";
-import { TESTES, mmss, type Teste } from "@/lib/zonas";
+import { TESTES, calcularZonas, mmss, velocidadeCritica, vdot, type Teste } from "@/lib/zonas";
 
 export const metadata = { title: "Atleta · Korrá Running Club" };
 
@@ -12,7 +12,7 @@ type T = { id: string; teste: Teste; data: string; tempo_s: number; obs: string 
 type A = { id: number; inicio_local: string; nome: string | null; distancia_m: number; tempo_mov_s: number; tempo_total_s: number };
 const OK: Record<string, string> = { salvo: "Teste salvo. As zonas e o progresso foram atualizados.", apagado: "Teste apagado." };
 const ERRO: Record<string, string> = { dados: "Confira o teste, a data e o tempo (ex.: 6:12 ou 1:05:30).", tabela: "Falta rodar o SQL no Supabase.", salvar: "Não conseguimos salvar. Tente de novo." };
-const CORES: Record<Teste, string> = { t1600: "#E8622C", t3000: "#3E6FB0", t5000: "#4E8A4A" };
+const CORES: Record<Teste, string> = { t1600: "#E8622C", t2400: "#7B57A6", t3000: "#3E6FB0", t5000: "#4E8A4A" };
 const dbr = (d: string) => d.slice(0, 10).split("-").reverse().join("/");
 
 /** Teste provável pela distância da atividade (±12%). */
@@ -118,6 +118,18 @@ export default async function AtletaPage({ params, searchParams }: { params: Pro
     );
   };
 
+  // velocidade crítica: teste mais recente + outro de distância diferente feito até 30 dias antes/depois
+  let vc: { vc: number; pace: number; dLinha: number; a: T; b: T } | null = null;
+  if (atual) {
+    const par = testes.find((t) => TESTES[t.teste].metros !== TESTES[atual.teste].metros &&
+      Math.abs(Date.parse(t.data) - Date.parse(atual.data)) <= 30 * 86400000);
+    if (par) {
+      const r = velocidadeCritica({ metros: TESTES[atual.teste].metros, tempoS: atual.tempo_s }, { metros: TESTES[par.teste].metros, tempoS: par.tempo_s });
+      if (r) vc = { ...r, a: atual, b: par };
+    }
+  }
+  const z4 = atual ? calcularZonas(atual.teste, atual.tempo_s).zonas[3] : null;
+
   // progresso: comparações por tipo de teste
   const porTipo = (Object.keys(TESTES) as Teste[]).map((k) => {
     const lista = testes.filter((t) => t.teste === k).sort((a, b) => a.data.localeCompare(b.data));
@@ -145,7 +157,28 @@ export default async function AtletaPage({ params, searchParams }: { params: Pro
           {aba === "zonas" && (
             <section style={{ marginTop: 24 }}>
               {atual ? (
-                <div className="zonas-destaque"><TabelaZonas teste={atual.teste} tempoS={atual.tempo_s} /></div>
+                <>
+                  <div className="zonas-destaque"><TabelaZonas teste={atual.teste} tempoS={atual.tempo_s} /></div>
+                  <div className="vc-caixa">
+                    <b>Velocidade crítica</b>
+                    {vc && z4 ? (
+                      <>
+                        <p>
+                          <span className="zona-pace">{mmss(vc.pace)}/km</span> ({(vc.vc * 3.6).toLocaleString("pt-BR", { maximumFractionDigits: 1 })} km/h) · D&apos; = {Math.round(vc.dLinha)} m ·
+                          com {TESTES[vc.a.teste].curto} ({mmss(vc.a.tempo_s)}) e {TESTES[vc.b.teste].curto} ({mmss(vc.b.tempo_s)})
+                        </p>
+                        <p className="regra">
+                          Z4 pelo VDOT: {mmss(z4.paceLento)} a {mmss(z4.paceRapido)}/km.{" "}
+                          {vc.pace < z4.paceRapido - 10 ? "A VC está mais de 10 s/km mais rápida que a Z4: vale rever o teste ou subir a Z4 desse atleta."
+                            : vc.pace > z4.paceLento + 10 ? "A VC está mais de 10 s/km mais lenta que a Z4: vale rever o teste ou baixar a Z4 desse atleta."
+                            : "A VC confirma o limiar calculado pelo VDOT."}
+                        </p>
+                      </>
+                    ) : (
+                      <p className="regra">Aparece quando houver dois testes de distâncias diferentes com até 30 dias entre eles (ex.: 1600 m e 5 km).</p>
+                    )}
+                  </div>
+                </>
               ) : (
                 <p className="msg">Nenhum teste ainda. Lance abaixo ou marque uma atividade do Strava como teste.</p>
               )}
@@ -176,7 +209,7 @@ export default async function AtletaPage({ params, searchParams }: { params: Pro
                         <h2 className="sub-provas">{TESTES[g.k].nome}</h2>
                         <div style={{ overflowX: "auto", marginTop: 10 }}>
                           <table className="tabela">
-                            <thead><tr><th>Data</th><th>Tempo</th><th>Pace</th><th>vs. anterior</th><th>vs. 1º teste</th><th>Origem</th><th></th></tr></thead>
+                            <thead><tr><th>Data</th><th>Tempo</th><th>Pace</th><th>VDOT</th><th>vs. anterior</th><th>vs. 1º teste</th><th>Origem</th><th></th></tr></thead>
                             <tbody>
                               {[...g.lista].reverse().map((t, i, arr) => {
                                 const ant = arr[i + 1];
@@ -191,6 +224,7 @@ export default async function AtletaPage({ params, searchParams }: { params: Pro
                                     <td>{dbr(t.data)}</td>
                                     <td><b>{mmss(t.tempo_s)}</b></td>
                                     <td>{mmss(t.tempo_s / (TESTES[t.teste].metros / 1000))}/km</td>
+                                    <td>{vdot(TESTES[t.teste].metros, t.tempo_s).toLocaleString("pt-BR", { maximumFractionDigits: 1, minimumFractionDigits: 1 })}</td>
                                     <td>{dif(ant)}</td>
                                     <td>{t.id === prim.id ? "—" : dif(prim)}</td>
                                     <td>{t.atividade_id ? <a className="ver-strava" href={`https://www.strava.com/activities/${t.atividade_id}`} target="_blank" rel="noopener noreferrer">View on Strava</a> : "manual"}</td>

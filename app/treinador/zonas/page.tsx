@@ -3,7 +3,7 @@ import { getSessao } from "@/lib/supabase/server";
 import { AppHeader } from "@/components/AppHeader";
 import { TabelaZonas } from "@/components/TabelaZonas";
 import { hojeSP } from "@/lib/semana";
-import { TESTES, mmss, type Teste } from "@/lib/zonas";
+import { TESTES, ZONAS_VDOT, mmss, type Teste } from "@/lib/zonas";
 
 export const metadata = { title: "Zonas de treino · Korrá Running Club" };
 
@@ -36,17 +36,15 @@ export default async function ZonasTreinador({ searchParams }: { searchParams: P
           <h1 style={{ marginTop: 14 }}>Zonas de treino</h1>
           <p style={{ marginTop: 12, maxWidth: 760 }}>
             Escolha o teste que o aluno fez e coloque o <b>tempo total</b> ou o <b>pace médio</b>. As zonas são geradas na hora com o
-            modelo da Korrá e aparecem para o aluno na <b>Minha área</b> dele.
+            modelo da Korrá (VDOT de Daniels) e aparecem para o aluno na <b>Minha área</b> dele.
           </p>
           <details className="gerenciar" style={{ marginTop: 14 }}>
-            <summary>Ver os modelos (% da velocidade do teste)</summary>
+            <summary>Ver o modelo (Metodologia Korrá · VDOT de Daniels)</summary>
             <div style={{ overflowX: "auto", marginTop: 10 }}>
               <table className="tabela">
-                <thead><tr><th>Zona</th>{Object.values(TESTES).map((t) => <th key={t.nome}>{t.curto}</th>)}</tr></thead>
+                <thead><tr><th>Zona</th><th>Daniels</th><th>% do VDOT</th><th>Uso</th></tr></thead>
                 <tbody>
-                  {TESTES.t1600.zonas.map((z, i) => (
-                    <tr key={z.n}><td><b>Z{z.n} · {z.nome}</b></td>{Object.values(TESTES).map((t) => <td key={t.nome}>{t.zonas[i].min}–{t.zonas[i].max}%</td>)}</tr>
-                  ))}
+                  {ZONAS_VDOT.map((z) => <tr key={z.n}><td><b>Z{z.n} · {z.nome}</b></td><td>{z.daniels || "—"}</td><td>{z.min}–{z.max}%</td><td>{z.uso}</td></tr>)}
                 </tbody>
               </table>
             </div>

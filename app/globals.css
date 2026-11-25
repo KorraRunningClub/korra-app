@@ -843,3 +843,7 @@ footer.escuro{--bg:var(--verde-2)}
 .linha-teste{background:rgba(254,210,97,.18)}
 .tipo-treino button.teste.ativo{background:#3E6FB0;border-color:#3E6FB0;color:#fff}
 .pill.teste-aluno{background:#3E6FB0;color:#fff}
+.zonas-numeros{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.zonas-numeros>div{padding:12px 14px;border-radius:12px;background:var(--bg);display:grid;gap:2px}
+@media (max-width:560px){.zonas-numeros{grid-template-columns:1fr}}
+.vc-caixa{margin-top:14px;padding:14px 16px;border-radius:12px;border:1.5px dashed var(--verde-3);display:grid;gap:6px}
