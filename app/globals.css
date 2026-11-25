@@ -847,3 +847,39 @@ footer.escuro{--bg:var(--verde-2)}
 .zonas-numeros>div{padding:12px 14px;border-radius:12px;background:var(--bg);display:grid;gap:2px}
 @media (max-width:560px){.zonas-numeros{grid-template-columns:1fr}}
 .vc-caixa{margin-top:14px;padding:14px 16px;border-radius:12px;border:1.5px dashed var(--verde-3);display:grid;gap:6px}
+/* biblioteca de treinos */
+.bib-topo{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;margin-top:20px}
+.bib-topo .forum-abas{margin:0}
+.bib-atleta{display:flex;gap:8px;align-items:center}
+.bib-atleta select{font:inherit;padding:9px 12px;border-radius:8px;border:1.5px solid var(--line);background:var(--bg);color:var(--fg);max-width:260px}
+.bib-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:14px;margin-top:12px}
+.bib-card{border:1.5px solid var(--line);border-radius:14px;padding:18px;display:grid;gap:10px;background:var(--bg);align-content:start}
+.bib-nivel{justify-self:start;font-family:var(--f-label);font-weight:700;letter-spacing:.08em;text-transform:uppercase;font-size:12px;padding:3px 10px;border-radius:999px;background:var(--creme-2)}
+.bib-nivel.iniciante{background:#D7F0D3;color:#245c21}.bib-nivel.intermediario{background:#FBEFC8;color:#7a5a00}.bib-nivel.avancado{background:#F9D9CB;color:#8d2a17}
+.bib-estrutura{margin:0;padding-left:20px;display:grid;gap:6px;font-size:15px}
+.bib-estrutura .zona-num{width:28px;height:22px;font-size:12px;vertical-align:middle}
+.bib-pace{font-family:var(--f-display);font-stretch:112%;font-weight:800}
+.bib-total{font-size:14.5px;border-top:1.5px solid var(--line);padding-top:8px}
+.bib-tipo{font-family:var(--f-label);font-weight:600;letter-spacing:.08em;text-transform:uppercase;font-size:13px;color:var(--muted);margin-left:8px;vertical-align:middle}
+.bib-rot{display:block;font-family:var(--f-label);font-weight:700;letter-spacing:.08em;text-transform:uppercase;font-size:11.5px;color:var(--muted)}
+.bib-unico{font-size:16px}
+.bib-unico .zona-num{width:28px;height:22px;font-size:12px;vertical-align:middle}
+.bib-serie{background:rgba(254,210,97,.14);border-radius:8px;padding:6px 8px;margin-left:-8px}
+.bloco-treino{border:1.5px solid var(--line);border-radius:10px;padding:10px 12px;margin:0}
+.bloco-treino legend{font-family:var(--f-label);font-weight:700;letter-spacing:.06em;text-transform:uppercase;font-size:13px;padding:0 6px}
+.modal-largo{width:min(820px,100%)}
+@media (max-width:640px){.bloco-treino .linha-campos{grid-template-columns:1fr 1fr!important}.bloco-treino .linha-campos .field:last-child{grid-column:1/-1}}
+/* pastas da biblioteca */
+.pastas{display:grid;gap:12px;margin-top:22px}
+.pasta{border:1.5px solid var(--line);border-radius:14px;background:var(--bg)}
+.pasta>summary{cursor:pointer;list-style:none;padding:14px 18px;font-family:var(--f-display);font-stretch:112%;font-weight:800;text-transform:uppercase;font-size:18px;display:flex;align-items:center;gap:10px}
+.pasta>summary::-webkit-details-marker{display:none}
+.pasta>summary::after{content:"▾";margin-left:auto;font-size:14px;opacity:.6;transition:transform .2s}
+.pasta:not([open])>summary::after{transform:rotate(-90deg)}
+.pasta-conta{font-family:var(--f-label);font-weight:700;font-size:12px;background:var(--creme-2);border-radius:99px;padding:2px 9px;letter-spacing:.04em}
+.pasta-corpo{padding:0 18px 16px;display:grid;gap:12px}
+.pasta.sub{border-radius:12px;background:var(--creme-2)}
+.pasta.sub>summary{font-size:15px;padding:11px 14px}
+.pasta.sub .pasta-corpo{padding:0 14px 14px}
+.pasta.sub .pasta-conta{background:var(--bg)}
+.pasta-novo{font-weight:700;justify-self:start}
