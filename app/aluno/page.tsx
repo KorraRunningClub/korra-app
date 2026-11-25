@@ -67,6 +67,11 @@ export default async function AlunoPage({
               <a className="link-mapa" href="/aluno/cadastro">Editar cadastro →</a>
             </div>
             <div className="tile">
+              <span className="k">Minhas zonas de treino</span>
+              <span>Seus paces por zona, calculados no último teste.</span>
+              <a className="link-mapa" href="/aluno/zonas">Ver minhas zonas →</a>
+            </div>
+            <div className="tile">
               <span className="k">Desafios</span>
               <span>Corrida mais longa, mais rápida e maior quilometragem da semana.</span>
               <a className="link-mapa" href="/aluno/ranking">Ver ranking →</a>

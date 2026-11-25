@@ -81,7 +81,7 @@ export default async function TreinadorPage({
         <div className="wrap">
           <div className="eyebrow">Painel do treinador</div>
           <h1 style={{ marginTop: "14px" }}>Visão do mês</h1>
-          <p style={{ marginTop: "12px", display: "flex", gap: "22px", flexWrap: "wrap" }}><a className="link-mapa" href="/treinador/agenda">Minha agenda →</a><a className="link-mapa" href="/treinador/ciclos">Ciclos das provas-alvo →</a><a className="link-mapa" href="/treinador/loja">Loja e estoque →</a><a className="link-mapa" href="/treinador/conteudos">Publicar vídeos no fórum →</a></p>
+          <p style={{ marginTop: "12px", display: "flex", gap: "22px", flexWrap: "wrap" }}><a className="link-mapa" href="/treinador/agenda">Minha agenda →</a><a className="link-mapa" href="/treinador/zonas">Zonas de treino →</a><a className="link-mapa" href="/treinador/ciclos">Ciclos das provas-alvo →</a><a className="link-mapa" href="/treinador/loja">Loja e estoque →</a><a className="link-mapa" href="/treinador/conteudos">Publicar vídeos no fórum →</a></p>
           {erro && <p className="msg erro" style={{ marginTop: "18px" }}>{ERROS[erro] ?? "Algo deu errado."}</p>}
           {ok && <p className="msg" style={{ marginTop: "18px" }}>{OKS[ok] ?? "Pronto."}</p>}
 
