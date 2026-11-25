@@ -71,7 +71,7 @@ export default async function CiclosPage({ searchParams }: { searchParams: Promi
                   <div key={l.id} className={`ciclo-card${temCiclo ? "" : " sem"}`}>
                     <div className="ciclo-card-topo">
                       <div>
-                        <b className="ciclo-aluno">{l.perfis?.nome ?? "Aluno"}</b>
+                        <a className="ciclo-aluno nome-atleta" href={`/treinador/aluno/${l.user_id}`}>{l.perfis?.nome ?? "Aluno"}</a>
                         <span className="prova-info">{l.provas.nome} · {l.provas.data.split("-").reverse().join("/")} · {nomeDistancia(l.provas)} · faltam {diasAte(l.provas.data, hoje)} dias</span>
                       </div>
                       {temCiclo ? <span className={`ader-badge ${ader === null ? "neutra" : ader >= 85 ? "otima" : ader >= 65 ? "boa" : "baixa"}`}>{ader === null ? "—" : `${ader}%`}</span> : <span className="ader-badge neutra">sem ciclo</span>}

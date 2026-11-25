@@ -61,7 +61,7 @@ export default async function ZonasTreinador({ searchParams }: { searchParams: P
               return (
                 <section key={a.id} id={`a-${a.id}`} className="zona-card">
                   <div className="zona-card-topo">
-                    <b className="ciclo-aluno">{a.nome ?? "Aluno"}</b>
+                    <a className="ciclo-aluno nome-atleta" href={`/treinador/aluno/${a.id}`}>{a.nome ?? "Aluno"}</a>
                     <span className="regra">{ultimo ? `${TESTES[ultimo.teste].curto} · ${mmss(ultimo.tempo_s)} · ${dbr(ultimo.data)}` : "sem teste"}</span>
                   </div>
                   {ultimo && (
