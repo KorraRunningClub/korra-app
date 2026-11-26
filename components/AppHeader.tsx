@@ -16,6 +16,7 @@ export function AppHeader({ nome, treinador }: { nome?: string | null; treinador
               <li><Link href="/aluno"><b>Minha área</b><span>Seus dados e atalhos</span></Link></li>
               {treinador && <li><Link href="/treinador/agenda"><b><i className="so-pc">Minha </i>Agenda</b><span>Horários e financeiro do personal (só você vê)</span></Link></li>}
               {treinador && <li><Link href="/treinador/treinos"><b><i className="so-pc">Biblioteca de </i>Treinos</b><span>Treinos-chave por fase e nível</span></Link></li>}
+              {treinador && <li><Link href="/treinador/metodologia"><b>Metodologia</b><span>Macrociclo, microciclos e zonas</span></Link></li>}
               {treinador && <li><Link href="/treinador/mensagens"><b>Mensagens</b><span>Avisos de planos vencendo</span></Link></li>}
             </ul>
           </li>

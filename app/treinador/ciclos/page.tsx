@@ -62,18 +62,7 @@ export default async function CiclosPage({ searchParams }: { searchParams: Promi
           {ok && <p className="msg" style={{ marginTop: 16 }}>{OK[ok] ?? "Pronto."}</p>}
           {erro && <p className="msg erro" style={{ marginTop: 16 }}>{ERRO[erro] ?? "Algo deu errado."}</p>}
 
-          <details className="micro-ref" style={{ marginTop: 20 }}>
-            <summary>Microciclos e treinos de qualidade</summary>
-            <div style={{ overflowX: "auto" }}><table className="tabela micro-tabela">
-              <thead><tr><th>Microciclo</th><th>Qualidade</th><th>Regra</th></tr></thead>
-              <tbody>
-                {Object.entries(MICROCICLOS).map(([k, m]) => (
-                  <tr key={k}><td><span className={`micro-tag micro-${k}`}>{m.nome}</span></td><td>{m.qMin === m.qMax ? m.qMin : `${m.qMin} a ${m.qMax}`}</td><td>{m.regra}</td></tr>
-                ))}
-              </tbody>
-            </table></div>
-            <p style={{ marginTop: 8, fontSize: 14 }}>Conta como qualidade a corrida que o aluno marcar como <b>Intervalado</b>, <b>Fartlek</b> ou <b>Teste</b> (prova não conta).</p>
-          </details>
+          <p style={{ marginTop: 12 }}><a href="/treinador/metodologia#micro">Ver as regras de cada microciclo →</a></p>
 
           {linhas.length === 0 ? (
             <p className="msg" style={{ marginTop: 24 }}>Nenhum aluno com prova-alvo ainda. Quando eles adicionarem em Calendário → Provas, aparecem aqui.</p>
