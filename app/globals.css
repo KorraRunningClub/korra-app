@@ -925,3 +925,18 @@ footer.escuro{--bg:var(--verde-2)}
 .faq-met summary{cursor:pointer;font-weight:700;line-height:1.4}
 .faq-met-r{margin-top:8px;font-size:15px;line-height:1.55}
 .faq-met-r ul{margin:0;padding-left:18px}
+/* Controle de carga */
+.carga-regras{margin:12px 0 0;padding-left:20px;line-height:1.7}
+.carga{border:1px solid var(--line);border-radius:14px;padding:16px;margin-top:12px}
+.carga-entrada{display:flex;flex-wrap:wrap;gap:12px;align-items:end}
+.carga-entrada label{display:grid;gap:4px;font-size:13px;font-weight:700}
+.carga-entrada input:not([type=range]){font-size:16px;padding:7px 10px;border-radius:8px;border:1px solid var(--line);width:150px}
+.carga-entrada input[type=range]{flex:1;min-width:180px;accent-color:var(--verde)}
+.carga-frase{margin-top:14px}
+.carga-barra{display:flex;height:46px;border-radius:10px;overflow:hidden;margin-top:10px;gap:2px}
+.carga-seg{display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#1f251e;white-space:nowrap;overflow:hidden;min-width:0;flex-basis:0}
+.carga-seg.facil{background:#7ED07A}
+.carga-legenda{list-style:none;padding:0;margin:12px 0 0;display:grid;gap:6px;font-size:14.5px}
+.carga-legenda i{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:6px;vertical-align:-1px}
+.carga-tabela{min-width:420px}
+.carga-tabela tr.ativa td{background:rgba(254,210,97,.25)}

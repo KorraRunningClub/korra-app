@@ -5,6 +5,7 @@ import { AppHeader } from "@/components/AppHeader";
 import { FASES_MACRO } from "@/lib/macrociclo";
 import { MICROCICLOS } from "@/lib/microciclos";
 import { ZONAS_VDOT } from "@/lib/zonas";
+import { GraficoCarga } from "./GraficoCarga";
 
 export const metadata = { title: "Metodologia · Korrá Running Club" };
 
@@ -40,7 +41,7 @@ export default async function MetodologiaPage() {
             Serve para consulta e para passar o método a um treinador parceiro.
           </p>
           <nav className="met-indice">
-            <a href="#macro">Macrociclo</a><a href="#enfase">Treinos de qualidade por fase</a><a href="#micro">Microciclos</a><a href="#zonas">Zonas (VDOT)</a><a href="#duvidas">Dúvidas frequentes</a>
+            <a href="#macro">Macrociclo</a><a href="#enfase">Treinos de qualidade por fase</a><a href="#micro">Microciclos</a><a href="#zonas">Zonas (VDOT)</a><a href="#duvidas">Dúvidas frequentes</a><a href="#carga">Controle de carga</a>
           </nav>
 
           <section id="macro" className="met-secao">
@@ -112,6 +113,16 @@ export default async function MetodologiaPage() {
                 </details>
               ))}
             </div>
+          </section>
+
+          <section id="carga" className="met-secao">
+            <h2>6. Controle de carga</h2>
+            <ul className="carga-regras">
+              <li>O volume em <b>limiar</b> não pode passar de <b>10%</b> do volume semanal do atleta.</li>
+              <li>O volume em <b>VO2máx</b> não pode passar de <b>10%</b> do volume semanal do atleta.</li>
+            </ul>
+            <p className="met-nota">Exemplo hipotético: mude o nome e o volume para ver os limites de cada atleta.</p>
+            <GraficoCarga />
           </section>
         </div>
       </main>
