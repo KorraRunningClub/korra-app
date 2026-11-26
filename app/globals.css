@@ -920,3 +920,8 @@ footer.escuro{--bg:var(--verde-2)}
 .met-tabela td{vertical-align:top}
 .q-linha{display:block;line-height:1.6}
 .q-linha b{display:inline-block;min-width:26px;color:var(--verde)}
+.faq-met{display:grid;gap:8px;margin-top:14px}
+.faq-met details{border:1px solid var(--line);border-radius:12px;padding:12px 16px}
+.faq-met summary{cursor:pointer;font-weight:700;line-height:1.4}
+.faq-met-r{margin-top:8px;font-size:15px;line-height:1.55}
+.faq-met-r ul{margin:0;padding-left:18px}

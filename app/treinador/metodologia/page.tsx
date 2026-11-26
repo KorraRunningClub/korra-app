@@ -8,6 +8,19 @@ import { ZONAS_VDOT } from "@/lib/zonas";
 
 export const metadata = { title: "Metodologia · Korrá Running Club" };
 
+const DUVIDAS: { p: string; r: React.ReactNode }[] = [
+  { p: "Qual o ritmo do treino longo tradicional na base?", r: "Nos períodos de base: 15 a 20% mais lento que o ritmo de 10 km." },
+  { p: "Em que pace devo fazer os treinos longos na fase específica?", r: "Na fase específica, o atleta corre em torno de 5 a 7% mais lento que o ritmo pretendido para a prova." },
+  { p: "Qual o tempo ideal para um treino de limiar?", r: <ul><li><b>Iniciantes:</b> 20 a 25 min</li><li><b>Intermediários:</b> 25 a 35 min</li><li><b>Avançados:</b> 35 a 50 min</li></ul> },
+  { p: "Qual a diferença entre limiar contínuo e limiar fracionado?", r: "No início da temporada, o fracionado se encaixa melhor." },
+  { p: "Quanto tempo é possível suportar na velocidade do VO2máx?", r: <ul><li><b>Iniciantes:</b> 7 a 8 min</li><li><b>Intermediários:</b> 8 a 9 min</li><li><b>Avançados:</b> 10 a 12 min</li></ul> },
+  { p: "Quanto tempo levamos para chegar no VO2máx?", r: "Algo em torno de 1 min 30 s." },
+  { p: "Quais os melhores tempos de exposição (cada tiro) para estimular o VO2máx?", r: <ul><li><b>Iniciantes:</b> 2 a 3 min</li><li><b>Intermediários:</b> 4 a 5 min</li><li><b>Avançados:</b> 4 a 7 min</li></ul> },
+  { p: "Qual o volume total dos treinos de VO2máx?", r: <ul><li><b>Iniciantes:</b> 8 min</li><li><b>Intermediários:</b> 10 a 15 min</li><li><b>Avançados:</b> 15 a 20 min</li></ul> },
+  { p: "O atleta tem 3 dias seguidos para treinar. Como colocar a qualidade?", r: <ul><li><b>Semanas pares:</b> limiar → aeróbico leve → longo</li><li><b>Semanas ímpares:</b> VO2máx → aeróbico leve → longo com estímulos em limiar no final</li></ul> },
+];
+
+
 export default async function MetodologiaPage() {
   const sessao = await getSessao();
   if (!sessao) redirect("/entrar?voltar=/treinador/metodologia");
@@ -27,7 +40,7 @@ export default async function MetodologiaPage() {
             Serve para consulta e para passar o método a um treinador parceiro.
           </p>
           <nav className="met-indice">
-            <a href="#macro">Macrociclo</a><a href="#enfase">Treinos de qualidade por fase</a><a href="#micro">Microciclos</a><a href="#zonas">Zonas (VDOT)</a>
+            <a href="#macro">Macrociclo</a><a href="#enfase">Treinos de qualidade por fase</a><a href="#micro">Microciclos</a><a href="#zonas">Zonas (VDOT)</a><a href="#duvidas">Dúvidas frequentes</a>
           </nav>
 
           <section id="macro" className="met-secao">
@@ -87,6 +100,18 @@ export default async function MetodologiaPage() {
               </table>
             </div>
             <p className="met-nota">VDOT calculado pelos testes de 1600 m, 2400 m, 3000 m ou 5000 m (Daniels &amp; Gilbert). Os ritmos de cada atleta ficam na página dele.</p>
+          </section>
+
+          <section id="duvidas" className="met-secao">
+            <h2>5. Dúvidas frequentes</h2>
+            <div className="faq-met">
+              {DUVIDAS.map((d, i) => (
+                <details key={i}>
+                  <summary>{d.p}</summary>
+                  <div className="faq-met-r">{d.r}</div>
+                </details>
+              ))}
+            </div>
           </section>
         </div>
       </main>
