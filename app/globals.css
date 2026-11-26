@@ -885,3 +885,24 @@ footer.escuro{--bg:var(--verde-2)}
 .pasta-novo{font-weight:700;justify-self:start}
 .serie-bloco{background:rgba(254,210,97,.12)}
 .add-serie{justify-self:start}
+
+/* Microciclos */
+.ciclo-sem{position:relative}
+.micro-pt{position:absolute;right:-5px;top:-6px;font-style:normal;font-size:8.5px;line-height:1;font-weight:800;padding:2px 3px;border-radius:4px;color:#1f251e}
+.micro-tag{display:inline-block;font-family:var(--f-label);font-weight:700;font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;padding:3px 8px;border-radius:999px;color:#1f251e;margin-right:6px}
+.ciclo-micro{font-size:14px;line-height:1.5}
+.micro-regra{font-size:13px;opacity:.75}
+.micro-desenvolvimento{background:#7ED07A}
+.micro-choque{background:#F08A5D}
+.micro-teste{background:#B9A6F2}
+.micro-manutencao{background:#8FC9E8}
+.micro-competitivo{background:#FED261}
+.micro-regenerativo{background:#D9D7C3}
+.ciclo-micro.micro-desenvolvimento,.ciclo-micro.micro-choque,.ciclo-micro.micro-teste,.ciclo-micro.micro-manutencao,.ciclo-micro.micro-competitivo,.ciclo-micro.micro-regenerativo{background:none}
+.micro-grade{grid-column:1/-1;border:1px solid var(--line);border-radius:10px;padding:10px 12px;display:flex;flex-wrap:wrap;gap:8px}
+.micro-grade legend{font-family:var(--f-label);font-weight:700;font-size:12.5px;letter-spacing:.08em;text-transform:uppercase;padding:0 4px}
+.micro-sel{display:grid;gap:2px;font-size:12.5px}
+.micro-sel select{font-size:13.5px;padding:5px 6px;border-radius:6px}
+.micro-grade small{flex-basis:100%;opacity:.7}
+.micro-ref summary{cursor:pointer;font-weight:700}
+.micro-tabela td:nth-child(2){text-align:center;font-weight:700}

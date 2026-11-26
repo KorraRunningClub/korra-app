@@ -3,7 +3,7 @@ import { somarDias } from "@/lib/calendario";
 // Ciclo da prova-alvo: semanas de 7 dias contadas a partir do início, terminando no dia da prova.
 export const TIPOS_EXTRA = { forca: "Força / academia", mobilidade: "Mobilidade / alongamento", corrida: "Corrida fora do Strava", outro: "Outro" } as const;
 
-export type ConfigCiclo = { semanas: number; inicio: string | null; meta: number; ajustes: Record<string, number> | null; dataProva: string };
+export type ConfigCiclo = { semanas: number; inicio: string | null; meta: number; ajustes: Record<string, number> | null; dataProva: string; micros?: Record<string, string> | null };
 
 const dif = (a: string, b: string) => Math.round((Date.parse(`${a}T12:00:00Z`) - Date.parse(`${b}T12:00:00Z`)) / 86400000);
 
@@ -38,7 +38,8 @@ export function calcularCiclo(c: ConfigCiclo, datasTreinos: string[], hoje: stri
     const meta = c.ajustes?.[String(i + 1)] ?? c.meta;
     const feitos = datasTreinos.filter((d) => d >= ini && d <= fim).length;
     const estado = hoje > fim ? "fechada" : hoje >= ini ? "atual" : "futura";
-    return { n: i + 1, ini, fim, meta, feitos, estado } as const;
+    const micro = c.micros?.[String(i + 1)] ?? null;
+    return { n: i + 1, ini, fim, meta, feitos, estado, micro } as const;
   });
   const fechadas = semanas.filter((s) => s.estado === "fechada" && s.meta > 0);
   const metaFechadas = fechadas.reduce((t, s) => t + s.meta, 0);
