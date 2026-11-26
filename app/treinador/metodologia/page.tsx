@@ -120,6 +120,7 @@ export default async function MetodologiaPage() {
             <ul className="carga-regras">
               <li>O volume em <b>limiar</b> não pode passar de <b>10%</b> do volume semanal do atleta.</li>
               <li>O volume em <b>VO2máx</b> não pode passar de <b>10%</b> do volume semanal do atleta.</li>
+              <li>Nas séries de <b>repetição</b>, o volume da série não pode passar de <b>5%</b> do volume semanal do atleta.</li>
             </ul>
             <p className="met-nota">Exemplo hipotético: mude o nome e o volume para ver os limites de cada atleta.</p>
             <GraficoCarga />

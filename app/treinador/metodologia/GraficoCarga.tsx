@@ -5,6 +5,7 @@ import { useState } from "react";
 export const LIMITES = [
   { id: "limiar", nome: "Limiar (Z4)", pct: 10, cor: "#FED261" },
   { id: "vo2", nome: "VO2máx (Z5)", pct: 10, cor: "#F08A5D" },
+  { id: "rep", nome: "Repetição (Z6)", pct: 5, cor: "#B9A6F2" },
 ] as const;
 
 const km = (v: number) => (Math.round(v * 10) / 10).toLocaleString("pt-BR");
