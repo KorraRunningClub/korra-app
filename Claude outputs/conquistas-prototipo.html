@@ -1,0 +1,167 @@
+<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Conquistas: protótipo</title>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@700;900&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#E9E8D6;color:#1f251e;font-family:Inter,system-ui,sans-serif;padding:24px 16px}
+h1{font-family:Archivo,sans-serif;font-weight:900;margin:0 0 6px}p.sub{margin:0 0 24px;color:#4a5248}
+.grade{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:24px;max-width:900px}
+.conq{background:none;border:0;padding:0;cursor:pointer;perspective:800px;text-align:center;font:inherit;color:inherit}
+.moeda{position:relative;width:150px;height:150px;margin:0 auto;transform-style:preserve-3d;transition:transform .8s cubic-bezier(.3,1.5,.5,1)}
+.face{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;border-radius:50%;filter:drop-shadow(0 6px 6px rgba(0,0,0,.28))}
+.face svg{width:100%;height:100%;display:block}
+.verso{transform:rotateY(180deg);background:radial-gradient(circle at 40% 35%,#3d4a3c,#1f251e);border:5px solid var(--anel);display:grid;place-content:center;gap:5px;padding:16px;color:#E9E8D6;box-sizing:border-box}
+.verso b{font-family:Archivo,sans-serif;font-size:15px;line-height:1.1}
+.verso small{font-size:11.5px;line-height:1.3;opacity:.85}
+.verso .barra{height:6px;border-radius:3px;background:rgba(233,232,214,.2);overflow:hidden;width:90px;margin:2px auto 0}
+.verso .barra span{display:block;height:100%;background:#FED261}
+.conq.virada .moeda{transform:rotateY(180deg)}
+@media (hover:hover) and (pointer:fine){.conq:hover .moeda{transform:rotateY(180deg)}}
+.nome{margin-top:12px;font-family:Archivo,sans-serif;font-weight:700;font-size:15px}
+.nivel{font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:#6b7369}
+</style></head><body>
+<h1>Conquistas · protótipo</h1><p class="sub">Passe o mouse (ou toque) para virar a moeda. O primeiro Papa Léguas mostra como fica uma conquista bloqueada (silhueta).</p>
+<div class="grade">
+<button class="conq" onclick="this.classList.toggle('virada')" style="--anel:#A8612F">
+ <div class="moeda"><div class="face"><svg viewBox="0 0 100 100" class="tok"><defs>
+<linearGradient id="gCinza_0" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#dcdcd6"/><stop offset="1" stop-color="#8d8d87"/></linearGradient>
+<linearGradient id="gAzul_0" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#8FC1F2"/><stop offset="1" stop-color="#2D5FA8"/></linearGradient>
+<radialGradient id="gFundo_0" cx=".4" cy=".35" r=".8"><stop offset="0" stop-color="#f4f3ea"/><stop offset=".7" stop-color="#c9c8bd"/><stop offset="1" stop-color="#9b9a8f"/></radialGradient>
+<pattern id="pGrade_0" width="8" height="8" patternUnits="userSpaceOnUse"><path d="M8 0H0V8" fill="none" stroke="#000" stroke-opacity=".08" stroke-width=".6"/></pattern>
+<filter id="fSil_0"><feColorMatrix type="matrix" values="0 0 0 0 0.12  0 0 0 0 0.14  0 0 0 0 0.12  0 0 0 1 0"/></filter>
+<clipPath id="cDisco_0"><circle cx="50" cy="50" r="40"/></clipPath>
+</defs>
+  <circle cx="50" cy="50" r="49" fill="#6b3a17"/>
+  <circle cx="50" cy="50" r="47" fill="url(#ring_0)"/>
+  <linearGradient id="ring_0" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#F0B887"/><stop offset=".5" stop-color="#A8612F"/><stop offset="1" stop-color="#F0B887"/></linearGradient>
+  <circle cx="50" cy="50" r="41.5" fill="#111"/>
+  <g clip-path="url(#cDisco_0)">
+    <circle cx="50" cy="50" r="40" fill="url(#gFundo_0)"/>
+    <rect width="100" height="100" fill="url(#pGrade_0)"/>
+    <g transform="translate(50 52) scale(.8) translate(-50 -50)" ><path d="M6 46 h10 M 3 54 h8 M 8 38 h7" stroke="#111" stroke-width="2" stroke-linecap="round" opacity=".5"/>
+  <path d="M38 54 L 28 62 L 18 64" fill="none" stroke="#111" stroke-width="7.3999999999999995" stroke-linecap="round" stroke-linejoin="round"/><path d="M38 54 L 28 62 L 18 64" fill="none" stroke="#77776f" stroke-width="4.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M62 54 L 72 60 L 84 58" fill="none" stroke="#111" stroke-width="7.3999999999999995" stroke-linecap="round" stroke-linejoin="round"/><path d="M62 54 L 72 60 L 84 58" fill="none" stroke="#77776f" stroke-width="4.6" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M34 47 C 26 43 14 46 7 57 C 12 56 15 58 20 59 C 25 59 29 57 33 55 Z" fill="url(#gCinza_0)" stroke="#111" stroke-width="2.6" stroke-linejoin="round" stroke-linecap="round"/>
+  <path d="M14 56 C 20 55 25 54 30 53" fill="none" stroke="#111" stroke-width="1.3"/>
+  <path d="M32 50 C 34 42 50 40 62 41 C 69 42 71 48 69 54 C 65 60 53 60 45 59 C 38 58 33 56 32 50 Z" fill="url(#gCinza_0)" stroke="#111" stroke-width="2.6" stroke-linejoin="round" stroke-linecap="round"/>
+  <path d="M38 45 C 46 43 54 43 62 44" fill="none" stroke="#fff" stroke-opacity=".75" stroke-width="1.8" stroke-linecap="round"/>
+  <path d="M48 58 C 52 55 58 55 62 57" fill="none" stroke="#111" stroke-width="1.3" opacity=".6"/>
+  <path d="M42 54 L 36 66 L 24 74" fill="none" stroke="#111" stroke-width="8.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M42 54 L 36 66 L 24 74" fill="none" stroke="#a9a9a2" stroke-width="5.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M64 52 L 70 64 L 80 72" fill="none" stroke="#111" stroke-width="8.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M64 52 L 70 64 L 80 72" fill="none" stroke="#a9a9a2" stroke-width="5.4" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M21 75 l 5 -1 M 79 73 l 5 1" stroke="#E8622C" stroke-width="3.6" stroke-linecap="round"/>
+  <path d="M62 44 C 63 37 67 33 72 32 L 72 22 L 77 30 L 80 23 L 81 32 C 84 34 87 37 93 39 C 93 42 90 44 86 44 C 82 47 76 49 70 49 C 66 49 63 47 62 44 Z" fill="url(#gCinza_0)" stroke="#111" stroke-width="2.6" stroke-linejoin="round" stroke-linecap="round"/>
+  <path d="M73.5 26 L 74.5 30 M 79.5 27 L 79.5 30.5" stroke="#E8622C" stroke-width="1.6" stroke-linecap="round"/>
+  <path d="M86 44 C 83 46 79 46.5 76 46" fill="none" stroke="#111" stroke-width="1.5"/>
+  <circle cx="79" cy="36.5" r="1.9" fill="#111"/><path d="M76 34 L 81.5 35" stroke="#111" stroke-width="1.5" stroke-linecap="round"/>
+  <ellipse cx="92.2" cy="39.6" rx="1.7" ry="1.4" fill="#111"/></g>
+  </g>
+  <path d="M18 30 A 36 36 0 0 1 60 14" fill="none" stroke="#fff" stroke-opacity=".35" stroke-width="2.5" stroke-linecap="round"/>
+  
+  </svg></div>
+ <div class="face verso"><b>Coyote</b><small>5 provas concluídas</small><div class="barra"><span style="width:100%"></span></div><small>Conquistada em 12/10/2026</small></div></div>
+ <div class="nome">Coyote</div><div class="nivel">bronze</div>
+</button>
+<button class="conq" onclick="this.classList.toggle('virada')" style="--anel:#9DA3A8">
+ <div class="moeda"><div class="face"><svg viewBox="0 0 100 100" class="tok"><defs>
+<linearGradient id="gCinza_1" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#dcdcd6"/><stop offset="1" stop-color="#8d8d87"/></linearGradient>
+<linearGradient id="gAzul_1" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#8FC1F2"/><stop offset="1" stop-color="#2D5FA8"/></linearGradient>
+<radialGradient id="gFundo_1" cx=".4" cy=".35" r=".8"><stop offset="0" stop-color="#f4f3ea"/><stop offset=".7" stop-color="#c9c8bd"/><stop offset="1" stop-color="#9b9a8f"/></radialGradient>
+<pattern id="pGrade_1" width="8" height="8" patternUnits="userSpaceOnUse"><path d="M8 0H0V8" fill="none" stroke="#000" stroke-opacity=".08" stroke-width=".6"/></pattern>
+<filter id="fSil_1"><feColorMatrix type="matrix" values="0 0 0 0 0.12  0 0 0 0 0.14  0 0 0 0 0.12  0 0 0 1 0"/></filter>
+<clipPath id="cDisco_1"><circle cx="50" cy="50" r="40"/></clipPath>
+</defs>
+  <circle cx="50" cy="50" r="49" fill="#5c6166"/>
+  <circle cx="50" cy="50" r="47" fill="url(#ring_1)"/>
+  <linearGradient id="ring_1" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#F1F3F5"/><stop offset=".5" stop-color="#9DA3A8"/><stop offset="1" stop-color="#F1F3F5"/></linearGradient>
+  <circle cx="50" cy="50" r="41.5" fill="#111"/>
+  <g clip-path="url(#cDisco_1)">
+    <circle cx="50" cy="50" r="40" fill="#a9a89c"/>
+    <rect width="100" height="100" fill="url(#pGrade_1)"/>
+    <g transform="translate(50 52) scale(.8) translate(-50 -50)" filter="url(#fSil_1)"><path d="M6 56 h10 M 3 64 h8 M 8 48 h7" stroke="#111" stroke-width="2" stroke-linecap="round" opacity=".5"/>
+  <path d="M42 44 C 32 38 22 26 16 12 C 23 17 28 21 32 23 C 27 15 26 10 27 5 C 34 14 39 24 46 36 Z" fill="url(#gAzul_1)" stroke="#111" stroke-width="2.6" stroke-linejoin="round" stroke-linecap="round"/>
+  <path d="M50 60 L 46 70 L 38 76" fill="none" stroke="#111" stroke-width="5.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M50 60 L 46 70 L 38 76" fill="none" stroke="#77776f" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><path d="M38 76 L 33 76" fill="none" stroke="#111" stroke-width="5.199999999999999" stroke-linecap="round" stroke-linejoin="round"/><path d="M38 76 L 33 76" fill="none" stroke="#77776f" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M38 46 C 43 37 56 34 64 38 C 71 42 71 53 64 59 C 56 65 44 63 38 56 Z" fill="url(#gCinza_1)" stroke="#111" stroke-width="2.6" stroke-linejoin="round" stroke-linecap="round"/>
+  <path d="M44 43 C 48 47 54 48 60 46 M 44 51 C 48 55 54 56 60 53" fill="none" stroke="#111" stroke-width="1.5" stroke-linecap="round"/>
+  <path d="M42 41 C 46 38 52 37 58 38" fill="none" stroke="#fff" stroke-opacity=".75" stroke-width="1.6" stroke-linecap="round"/>
+  <path d="M58 60 L 62 70 L 70 76" fill="none" stroke="#111" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/><path d="M58 60 L 62 70 L 70 76" fill="none" stroke="#a9a9a2" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M70 76 L 77 74" fill="none" stroke="#111" stroke-width="5.199999999999999" stroke-linecap="round" stroke-linejoin="round"/><path d="M70 76 L 77 74" fill="none" stroke="#a9a9a2" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M62 70 L 60 80" fill="none" stroke="#111" stroke-width="5.199999999999999" stroke-linecap="round" stroke-linejoin="round"/><path d="M62 70 L 60 80" fill="none" stroke="#a9a9a2" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M60 41 C 61 33 64 27 70 25 C 74 23 78 25 80 29 L 95 33 L 80 34 C 78 37 74 41 68 45 Z" fill="url(#gCinza_1)" stroke="#111" stroke-width="2.6" stroke-linejoin="round" stroke-linecap="round"/>
+  <path d="M68 25 L 63 15 L 70 21 L 70 11 L 74 22 L 79 15 L 76 25 Z" fill="url(#gAzul_1)" stroke="#111" stroke-width="2.6" stroke-linejoin="round" stroke-linecap="round"/>
+  <circle cx="74" cy="29" r="2.4" fill="#fff" stroke="#111" stroke-width="1.2"/><circle cx="74.8" cy="29" r="1.1" fill="#111"/>
+  <path d="M70.5 32 C 73.5 34 76.5 34 79 33" fill="none" stroke="#3B7DD8" stroke-width="2.2" stroke-linecap="round"/></g>
+  </g>
+  <path d="M18 30 A 36 36 0 0 1 60 14" fill="none" stroke="#fff" stroke-opacity=".35" stroke-width="2.5" stroke-linecap="round"/>
+  <g transform="translate(76 76)"><circle r="11" fill="#1f251e" stroke="#9DA3A8" stroke-width="2"/><path d="M-4 -1v-3a4 4 0 0 1 8 0v3" stroke="#E9E8D6" stroke-width="2" fill="none"/><rect x="-5.5" y="-1" width="11" height="8" rx="2" fill="#E9E8D6"/></g>
+  </svg></div>
+ <div class="face verso"><b>Papa Léguas</b><small>10 provas concluídas</small><div class="barra"><span style="width:60%"></span></div><small>6 de 10 · faltam 4</small></div></div>
+ <div class="nome">Papa Léguas</div><div class="nivel">prata</div>
+</button>
+<button class="conq" onclick="this.classList.toggle('virada')" style="--anel:#9DA3A8">
+ <div class="moeda"><div class="face"><svg viewBox="0 0 100 100" class="tok"><defs>
+<linearGradient id="gCinza_2" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#dcdcd6"/><stop offset="1" stop-color="#8d8d87"/></linearGradient>
+<linearGradient id="gAzul_2" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#8FC1F2"/><stop offset="1" stop-color="#2D5FA8"/></linearGradient>
+<radialGradient id="gFundo_2" cx=".4" cy=".35" r=".8"><stop offset="0" stop-color="#f4f3ea"/><stop offset=".7" stop-color="#c9c8bd"/><stop offset="1" stop-color="#9b9a8f"/></radialGradient>
+<pattern id="pGrade_2" width="8" height="8" patternUnits="userSpaceOnUse"><path d="M8 0H0V8" fill="none" stroke="#000" stroke-opacity=".08" stroke-width=".6"/></pattern>
+<filter id="fSil_2"><feColorMatrix type="matrix" values="0 0 0 0 0.12  0 0 0 0 0.14  0 0 0 0 0.12  0 0 0 1 0"/></filter>
+<clipPath id="cDisco_2"><circle cx="50" cy="50" r="40"/></clipPath>
+</defs>
+  <circle cx="50" cy="50" r="49" fill="#5c6166"/>
+  <circle cx="50" cy="50" r="47" fill="url(#ring_2)"/>
+  <linearGradient id="ring_2" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#F1F3F5"/><stop offset=".5" stop-color="#9DA3A8"/><stop offset="1" stop-color="#F1F3F5"/></linearGradient>
+  <circle cx="50" cy="50" r="41.5" fill="#111"/>
+  <g clip-path="url(#cDisco_2)">
+    <circle cx="50" cy="50" r="40" fill="url(#gFundo_2)"/>
+    <rect width="100" height="100" fill="url(#pGrade_2)"/>
+    <g transform="translate(50 52) scale(.8) translate(-50 -50)" ><path d="M6 56 h10 M 3 64 h8 M 8 48 h7" stroke="#111" stroke-width="2" stroke-linecap="round" opacity=".5"/>
+  <path d="M42 44 C 32 38 22 26 16 12 C 23 17 28 21 32 23 C 27 15 26 10 27 5 C 34 14 39 24 46 36 Z" fill="url(#gAzul_2)" stroke="#111" stroke-width="2.6" stroke-linejoin="round" stroke-linecap="round"/>
+  <path d="M50 60 L 46 70 L 38 76" fill="none" stroke="#111" stroke-width="5.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M50 60 L 46 70 L 38 76" fill="none" stroke="#77776f" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><path d="M38 76 L 33 76" fill="none" stroke="#111" stroke-width="5.199999999999999" stroke-linecap="round" stroke-linejoin="round"/><path d="M38 76 L 33 76" fill="none" stroke="#77776f" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M38 46 C 43 37 56 34 64 38 C 71 42 71 53 64 59 C 56 65 44 63 38 56 Z" fill="url(#gCinza_2)" stroke="#111" stroke-width="2.6" stroke-linejoin="round" stroke-linecap="round"/>
+  <path d="M44 43 C 48 47 54 48 60 46 M 44 51 C 48 55 54 56 60 53" fill="none" stroke="#111" stroke-width="1.5" stroke-linecap="round"/>
+  <path d="M42 41 C 46 38 52 37 58 38" fill="none" stroke="#fff" stroke-opacity=".75" stroke-width="1.6" stroke-linecap="round"/>
+  <path d="M58 60 L 62 70 L 70 76" fill="none" stroke="#111" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/><path d="M58 60 L 62 70 L 70 76" fill="none" stroke="#a9a9a2" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M70 76 L 77 74" fill="none" stroke="#111" stroke-width="5.199999999999999" stroke-linecap="round" stroke-linejoin="round"/><path d="M70 76 L 77 74" fill="none" stroke="#a9a9a2" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M62 70 L 60 80" fill="none" stroke="#111" stroke-width="5.199999999999999" stroke-linecap="round" stroke-linejoin="round"/><path d="M62 70 L 60 80" fill="none" stroke="#a9a9a2" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M60 41 C 61 33 64 27 70 25 C 74 23 78 25 80 29 L 95 33 L 80 34 C 78 37 74 41 68 45 Z" fill="url(#gCinza_2)" stroke="#111" stroke-width="2.6" stroke-linejoin="round" stroke-linecap="round"/>
+  <path d="M68 25 L 63 15 L 70 21 L 70 11 L 74 22 L 79 15 L 76 25 Z" fill="url(#gAzul_2)" stroke="#111" stroke-width="2.6" stroke-linejoin="round" stroke-linecap="round"/>
+  <circle cx="74" cy="29" r="2.4" fill="#fff" stroke="#111" stroke-width="1.2"/><circle cx="74.8" cy="29" r="1.1" fill="#111"/>
+  <path d="M70.5 32 C 73.5 34 76.5 34 79 33" fill="none" stroke="#3B7DD8" stroke-width="2.2" stroke-linecap="round"/></g>
+  </g>
+  <path d="M18 30 A 36 36 0 0 1 60 14" fill="none" stroke="#fff" stroke-opacity=".35" stroke-width="2.5" stroke-linecap="round"/>
+  
+  </svg></div>
+ <div class="face verso"><b>Papa Léguas</b><small>10 provas concluídas</small><div class="barra"><span style="width:100%"></span></div><small>Conquistada em 20/11/2026</small></div></div>
+ <div class="nome">Papa Léguas</div><div class="nivel">prata</div>
+</button>
+<button class="conq" onclick="this.classList.toggle('virada')" style="--anel:#E8622C">
+ <div class="moeda"><div class="face"><svg viewBox="0 0 100 100" class="tok"><defs>
+<linearGradient id="gCinza_3" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#dcdcd6"/><stop offset="1" stop-color="#8d8d87"/></linearGradient>
+<linearGradient id="gAzul_3" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#8FC1F2"/><stop offset="1" stop-color="#2D5FA8"/></linearGradient>
+<radialGradient id="gFundo_3" cx=".4" cy=".35" r=".8"><stop offset="0" stop-color="#f4f3ea"/><stop offset=".7" stop-color="#c9c8bd"/><stop offset="1" stop-color="#9b9a8f"/></radialGradient>
+<pattern id="pGrade_3" width="8" height="8" patternUnits="userSpaceOnUse"><path d="M8 0H0V8" fill="none" stroke="#000" stroke-opacity=".08" stroke-width=".6"/></pattern>
+<filter id="fSil_3"><feColorMatrix type="matrix" values="0 0 0 0 0.12  0 0 0 0 0.14  0 0 0 0 0.12  0 0 0 1 0"/></filter>
+<clipPath id="cDisco_3"><circle cx="50" cy="50" r="40"/></clipPath>
+</defs>
+  <circle cx="50" cy="50" r="49" fill="#8f3412"/>
+  <circle cx="50" cy="50" r="47" fill="url(#ring_3)"/>
+  <linearGradient id="ring_3" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FFC39E"/><stop offset=".5" stop-color="#E8622C"/><stop offset="1" stop-color="#FFC39E"/></linearGradient>
+  <circle cx="50" cy="50" r="41.5" fill="#111"/>
+  <g clip-path="url(#cDisco_3)">
+    <circle cx="50" cy="50" r="40" fill="url(#gFundo_3)"/>
+    <rect width="100" height="100" fill="url(#pGrade_3)"/>
+    <g transform="translate(50 52) scale(.8) translate(-50 -50)" >
+  <g transform="translate(20 20) rotate(-18)"><path d="M-12 1 L -2 -1 L 4 -8 L 7 -8 L 5 -1 L 12 -1.5 L 14 1 L 5 2.5 L 6 7 L 3 7 L 1 3 L -11 4 Z" fill="#E8622C" stroke="#111" stroke-width="1.6" stroke-linejoin="round"/></g>
+  <path d="M34 17 C 42 14 48 16 54 13" fill="none" stroke="#111" stroke-width="1.3" stroke-dasharray="2 3" opacity=".55"/>
+  <path d="M10 84 C 30 79 70 79 92 84" fill="none" stroke="#111" stroke-width="2" opacity=".4"/>
+  <path d="M54 37 L 47 45 L 43 53" fill="none" stroke="#111" stroke-width="6.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M54 37 L 47 45 L 43 53" fill="none" stroke="#8d8d86" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M51 56 L 43 64 L 33 64" fill="none" stroke="#111" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/><path d="M51 56 L 43 64 L 33 64" fill="none" stroke="#5f5f59" stroke-width="5.2" stroke-linecap="round" stroke-linejoin="round"/>
+  <rect x="37" y="34" width="13" height="20" rx="4" fill="#7d6a4f" stroke="#111" stroke-width="2.6" stroke-linejoin="round" stroke-linecap="round" transform="rotate(14 43 44)"/>
+  <path d="M40 41 h8 M 39 48 h8" stroke="#111" stroke-width="1.5" transform="rotate(14 43 44)"/>
+  <path d="M56 36 L 51 56" fill="none" stroke="#111" stroke-width="11.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M56 36 L 51 56" fill="none" stroke="#c4c4bd" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M53 38 L 49 50" stroke="#fff" stroke-opacity=".6" stroke-width="1.6" stroke-linecap="round"/>
+  <path d="M52 56 L 62 63 L 60 77" fill="none" stroke="#111" stroke-width="8.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M52 56 L 62 63 L 60 77" fill="none" stroke="#77776f" stroke-width="5.4" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M56 38 L 64 46 L 72 41" fill="none" stroke="#111" stroke-width="6.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M56 38 L 64 46 L 72 41" fill="none" stroke="#b5b5ae" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M30 65 l 6 -0.5 M 58 79 l 7 0" stroke="#E8622C" stroke-width="3.8" stroke-linecap="round"/>
+  <circle cx="60" cy="27" r="6.6" fill="url(#gCinza_3)" stroke="#111" stroke-width="2.6" stroke-linejoin="round" stroke-linecap="round"/>
+  <path d="M53.6 26 C 54 19.5 64 18 66.6 24 L 71 25 L 66 27 Z" fill="#E8622C" stroke="#111" stroke-width="1.8" stroke-linejoin="round"/>
+  <circle cx="63.6" cy="28.6" r="1" fill="#111"/></g>
+  </g>
+  <path d="M18 30 A 36 36 0 0 1 60 14" fill="none" stroke="#fff" stroke-opacity=".35" stroke-width="2.5" stroke-linecap="round"/>
+  
+  </svg></div>
+ <div class="face verso"><b>O Viajante</b><small>1 prova fora do seu estado</small><div class="barra"><span style="width:100%"></span></div><small>Conquistada em 03/11/2026</small></div></div>
+ <div class="nome">O Viajante</div><div class="nivel">especial</div>
+</button>
+</div></body></html>
