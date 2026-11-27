@@ -29,6 +29,7 @@ export type Estrutura = {
   strides?: Bloco | null;
   strides_reps?: number | null;
   strides_reps_max?: number | null;
+  strides_rec_s?: number | null; // recuperação entre um stride e outro
   descanso_strides_s?: number | null;
   serie?: Bloco & { series: number; series_max?: number | null }; // formato antigo (1 série)
   series?: Serie[]; // várias séries principais

@@ -71,7 +71,7 @@ export async function POST(request: NextRequest) {
           const r = parseInt(txt(form.get("strides_reps"), 3), 10);
           const rm = parseInt(txt(form.get("strides_reps_max"), 3), 10);
           const reps = st && r >= 1 && r <= 30 ? r : null;
-          return { strides_reps: reps, strides_reps_max: reps && rm > reps && rm <= 30 ? rm : null };
+          return { strides_reps: reps, strides_reps_max: reps && rm > reps && rm <= 30 ? rm : null, strides_rec_s: st ? segundos(txt(form.get("strides_rec"), 20)) : null };
         })(),
         descanso_strides_s: segundos(txt(form.get("descanso_strides"), 20)),
         series,

@@ -82,6 +82,9 @@ export function FormTreino({ treino, fase, atleta, voltar, tipoInicial, subtipoI
                 <input id="strides_reps_max" name="strides_reps_max" type="number" min={1} max={30} defaultValue={e.strides_reps_max ?? ""} placeholder="ex.: 6" />
               </div>
             </div>
+            <div className="field"><label htmlFor="strides_rec">Recuperação entre os strides (tempo, ex.: 1:00)</label>
+              <input id="strides_rec" name="strides_rec" defaultValue={e.strides_rec_s ? descansoTxt(e.strides_rec_s).replace(" min", ":00").replace(" s", "") : ""} placeholder="ex.: 1:00 ou 45" />
+            </div>
           </CampoBloco>
           <div className="field"><label htmlFor="b-ds">3. Descanso depois dos strides (tempo, ex.: 2:00)</label>
             <input id="b-ds" name="descanso_strides" defaultValue={e.descanso_strides_s ? descansoTxt(e.descanso_strides_s).replace(" min", ":00") : ""} placeholder="ex.: 2:00" />

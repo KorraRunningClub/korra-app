@@ -113,7 +113,8 @@ export default async function Biblioteca({ searchParams }: { searchParams: Promi
                       ) : (
                         <ol className="bib-estrutura">
                           {e.aquecimento && <li><span className="bib-rot">Aquecimento</span> {linhaBloco(e.aquecimento)}</li>}
-                          {e.strides && <li><span className="bib-rot">Strides</span> {linhaBloco(e.strides, e.strides_reps ? `${seriesTxt({ series: e.strides_reps, series_max: e.strides_reps_max })} × ` : undefined)}</li>}
+                          {e.strides && <li><span className="bib-rot">Strides</span> {linhaBloco(e.strides, e.strides_reps ? `${seriesTxt({ series: e.strides_reps, series_max: e.strides_reps_max })} × ` : undefined)}
+                            {e.strides_rec_s ? <><br /><span className="regra">Recuperação entre os strides: {tempoTxt(e.strides_rec_s)}</span></> : null}</li>}
                           {e.strides && e.descanso_strides_s ? <li><span className="bib-rot">Descanso</span> {tempoTxt(e.descanso_strides_s)}</li> : null}
                           {seriesDo(e).map((sr, i, arr) => (
                             <li key={i} className="bib-serie"><span className="bib-rot">Série principal{arr.length > 1 ? ` ${i + 1}` : ""}</span> {linhaBloco(sr, `${seriesTxt(sr)} × `)}
