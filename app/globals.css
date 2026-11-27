@@ -940,3 +940,6 @@ footer.escuro{--bg:var(--verde-2)}
 .carga-legenda i{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:6px;vertical-align:-1px}
 .carga-tabela{min-width:420px}
 .carga-tabela tr.ativa td{background:rgba(254,210,97,.25)}
+/* Lixeira da biblioteca */
+.lixeira-lista{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+.lixeira-lista li{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:8px;padding:10px 12px;border:1px dashed var(--line);border-radius:10px}

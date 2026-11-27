@@ -25,10 +25,22 @@ export async function POST(request: NextRequest) {
   const db = sessao.supabase.from("treinos_modelo");
   const id = txt(form.get("id"), 40);
   try {
-    if (form.get("acao") === "apagar") {
-      const { error } = await db.delete().eq("id", id);
-      if (error) throw error;
+    const acao = form.get("acao");
+    if (acao === "apagar") {
+      // vai para a lixeira
+      const { error } = await db.update({ apagado_em: new Date().toISOString() }).eq("id", id);
+      if (error) return ir("&erro=lixeira");
       return ir("&ok=apagado");
+    }
+    if (acao === "restaurar") {
+      const { error } = await db.update({ apagado_em: null }).eq("id", id);
+      if (error) throw error;
+      return ir("&ok=restaurado#lixeira");
+    }
+    if (acao === "apagar_de_vez") {
+      const { error } = await db.delete().eq("id", id).not("apagado_em", "is", null);
+      if (error) throw error;
+      return ir("&ok=excluido#lixeira");
     }
     const tipo = txt(form.get("tipo"), 20);
     const nivel = txt(form.get("nivel"), 20);

@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { getSessao } from "@/lib/supabase/server";
 import { AppHeader } from "@/components/AppHeader";
 import { FormTreino } from "./FormTreino";
+import { BotaoConfirmar } from "./BotaoConfirmar";
 import {
   FASES_TREINO, NIVEIS, SUBTIPOS, TIPOS, descansoTxt, qtd, seriesDo, seriesTxt, tempoNoPace, tempoTxt, totalSerie, zonaNome,
   type Bloco, type FaseTreino, type TreinoModelo,
@@ -11,8 +12,8 @@ import { calcularZonas, mmss, type Teste } from "@/lib/zonas";
 
 export const metadata = { title: "Biblioteca de treinos · Korrá Running Club" };
 
-const OK: Record<string, string> = { salvo: "Treino salvo na biblioteca.", apagado: "Treino removido." };
-const ERRO: Record<string, string> = { dados: "Confira os blocos do treino (quanto, unidade e zona).", tabela: "Falta rodar o SQL da biblioteca no Supabase.", salvar: "Não conseguimos salvar. Tente de novo." };
+const OK: Record<string, string> = { salvo: "Treino salvo na biblioteca.", apagado: "Treino enviado para a lixeira. Dá para restaurar lá embaixo.", restaurado: "Treino restaurado.", excluido: "Treino apagado de vez." };
+const ERRO: Record<string, string> = { dados: "Confira os blocos do treino (quanto, unidade e zona).", tabela: "Falta rodar o SQL da biblioteca no Supabase.", lixeira: "Falta rodar o SQL da lixeira (0036) no Supabase. O treino não foi removido.", salvar: "Não conseguimos salvar. Tente de novo." };
 const ORDEM_NIVEL = { iniciante: 0, intermediario: 1, avancado: 2, todos: 3 } as const;
 
 export default async function Biblioteca({ searchParams }: { searchParams: Promise<{ fase?: string; atleta?: string; editar?: string; novo?: string; tipo?: string; subtipo?: string; ok?: string; erro?: string }> }) {
@@ -24,10 +25,12 @@ export default async function Biblioteca({ searchParams }: { searchParams: Promi
   const fase: FaseTreino = q.fase && q.fase in FASES_TREINO ? (q.fase as FaseTreino) : "base";
 
   const [{ data: tr }, { data: alunos }] = await Promise.all([
-    supabase.from("treinos_modelo").select("id, fase, nivel, nome, tipo, subtipo, estrutura, obs, ordem").order("ordem").order("nome"),
+    supabase.from("treinos_modelo").select("*").order("ordem").order("nome"),
     supabase.from("perfis").select("id, nome").eq("status", "ativo").order("nome"),
   ]);
-  const todos = ((tr ?? []) as TreinoModelo[]).filter((t) => t.estrutura && Object.keys(t.estrutura).length);
+  const validos = ((tr ?? []) as (TreinoModelo & { apagado_em?: string | null })[]).filter((t) => t.estrutura && Object.keys(t.estrutura).length);
+  const todos = validos.filter((t) => !t.apagado_em);
+  const lixeira = validos.filter((t) => t.apagado_em).sort((a, b) => String(b.apagado_em).localeCompare(String(a.apagado_em)));
   const daFase = todos.filter((t) => t.fase === fase);
   const editando = q.editar ? todos.find((t) => t.id === q.editar) ?? null : null;
   const novo = q.novo === "1";
@@ -132,7 +135,7 @@ export default async function Biblioteca({ searchParams }: { searchParams: Promi
                         <form action="/treinador/treinos/acao" method="post">
                           <input type="hidden" name="acao" value="apagar" /><input type="hidden" name="id" value={t.id} /><input type="hidden" name="fase" value={fase} />
                           {q.atleta && <input type="hidden" name="atleta" value={q.atleta} />}
-                          <button className="btn-link" type="submit">Remover</button>
+                          <BotaoConfirmar texto="Remover" pergunta={`Tem certeza que quer remover "${t.nome}"? Ele vai para a lixeira e dá para restaurar depois.`} />
                         </form>
                       </div>
                     </div>
@@ -155,6 +158,31 @@ export default async function Biblioteca({ searchParams }: { searchParams: Promi
               );
             })}
           </div>
+
+          {lixeira.length > 0 && (
+            <details id="lixeira" className="pasta lixeira" style={{ marginTop: 28 }}>
+              <summary><span className="pasta-icone" aria-hidden="true">🗑️</span> Lixeira <span className="pasta-conta">{lixeira.length}</span></summary>
+              <div className="pasta-corpo">
+                <ul className="lixeira-lista">
+                  {lixeira.map((t) => (
+                    <li key={t.id}>
+                      <span><b>{t.nome}</b> · {FASES_TREINO[t.fase]?.nome} · {NIVEIS[t.nivel]}<br /><span className="regra">Removido em {new Date(String(t.apagado_em)).toLocaleDateString("pt-BR", { timeZone: "America/Sao_Paulo" })}</span></span>
+                      <span className="ev-admin">
+                        <form action="/treinador/treinos/acao" method="post">
+                          <input type="hidden" name="acao" value="restaurar" /><input type="hidden" name="id" value={t.id} /><input type="hidden" name="fase" value={fase} />
+                          <button className="btn-link" type="submit">Restaurar</button>
+                        </form>
+                        <form action="/treinador/treinos/acao" method="post">
+                          <input type="hidden" name="acao" value="apagar_de_vez" /><input type="hidden" name="id" value={t.id} /><input type="hidden" name="fase" value={fase} />
+                          <BotaoConfirmar texto="Apagar de vez" pergunta={`Apagar "${t.nome}" de vez? Isso não tem volta.`} />
+                        </form>
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </details>
+          )}
         </div>
 
         {(novo || editando) && (
