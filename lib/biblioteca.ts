@@ -27,6 +27,8 @@ export type Estrutura = {
   principal?: Bloco; // rodagem, regenerativo, longo
   aquecimento?: Bloco;
   strides?: Bloco | null;
+  strides_reps?: number | null;
+  strides_reps_max?: number | null;
   descanso_strides_s?: number | null;
   serie?: Bloco & { series: number; series_max?: number | null }; // formato antigo (1 série)
   series?: Serie[]; // várias séries principais

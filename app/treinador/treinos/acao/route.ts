@@ -67,6 +67,12 @@ export async function POST(request: NextRequest) {
       if (aq === "erro" || st === "erro" || vc === "erro" || !aq || !vc) return ir("&erro=dados");
       estrutura = {
         aquecimento: aq, strides: st,
+        ...(() => {
+          const r = parseInt(txt(form.get("strides_reps"), 3), 10);
+          const rm = parseInt(txt(form.get("strides_reps_max"), 3), 10);
+          const reps = st && r >= 1 && r <= 30 ? r : null;
+          return { strides_reps: reps, strides_reps_max: reps && rm > reps && rm <= 30 ? rm : null };
+        })(),
         descanso_strides_s: segundos(txt(form.get("descanso_strides"), 20)),
         series,
         volta_calma: vc,

@@ -4,8 +4,8 @@ import { useState } from "react";
 import { FASES_TREINO, NIVEIS, SUBTIPOS, TIPOS, UNIDADES, descansoTxt, seriesDo, type Bloco, type Serie, type TreinoModelo } from "@/lib/biblioteca";
 import { ZONAS_VDOT } from "@/lib/zonas";
 
-function CampoBloco({ prefixo, rotulo, bloco, unidades, zonaPadrao, opcional }: {
-  prefixo: string; rotulo: string; bloco?: Bloco | null; unidades: (keyof typeof UNIDADES)[]; zonaPadrao: number; opcional?: boolean;
+function CampoBloco({ prefixo, rotulo, bloco, unidades, zonaPadrao, opcional, children }: {
+  prefixo: string; rotulo: string; bloco?: Bloco | null; unidades: (keyof typeof UNIDADES)[]; zonaPadrao: number; opcional?: boolean; children?: React.ReactNode;
 }) {
   return (
     <fieldset className="bloco-treino">
@@ -25,6 +25,7 @@ function CampoBloco({ prefixo, rotulo, bloco, unidades, zonaPadrao, opcional }: 
           </select>
         </div>
       </div>
+      {children}
     </fieldset>
   );
 }
@@ -72,7 +73,16 @@ export function FormTreino({ treino, fase, atleta, voltar, tipoInicial, subtipoI
       ) : (
         <>
           <CampoBloco prefixo="aquecimento" rotulo="1. Aquecimento" bloco={e.aquecimento} unidades={["min", "km"]} zonaPadrao={2} />
-          <CampoBloco prefixo="strides" rotulo="2. Strides" bloco={e.strides} unidades={["m", "s", "km", "min"]} zonaPadrao={6} opcional />
+          <CampoBloco prefixo="strides" rotulo="2. Strides" bloco={e.strides} unidades={["m", "s", "km", "min"]} zonaPadrao={6} opcional>
+            <div className="linha-campos" style={{ gridTemplateColumns: "1fr 1fr" }}>
+              <div className="field"><label htmlFor="strides_reps">Repetições</label>
+                <input id="strides_reps" name="strides_reps" type="number" min={1} max={30} defaultValue={e.strides_reps ?? ""} placeholder="ex.: 4" />
+              </div>
+              <div className="field"><label htmlFor="strides_reps_max">Até (opcional)</label>
+                <input id="strides_reps_max" name="strides_reps_max" type="number" min={1} max={30} defaultValue={e.strides_reps_max ?? ""} placeholder="ex.: 6" />
+              </div>
+            </div>
+          </CampoBloco>
           <div className="field"><label htmlFor="b-ds">3. Descanso depois dos strides (tempo, ex.: 2:00)</label>
             <input id="b-ds" name="descanso_strides" defaultValue={e.descanso_strides_s ? descansoTxt(e.descanso_strides_s).replace(" min", ":00") : ""} placeholder="ex.: 2:00" />
           </div>
