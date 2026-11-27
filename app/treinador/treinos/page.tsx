@@ -4,6 +4,7 @@ import { getSessao } from "@/lib/supabase/server";
 import { AppHeader } from "@/components/AppHeader";
 import { FormTreino } from "./FormTreino";
 import { BotaoConfirmar } from "./BotaoConfirmar";
+import { ArrastarProvider, Arrastavel, Soltavel } from "./Arrastar";
 import {
   FASES_TREINO, NIVEIS, SUBTIPOS, TIPOS, descansoTxt, qtd, seriesDo, seriesTxt, tempoNoPace, tempoTxt, totalSerie, zonaNome,
   type Bloco, type FaseTreino, type TreinoModelo,
@@ -12,7 +13,7 @@ import { calcularZonas, mmss, type Teste } from "@/lib/zonas";
 
 export const metadata = { title: "Biblioteca de treinos · Korrá Running Club" };
 
-const OK: Record<string, string> = { salvo: "Treino salvo na biblioteca.", apagado: "Treino enviado para a lixeira. Dá para restaurar lá embaixo.", restaurado: "Treino restaurado.", excluido: "Treino apagado de vez." };
+const OK: Record<string, string> = { salvo: "Treino salvo na biblioteca.", apagado: "Treino enviado para a lixeira. Dá para restaurar lá embaixo.", restaurado: "Treino restaurado.", copiado: "Cópia criada na mesma pasta. Arraste para onde quiser ou clique em Editar.", excluido: "Treino apagado de vez." };
 const ERRO: Record<string, string> = { dados: "Confira os blocos do treino (quanto, unidade e zona).", tabela: "Falta rodar o SQL da biblioteca no Supabase.", lixeira: "Falta rodar o SQL da lixeira (0036) no Supabase. O treino não foi removido.", salvar: "Não conseguimos salvar. Tente de novo." };
 const ORDEM_NIVEL = { iniciante: 0, intermediario: 1, avancado: 2, todos: 3 } as const;
 
@@ -68,11 +69,14 @@ export default async function Biblioteca({ searchParams }: { searchParams: Promi
           {q.ok && <p className="msg" style={{ marginTop: 14 }}>{OK[q.ok] ?? "Pronto."}</p>}
           {q.erro && <p className="msg erro" style={{ marginTop: 14 }}>{ERRO[q.erro] ?? "Algo deu errado."}</p>}
 
+          <ArrastarProvider>
           <div className="bib-topo">
             <div className="forum-abas" role="tablist">
               {Object.entries(FASES_TREINO).map(([k, f]) => (
-                <Link key={k} role="tab" aria-selected={fase === k} className={`forum-aba${fase === k ? " ativa" : ""}`}
-                  href={`/treinador/treinos?fase=${k}${q.atleta ? `&atleta=${q.atleta}` : ""}`}>{f.nome}</Link>
+                <Soltavel key={k} destino={{ fase: k, rotulo: f.nome }} className="aba-alvo">
+                  <Link role="tab" aria-selected={fase === k} className={`forum-aba${fase === k ? " ativa" : ""}`}
+                    href={`/treinador/treinos?fase=${k}${q.atleta ? `&atleta=${q.atleta}` : ""}`}>{f.nome}</Link>
+                </Soltavel>
               ))}
             </div>
             <form method="get" action="/treinador/treinos" className="bib-atleta">
@@ -88,13 +92,15 @@ export default async function Biblioteca({ searchParams }: { searchParams: Promi
             {q.atleta && (zonasAtleta ? ` Paces de ${nomeAtleta} (VDOT ${zonasAtleta.vdot.toFixed(1).replace(".", ",")}).` : ` ${nomeAtleta} ainda não tem teste lançado.`)}
           </p>
           <Link className="btn btn-primary" href={`${base}&novo=1`} style={{ marginTop: 14, display: "inline-block" }}>+ Novo treino</Link>
+          <p className="regra so-pc-bloco" style={{ marginTop: 10 }}>Dica: arraste um treino para outra pasta ou para a aba de outra fase e escolha <b>Copiar aqui</b> ou <b>Mover aqui</b>.</p>
 
           <div className="pastas">
             {(["regenerativo", "rodagem", "intervalado", "longo"] as const).map((tp) => {
               const doTipo = daFase.filter((t) => t.tipo === tp);
               const subpastas = tp === "intervalado" ? (Object.keys(SUBTIPOS) as (keyof typeof SUBTIPOS)[]) : [null];
               return (
-                <details key={tp} className="pasta" open={doTipo.length > 0}>
+                <Soltavel key={tp} destino={tp === "intervalado" ? { fase, rotulo: "" } : { fase, tipo: tp, rotulo: `${FASES_TREINO[fase].nome} › ${TIPOS[tp]}` }} className={tp === "intervalado" ? "sem-alvo" : undefined}>
+                <details className="pasta" open={doTipo.length > 0}>
                   <summary>
                     <span className="pasta-icone" aria-hidden="true">📁</span> {TIPOS[tp]} <span className="pasta-conta">{doTipo.length}</span>
                   </summary>
@@ -109,7 +115,7 @@ export default async function Biblioteca({ searchParams }: { searchParams: Promi
                               {lista.map((t) => {
                   const e = t.estrutura;
                   return (
-                    <div key={t.id} className="bib-card">
+                    <Arrastavel key={t.id} id={t.id} tipo={t.tipo} nome={t.nome} className="bib-card">
                       <span className={`bib-nivel ${t.nivel}`}>{NIVEIS[t.nivel]}</span>
                       {t.tipo !== "intervalado" && e.principal ? (
                         <p className="bib-unico">{linhaBloco(e.principal)}</p>
@@ -137,8 +143,13 @@ export default async function Biblioteca({ searchParams }: { searchParams: Promi
                           {q.atleta && <input type="hidden" name="atleta" value={q.atleta} />}
                           <BotaoConfirmar texto="Remover" pergunta={`Tem certeza que quer remover "${t.nome}"? Ele vai para a lixeira e dá para restaurar depois.`} />
                         </form>
+                        <form action="/treinador/treinos/acao" method="post">
+                          <input type="hidden" name="acao" value="copiar" /><input type="hidden" name="id" value={t.id} /><input type="hidden" name="fase" value={fase} />
+                          {q.atleta && <input type="hidden" name="atleta" value={q.atleta} />}
+                          <button className="btn-link" type="submit">Copiar</button>
+                        </form>
                       </div>
-                    </div>
+                    </Arrastavel>
                   );
                               })}
                             </div>
@@ -147,17 +158,21 @@ export default async function Biblioteca({ searchParams }: { searchParams: Promi
                         </>
                       );
                       return sub ? (
-                        <details key={sub} className="pasta sub" open={lista.length > 0}>
-                          <summary><span className="pasta-icone" aria-hidden="true">📂</span> {SUBTIPOS[sub]} <span className="pasta-conta">{lista.length}</span></summary>
-                          <div className="pasta-corpo">{conteudo}</div>
-                        </details>
+                        <Soltavel key={sub} destino={{ fase, tipo: tp, subtipo: sub, rotulo: `${FASES_TREINO[fase].nome} › ${SUBTIPOS[sub]}` }}>
+                          <details className="pasta sub" open={lista.length > 0}>
+                            <summary><span className="pasta-icone" aria-hidden="true">📂</span> {SUBTIPOS[sub]} <span className="pasta-conta">{lista.length}</span></summary>
+                            <div className="pasta-corpo">{conteudo}</div>
+                          </details>
+                        </Soltavel>
                       ) : <div key="unica">{conteudo}</div>;
                     })}
                   </div>
                 </details>
+                </Soltavel>
               );
             })}
           </div>
+          </ArrastarProvider>
 
           {lixeira.length > 0 && (
             <details id="lixeira" className="pasta lixeira" style={{ marginTop: 28 }}>

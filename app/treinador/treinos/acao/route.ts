@@ -32,6 +32,13 @@ export async function POST(request: NextRequest) {
       if (error) return ir("&erro=lixeira");
       return ir("&ok=apagado");
     }
+    if (acao === "copiar") {
+      const { data: t } = await db.select("*").eq("id", id).maybeSingle();
+      if (!t) return ir("&erro=salvar");
+      const { error } = await db.insert({ fase: t.fase, tipo: t.tipo, subtipo: t.subtipo, nivel: t.nivel, estrutura: t.estrutura, obs: t.obs, ordem: t.ordem, nome: `${t.nome} (cópia)`.slice(0, 80) });
+      if (error) throw error;
+      return ir("&ok=copiado");
+    }
     if (acao === "restaurar") {
       const { error } = await db.update({ apagado_em: null }).eq("id", id);
       if (error) throw error;

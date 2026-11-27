@@ -943,3 +943,14 @@ footer.escuro{--bg:var(--verde-2)}
 /* Lixeira da biblioteca */
 .lixeira-lista{list-style:none;margin:0;padding:0;display:grid;gap:10px}
 .lixeira-lista li{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:8px;padding:10px 12px;border:1px dashed var(--line);border-radius:10px}
+/* Arrastar treinos na biblioteca */
+.arrastavel{cursor:grab}
+.arrastavel.arrastando{opacity:.45}
+.soltavel{outline:2px dashed var(--verde);outline-offset:3px;border-radius:12px;transition:background .15s}
+.soltavel.sobre{background:rgba(254,210,97,.25)}
+.aba-alvo{display:inline-block}
+.arrastar-menu{position:fixed;z-index:80;width:260px;background:var(--creme,#E9E8D6);color:var(--tinta,#1f251e);border:1px solid var(--line);border-radius:12px;padding:12px;box-shadow:0 10px 30px rgba(0,0,0,.25)}
+.arrastar-menu p{margin:0 0 10px;font-size:14px;line-height:1.4}
+.arrastar-menu div{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.so-pc-bloco{display:none}
+@media (hover:hover) and (pointer:fine){.so-pc-bloco{display:block}}
